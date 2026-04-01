@@ -594,6 +594,8 @@
       white-space: nowrap;
     }
     .btn-save:hover { background: #e05520; }
+    .btn-save.is-saved { background: #fff; border: 1px solid #000023; color: #000023; cursor: default; pointer-events: none; }
+    .btn-save.is-saved:hover { background: #fff; }
     .btn-cancel {
       display: inline-flex;
       align-items: center;
@@ -1083,8 +1085,8 @@
     const btn = document.querySelector('.btn-save');
     const orig = btn.textContent;
     btn.textContent = 'Saved';
-    btn.style.background = '#2e8802';
-    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1500);
+    btn.classList.add('is-saved');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('is-saved'); }, 900);
   });
 
   // ── Logo + Home nav link: save then navigate ─────────────────────────────
