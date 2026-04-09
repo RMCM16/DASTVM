@@ -4333,11 +4333,11 @@
         id: 'assignee', label: 'Assignee', title: 'Filter by assignee',
         options: () => {
           const s = new Set();
-          rows.forEach(r => r.querySelectorAll('.av[title]').forEach(a => s.add(a.title)));
+          rows.forEach(r => r.querySelectorAll('.av[data-name]').forEach(a => s.add(a.dataset.name)));
           return [...s].sort();
         },
         match(row, sel) {
-          return [...row.querySelectorAll('.av[title]')].some(a => sel.has(a.title));
+          return [...row.querySelectorAll('.av[data-name]')].some(a => sel.has(a.dataset.name));
         },
       },
       {
@@ -6953,7 +6953,7 @@
     var dpEnd          = new Date(2026,3,30);
     var dpPendingStart = new Date(2026,3,1);
     var dpPendingEnd   = new Date(2026,3,30);
-    window._dpStart = dpStart; window._dpEnd = dpEnd;
+    window._dpStart = null; window._dpEnd = null;  // only set when user explicitly applies a date
     var dpPicking      = false;   // true after 1st click, waiting for 2nd
     var dpViewYear     = 2026;
     var dpViewMonth    = 2;       // left calendar = March
