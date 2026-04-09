@@ -2228,6 +2228,86 @@
     .tl-comments-btn:not([disabled]):hover { background: #e5562a; }
     .tl-card-new { border: 3px solid #7FC9FF !important; transition: border 0.3s ease; }
     .tl-card-new.tl-card-new-fade { border: 1px solid #CBD0D1 !important; }
+
+    /* ── Age popover ── */
+    .age-popover {
+      position: fixed;
+      z-index: 99999;
+      display: none;
+      pointer-events: auto;
+    }
+    .age-popover-card {
+      position: relative;
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 35, 0.1);
+      padding: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      width: 360px;
+      box-sizing: border-box;
+    }
+    .age-popover-card::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: var(--caret-offset, 50%);
+      transform: translateX(-50%) rotate(45deg);
+      width: 16px;
+      height: 16px;
+      background: #ffffff;
+      box-shadow: 3px 3px 4px rgba(0, 0, 35, 0.07);
+      z-index: -1;
+    }
+    .age-popover-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 2px;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 35, 0.1);
+    }
+    .age-popover-content {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+    .age-popover-title {
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: 0.01em;
+      color: #000023;
+      margin: 0;
+    }
+    .age-popover-body {
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.4;
+      letter-spacing: 0.005em;
+      color: #333332;
+      margin: 0;
+    }
+    .age-popover-link {
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 500;
+      color: #FF6633;
+      text-decoration: underline;
+      text-decoration-color: #FF6633;
+      text-underline-offset: 2px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      line-height: 1.2;
+    }
+    .age-popover-link:hover { color: #cc4f29; }
+
   </style>
 </head>
 <body>
@@ -4204,7 +4284,7 @@
             ageCustomMax = maxInput.value !== '' ? parseInt(maxInput.value, 10) : null;
             syncStyle();
             refreshBadge('age');
-            applyFilters();
+            window._applyTableFilters();
           }
 
           minInput.addEventListener('input', update);
@@ -4229,7 +4309,7 @@
             ageCustomMax = null;
             syncStyle();
             refreshBadge('age');
-            applyFilters();
+            window._applyTableFilters();
           });
         },
         match(row, sel) {
@@ -4348,7 +4428,7 @@
         if (e.target.checked) active[def.id].add(val);
         else                  active[def.id].delete(val);
         refreshBadge(def.id);
-        applyFilters();
+        window._applyTableFilters();
       });
 
       pop.addEventListener('click', e => e.stopPropagation());
@@ -4375,7 +4455,7 @@
     if (searchInput) {
       searchInput.addEventListener('input', function () {
         searchQuery = this.value.trim().toLowerCase();
-        applyFilters();
+        window._applyTableFilters();
       });
     }
 
@@ -7461,6 +7541,127 @@
 
     // Initial render
     goToPage(1);
+  })();
+
+  /* ── Age cell popover ── */
+  (function () {
+    var _slaStored = null;
+    try { _slaStored = JSON.parse(localStorage.getItem('dast-sla-settings')); } catch(e) {}
+    var SLA = {
+      High:   (_slaStored && _slaStored.high)   || 7,
+      Medium: (_slaStored && _slaStored.medium)  || 30,
+      Low:    (_slaStored && _slaStored.low)     || 90
+    };
+
+    // Create singleton popover element
+    var pop = document.createElement('div');
+    pop.className = 'age-popover';
+    pop.innerHTML =
+      '<div class="age-popover-card">' +
+        '<div class="age-popover-dot"></div>' +
+        '<div class="age-popover-content">' +
+          '<p class="age-popover-title"></p>' +
+          '<p class="age-popover-body"></p>' +
+          '<a class="age-popover-link" href="burp-dast-settings-issue-management.html#sla-settings">SLA settings</a>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(pop);
+
+    var card  = pop.querySelector('.age-popover-card');
+    var dot   = pop.querySelector('.age-popover-dot');
+    var title = pop.querySelector('.age-popover-title');
+    var body  = pop.querySelector('.age-popover-body');
+    var link  = pop.querySelector('.age-popover-link');
+    var hideTimer;
+
+    function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
+
+    function buildContent(badge, severity) {
+      var days = parseInt(badge.textContent, 10) || 0;
+      var sla  = SLA[severity];
+      var cls  = badge.className; // e.g. "age-badge age-high-over"
+
+      // Dot colour matches the badge background exactly (per the Figma SLA colour index)
+      dot.style.background = getComputedStyle(badge).backgroundColor;
+
+      if (!sla || severity === 'Information') {
+        title.textContent = 'No SLA applies to this issue';
+        body.textContent  = 'Informational findings are not subject to a remediation SLA. Address them as part of your regular security hygiene.';
+        link.style.display = 'inline';
+      } else if (cls.indexOf('-over') !== -1) {
+        var overBy = days - sla;
+        title.textContent = 'This issue is over the SLA';
+        body.textContent  = 'This ' + severity.toLowerCase() + ' severity issue has been open for ' + plural(days, 'day') + ' — ' + plural(overBy, 'day') + ' past the ' + sla + '-day SLA. Prioritise remediation to reduce your exposure.';
+        link.style.display = 'inline';
+      } else if (cls.indexOf('-warn') !== -1) {
+        var remaining = sla - days;
+        title.textContent = 'This issue is approaching the SLA';
+        body.textContent  = 'This ' + severity.toLowerCase() + ' severity issue has been open for ' + plural(days, 'day') + '. The ' + sla + '-day SLA deadline is in ' + plural(remaining, 'day') + '. Act now to avoid a breach.';
+        link.style.display = 'inline';
+      } else {
+        var rem = sla - days;
+        title.textContent = 'This issue is within the SLA';
+        body.textContent  = 'This ' + severity.toLowerCase() + ' severity issue has been open for ' + plural(days, 'day') + '. ' + plural(rem, 'day') + ' remain before the ' + sla + '-day SLA deadline.';
+        link.style.display = 'inline';
+      }
+    }
+
+    function showPopover(cell) {
+      clearTimeout(hideTimer);
+      var row    = cell.closest('[data-row]');
+      var badge  = cell.querySelector('.age-badge');
+      var sevEl  = row && row.querySelector('.severity-label');
+      if (!badge || !sevEl) return;
+
+      buildContent(badge, sevEl.textContent.trim());
+
+      // Show to measure
+      pop.style.display = 'block';
+      pop.style.visibility = 'hidden';
+
+      var popW   = pop.offsetWidth;
+      var popH   = pop.offsetHeight;
+      var rect   = cell.getBoundingClientRect();
+      var cx     = rect.left + rect.width / 2;  // centre of cell
+      var top    = rect.top - popH - 12;
+      var left   = cx - popW / 2;
+
+      // Clamp to viewport
+      var minL = 12, maxL = window.innerWidth - popW - 12;
+      if (left < minL) left = minL;
+      if (left > maxL) left = maxL;
+
+      // Adjust caret to still point at cell centre
+      var caretPct = Math.round(cx - left);
+      card.style.setProperty('--caret-offset', caretPct + 'px');
+
+      // Flip below if not enough room above
+      if (top < 12) top = rect.bottom + 12;
+
+      pop.style.left = left + 'px';
+      pop.style.top  = top  + 'px';
+      pop.style.visibility = 'visible';
+    }
+
+    function hidePopover() {
+      hideTimer = setTimeout(function() { pop.style.display = 'none'; }, 120);
+    }
+
+    document.addEventListener('mouseover', function(e) {
+      var cell = e.target.closest('.col-age');
+      if (cell) showPopover(cell);
+    });
+
+    document.addEventListener('mouseout', function(e) {
+      var cell = e.target.closest('.col-age');
+      if (cell) {
+        var to = e.relatedTarget;
+        if (!pop.contains(to)) hidePopover();
+      }
+    });
+
+    pop.addEventListener('mouseenter', function() { clearTimeout(hideTimer); });
+    pop.addEventListener('mouseleave', hidePopover);
   })();
 </script>
 
