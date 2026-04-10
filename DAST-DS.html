@@ -366,16 +366,19 @@
     .btn-outlined.disabled, .btn-outlined:disabled { border-color: #EBF0F2; color: rgba(51,51,50,0.4); cursor: default; }
     .btn-outlined.btn-square { border-radius: var(--r-sm); }
 
-    /* Quaternary — inline underlined text link */
+    /* Quaternary — inline text link */
     .btn-quaternary {
-      display: inline-flex; align-items: center; gap: 6px;
+      display: inline-flex; align-items: center; gap: 5px;
       background: none; border: none; padding: 0;
       color: #B86633; font-family: var(--font); font-size: 16px; font-weight: 500;
       letter-spacing: 0.16px; line-height: 1.2;
-      text-decoration: underline; text-decoration-color: #B86633; cursor: pointer;
+      text-decoration: underline; text-underline-offset: 2px; cursor: pointer;
+      white-space: nowrap; flex-shrink: 0;
     }
-    .btn-quaternary:hover { color: #FF6633; text-decoration-color: #FF6633; }
-    .btn-quaternary.disabled, .btn-quaternary:disabled { color: #CBD0D1; text-decoration-color: #CBD0D1; cursor: default; }
+    .btn-quaternary.btn-sm { font-size: 14px; letter-spacing: 0.14px; }
+    .btn-quaternary.has-icon { text-decoration: none; }
+    .btn-quaternary:hover { color: #FF6633; }
+    .btn-quaternary.disabled, .btn-quaternary:disabled { color: #CBD0D1; cursor: default; }
 
     /* AI Button */
     .btn-ai {
@@ -4846,25 +4849,83 @@ border: 1px solid <span class="tok-val">#CBD0D1</span>; color: <span class="tok-
 
     <!-- Quaternary -->
     <div class="ds-subsection">
-      <div class="ds-subsection-title">Quaternary <span style="font-size:12px;font-weight:400;color:#676667">— inline underlined link</span></div>
-      <div class="ds-preview" style="gap:32px;align-items:center;">
-        <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;">
+      <div class="ds-subsection-title">Quaternary <span style="font-size:12px;font-weight:400;color:#676667">— inline text link</span></div>
+      <p style="font-size:13px;color:#676667;margin:0 0 16px;line-height:1.5;">Icons on the left, right, or both are optional. When any icon is present the text underline is removed — the icon provides the affordance. Text-only variant retains the underline.</p>
+
+      <!-- Large -->
+      <div style="margin-bottom:6px;font-size:11px;font-weight:600;color:#676667;letter-spacing:0.5px;text-transform:uppercase;padding:0 2px;">Large (16px)</div>
+      <div class="ds-preview" style="gap:32px;align-items:center;margin-bottom:16px;">
+        <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start;">
           <span style="font-size:11px;color:#676667;font-weight:500;letter-spacing:0.5px;text-transform:uppercase">Normal</span>
           <button class="btn-quaternary">Button text</button>
+          <button class="btn-quaternary has-icon">
+            <svg width="20" height="20" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1.75v7M4.5 6.25l2.5 2.5 2.5-2.5M1.75 10.5v1a1 1 0 0 0 1 1h8.5a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Button text
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;">
+        <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start;">
           <span style="font-size:11px;color:#676667;font-weight:500;letter-spacing:0.5px;text-transform:uppercase">Hover</span>
-          <button class="btn-quaternary" style="color:#FF6633;text-decoration-color:#FF6633">Button text</button>
+          <button class="btn-quaternary" style="color:#FF6633;">Button text</button>
+          <button class="btn-quaternary has-icon" style="color:#FF6633;">
+            <svg width="20" height="20" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1.75v7M4.5 6.25l2.5 2.5 2.5-2.5M1.75 10.5v1a1 1 0 0 0 1 1h8.5a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Button text
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
         </div>
-        <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start;">
+        <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start;">
           <span style="font-size:11px;color:#676667;font-weight:500;letter-spacing:0.5px;text-transform:uppercase">Disabled</span>
           <button class="btn-quaternary disabled">Button text</button>
+          <button class="btn-quaternary has-icon disabled">
+            <svg width="20" height="20" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1.75v7M4.5 6.25l2.5 2.5 2.5-2.5M1.75 10.5v1a1 1 0 0 0 1 1h8.5a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Button text
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
         </div>
       </div>
-      <div class="ds-code"><span class="tok-class">.btn-quaternary</span>  <span class="tok-com">/* inline underlined text link, 16px medium */</span>
-color: <span class="tok-val">#B86633</span>; text-decoration: underline; font-size: 16px; font-weight: 500;
+
+      <!-- Small -->
+      <div style="margin-bottom:6px;font-size:11px;font-weight:600;color:#676667;letter-spacing:0.5px;text-transform:uppercase;padding:0 2px;">Small (14px)</div>
+      <div class="ds-preview" style="gap:32px;align-items:center;">
+        <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start;">
+          <span style="font-size:11px;color:#676667;font-weight:500;letter-spacing:0.5px;text-transform:uppercase">Normal</span>
+          <button class="btn-quaternary btn-sm">Button text</button>
+          <button class="btn-quaternary btn-sm has-icon">
+            <svg width="20" height="20" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1.75v7M4.5 6.25l2.5 2.5 2.5-2.5M1.75 10.5v1a1 1 0 0 0 1 1h8.5a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Button text
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start;">
+          <span style="font-size:11px;color:#676667;font-weight:500;letter-spacing:0.5px;text-transform:uppercase">Hover</span>
+          <button class="btn-quaternary btn-sm" style="color:#FF6633;">Button text</button>
+          <button class="btn-quaternary btn-sm has-icon" style="color:#FF6633;">
+            <svg width="20" height="20" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1.75v7M4.5 6.25l2.5 2.5 2.5-2.5M1.75 10.5v1a1 1 0 0 0 1 1h8.5a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Button text
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start;">
+          <span style="font-size:11px;color:#676667;font-weight:500;letter-spacing:0.5px;text-transform:uppercase">Disabled</span>
+          <button class="btn-quaternary btn-sm disabled">Button text</button>
+          <button class="btn-quaternary btn-sm has-icon disabled">
+            <svg width="20" height="20" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 1.75v7M4.5 6.25l2.5 2.5 2.5-2.5M1.75 10.5v1a1 1 0 0 0 1 1h8.5a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Button text
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 7.5l5 5 5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="ds-code"><span class="tok-class">.btn-quaternary</span>  <span class="tok-com">/* 16px/500, #B86633, underlined (text-only) */</span>
+display: inline-flex; align-items: center; gap: <span class="tok-val">5px</span>;
+color: <span class="tok-val">#B86633</span>; font-size: <span class="tok-val">16px</span>; font-weight: <span class="tok-val">500</span>; letter-spacing: <span class="tok-val">0.16px</span>;
+text-decoration: underline; text-underline-offset: <span class="tok-val">2px</span>;
 background: none; border: none; padding: 0;
-<span class="tok-prop">:hover</span>  color: <span class="tok-val">#FF6633</span>;
+
+<span class="tok-prop">.btn-sm</span>    font-size: <span class="tok-val">14px</span>; letter-spacing: <span class="tok-val">0.14px</span>;
+<span class="tok-prop">.has-icon</span>  text-decoration: <span class="tok-val">none</span>;  <span class="tok-com">/* any icon present — underline removed */</span>
+           Icons: <span class="tok-val">20×20px</span>, stroke/fill="currentColor"  <span class="tok-com">/* left, right, or both — all optional */</span>
+<span class="tok-prop">:hover</span>     color: <span class="tok-val">#FF6633</span>;  <span class="tok-com">/* icons inherit via currentColor */</span>
 <span class="tok-prop">.disabled</span>  color: <span class="tok-val">#CBD0D1</span>;</div>
     </div>
 
