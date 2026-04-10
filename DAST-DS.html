@@ -1283,6 +1283,23 @@
     .search-result-row.is-highlighted { background: #F0F8FB; }
 
     /* Filter chip */
+    .fc-clear-btn {
+      display: none; align-items: center; justify-content: center;
+      background: none; border: none; padding: 0;
+      width: 14px; height: 14px; cursor: pointer;
+      color: #999; flex-shrink: 0; margin-left: -2px;
+    }
+    .fc-clear-btn:hover { color: #000023; }
+    .filter-chip.has-active .fc-clear-btn { display: inline-flex; }
+    .filter-clear-all {
+      display: none; font-size: 13px; color: #676667; cursor: pointer;
+      white-space: nowrap; flex-shrink: 0; background: none; border: none; padding: 0 4px;
+      text-decoration: underline; text-decoration-color: transparent;
+      transition: color 0.15s, text-decoration-color 0.15s;
+    }
+    .filter-clear-all:hover { color: #000023; text-decoration-color: #000023; }
+    .filter-clear-all.is-visible { display: block; }
+
     .filter-chip {
       display: inline-flex;
       align-items: center;
@@ -5637,15 +5654,23 @@ padding: 0 12px 0 15px;  <span class="tok-com">/* site URL left, chevron right *
     <!-- ── FILTER CHIP ───────────────────────────────────────────────── -->
     <div class="ds-subsection">
       <div class="ds-subsection-title">Filter Chip</div>
-      <div class="ds-preview">
-        <button class="filter-chip">Severity <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
-        <button class="filter-chip is-active">Status (2) <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
-        <button class="filter-chip">Age range <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
+      <div class="ds-preview" style="flex-direction:column;align-items:flex-start;gap:12px;">
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-size:11px;color:var(--c-secondary);width:72px;flex-shrink:0;">Default</span>
+          <div class="filter-chip">Severity (0) <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+          <div class="filter-chip">Age range (0) <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="font-size:11px;color:var(--c-secondary);width:72px;flex-shrink:0;">Active</span>
+          <div class="filter-chip has-active">Status (2) <button class="fc-clear-btn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+          <div class="filter-chip has-active">Severity (1) <button class="fc-clear-btn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button><svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+        </div>
       </div>
-      <div class="ds-code"><span class="tok-class">.filter-chip</span>  height: 30px; padding: 0 10px; border: 1px solid <span class="tok-val">var(--c-grey-4)</span>;
-border-radius: <span class="tok-val">var(--r-sm)</span>; background: <span class="tok-val">var(--c-grey-6)</span>; font-size: 14px;
-<span class="tok-class">.is-active</span>  color: <span class="tok-val">var(--c-primary)</span>;
-             Count shown inline as plain text: "Status (2)"</div>
+      <div class="ds-code"><span class="tok-class">.filter-chip</span>          height: 29px; padding: 0 10px; border: 1px solid <span class="tok-val">var(--c-grey-4)</span>;
+                       border-radius: <span class="tok-val">var(--r-sm)</span>; background: <span class="tok-val">var(--c-white)</span>; font-size: 14px;
+<span class="tok-class">.filter-chip.has-active</span>  applied when ≥1 selection is active — reveals <span class="tok-class">.fc-clear-btn</span>
+<span class="tok-class">.fc-clear-btn</span>           14×14px × icon; hidden by default; shown via <span class="tok-class">.has-active</span>
+                       clicking clears only that chip's selections</div>
     </div>
 
   </section>
@@ -6880,23 +6905,50 @@ padding: 13px 20px 13px 16px; z-index: 10;
   <!-- ── FILTER BAR ────────────────────────────────────────────────── -->
   <section class="ds-section" id="filter-bar">
     <h2 class="ds-section-title">Filter Bar</h2>
-    <p class="ds-section-desc">Row of filter chips + right-aligned search. Height: 30px. Margin-bottom: 20px before table.</p>
+    <p class="ds-section-desc">Date picker + row of filter chips + contextual "Clear all" + right-aligned search. Two-level reset: per-chip × clears one filter; "Clear all" resets everything including search and date picker.</p>
 
-    <div class="ds-preview" style="align-items:center;">
-      <div style="display:flex;gap:8px;align-items:center;flex:1;">
-        <button class="filter-chip">Severity <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
-        <button class="filter-chip is-active">Status (1) <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
-        <button class="filter-chip">Age range <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></button>
-      </div>
-      <div class="search-wrap search-wrap-sm" style="width:280px;margin-left:auto;">
-        <span class="search-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
-        <input type="text" class="search-input" placeholder="Search issues…">
+    <div class="ds-subsection">
+      <div class="ds-subsection-title">No filters active</div>
+      <div class="ds-preview" style="align-items:center;flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;gap:8px;align-items:center;flex:1;flex-wrap:wrap;">
+          <div class="filter-chip">Severity (0) <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+          <div class="filter-chip">Status (0) <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+          <div class="filter-chip">Age (0) <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+          <!-- "Clear all" hidden when no filters active -->
+        </div>
+        <div class="search-wrap search-wrap-sm" style="width:240px;margin-left:auto;">
+          <span class="search-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+          <input type="text" class="search-input" placeholder="Search issues…">
+        </div>
       </div>
     </div>
 
-    <div class="ds-code"><span class="tok-class">.filter-bar</span>  display: flex; align-items: center; height: 30px; margin-bottom: 20px;
-<span class="tok-class">.filter-chips</span>  display: flex; gap: 8px;
-<span class="tok-class">.search-wrap</span>  margin-left: auto; width: 280px;</div>
+    <div class="ds-subsection">
+      <div class="ds-subsection-title">Filters active — "Clear all" visible, chips show ×</div>
+      <div class="ds-preview" style="align-items:center;flex-wrap:wrap;gap:8px;">
+        <div style="display:flex;gap:8px;align-items:center;flex:1;flex-wrap:wrap;">
+          <div class="filter-chip has-active">Severity (2) <button class="fc-clear-btn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+          <div class="filter-chip has-active">Status (1) <button class="fc-clear-btn"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+          <div class="filter-chip">Age (0) <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div>
+          <button class="filter-clear-all is-visible">Clear all</button>
+        </div>
+        <div class="search-wrap search-wrap-sm" style="width:240px;margin-left:auto;">
+          <span class="search-icon"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span>
+          <input type="text" class="search-input" placeholder="Search issues…">
+        </div>
+      </div>
+    </div>
+
+    <div class="ds-code"><span class="tok-comment">/* Layout */</span>
+<span class="tok-class">.filter-bar</span>     display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
+<span class="tok-class">.filter-chips</span>   display: flex; gap: 8px; flex: 1;
+
+<span class="tok-comment">/* Reset controls */</span>
+<span class="tok-class">.fc-clear-btn</span>        14×14px × inside each chip; hidden until <span class="tok-class">.has-active</span> is set
+                     stops propagation so it does not open the popover
+<span class="tok-class">.filter-clear-all</span>    plain text link; 13px; <span class="tok-val">var(--c-secondary)</span> → <span class="tok-val">var(--c-primary)</span> on hover
+                     hidden by default; <span class="tok-class">.is-visible</span> when any chip, search, or date filter is active
+                     resets all chips + age range + search input + date picker</div>
   </section>
 
   <!-- ── SLA / AGE SYSTEM ──────────────────────────────────────────── -->
