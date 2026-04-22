@@ -8201,6 +8201,59 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     pop.addEventListener('mouseleave', hidePopover);
   })();
 
+  // ── Line chart load animation ─────────────────────────────────────────────
+  (function() {
+    var svg = document.querySelector('.lc-svg');
+    if (!svg) return;
+
+    var polylines = svg.querySelectorAll('polyline');
+    var circles   = svg.querySelectorAll('circle');
+    var gridLines = svg.querySelectorAll('line');
+    var texts     = svg.querySelectorAll('text');
+
+    // Set initial hidden state immediately (painted on first browser render)
+    gridLines.forEach(function(l) { l.style.opacity = '0'; });
+    texts.forEach(function(t)     { t.style.opacity = '0'; });
+
+    polylines.forEach(function(pl) {
+      var len = Math.ceil(pl.getTotalLength());
+      pl.style.strokeDasharray  = len;
+      pl.style.strokeDashoffset = len;
+    });
+
+    circles.forEach(function(c) {
+      c.style.transformBox    = 'fill-box';
+      c.style.transformOrigin = 'center';
+      c.style.transform       = 'scale(0)';
+      c.style.opacity         = '0';
+    });
+
+    // Trigger animation after page has fully loaded and painted
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        gridLines.forEach(function(l) {
+          l.style.transition = 'opacity 0.5s ease';
+          l.style.opacity = '1';
+        });
+        texts.forEach(function(t) {
+          t.style.transition = 'opacity 0.5s ease 0.1s';
+          t.style.opacity = '1';
+        });
+        polylines.forEach(function(pl, i) {
+          var len = pl.style.strokeDasharray;
+          pl.style.transition = 'stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1) ' + (0.2 + i * 0.1) + 's';
+          pl.style.strokeDashoffset = '0';
+        });
+        circles.forEach(function(c, i) {
+          var delay = (0.85 + i * 0.04).toFixed(2) + 's';
+          c.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1) ' + delay + ', opacity 0.2s ease ' + delay;
+          c.style.transform = 'scale(1)';
+          c.style.opacity   = '1';
+        });
+      }, 100);
+    });
+  })();
+
   // ── Line chart circle tooltips ────────────────────────────────────────────
   (function() {
     var MONTHS = ['Nov','Dec','Jan','Feb','Mar','Apr'];
