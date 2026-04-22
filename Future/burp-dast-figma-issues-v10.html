@@ -2061,7 +2061,7 @@
       flex-shrink: 0;
       padding-right: 20px;
     }
-    .donut-svg { width: 120px; height: 120px; display: block; }
+    .donut-svg { width: 150px; height: 150px; display: block; }
     .donut-arc {
       transition: stroke-dasharray 0.7s cubic-bezier(0.4,0,0.2,1),
                   stroke-dashoffset 0.7s cubic-bezier(0.4,0,0.2,1);
@@ -2080,6 +2080,7 @@
       font-size: 12px;
       font-weight: 400;
       color: var(--c-secondary);
+      fill: var(--c-secondary);
       line-height: 1.2;
       letter-spacing: 0.12px;
       white-space: nowrap;
@@ -2585,41 +2586,220 @@
     /* Sparkle (✦) SVG used inline */
     .sparkle-svg { display: inline; vertical-align: middle; }
 
-    /* ── Average days to resolve — line chart card ── */
+    /* ── SLA fix rate — line chart card ── */
     .stats-chart-row { margin-bottom: 20px; }
-    .line-chart-card { padding: 0 0 12px; display: flex; flex-direction: column; gap: 0; }
+    .line-chart-card { padding: 0 0 20px; display: flex; flex-direction: column; gap: 0; }
     .lc-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 20px; }
     .lc-header .donut-card-title { padding: 0; }
-    .lc-title { font-size: 16px; font-weight: 500; color: #000023; letter-spacing: 0.16px; line-height: 1.2; }
     .lc-legend { display: flex; flex-direction: row; gap: 16px; flex-shrink: 0; margin-left: 20px; align-items: center; }
     .lc-leg { display: flex; align-items: center; gap: 10px; }
-    .lc-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .lc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .lc-leg-text { font-size: 12px; color: #676667; letter-spacing: 0.12px; white-space: nowrap; line-height: 1.2; }
-    .lc-svg-wrap { padding: 0 20px 0; position: relative; }
+    .lc-svg-wrap { padding: 0 20px 0; }
+    .lc-main-row { display: flex; gap: 8px; align-items: stretch; }
+    .lc-y-labels { display: flex; flex-direction: column; justify-content: space-between; padding: 4px 0; box-sizing: border-box; flex-shrink: 0; }
+    .lc-chart-col { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .lc-chart-inner { position: relative; overflow: visible; }
     .lc-svg { width: 100%; height: auto; display: block; }
-    .lc-svg text { font-size: 12px; font-family: var(--font); fill: #676667; }
-    .lc-tip-overlay { position: absolute; left: 20px; right: 20px; top: 0; bottom: 0; pointer-events: none; }
-    .lc-tip-point { position: absolute; width: 20px; height: 20px; transform: translate(-50%,-50%); pointer-events: auto; cursor: default; }
-    .lc-tip-pop {
+    .lc-x-labels { display: flex; justify-content: space-between; padding-top: 6px; }
+    /* SLA target label — absolutely positioned over chart */
+    .lc-sla-label {
       position: absolute;
-      bottom: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      margin-bottom: 6px;
-      background: #000023;
-      color: #fff;
+      right: 18px;
+      top: 14.5%;
+      transform: translateY(-50%);
       font-size: 11px;
       font-weight: 500;
+      color: #5B4FFF;
       font-family: var(--font);
-      padding: 3px 8px;
+      pointer-events: none;
+      letter-spacing: 0.1px;
+      background: #fff;
+      border: 1px solid #D6D3FF;
       border-radius: 4px;
-      white-space: nowrap;
+      padding: 2px 6px;
+      line-height: 1.4;
+    }
+    /* Column hover zones */
+    .lc-col-overlay { position: absolute; inset: 0; pointer-events: none; }
+    .lc-col-zone {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 56px;
+      transform: translateX(-50%);
+      pointer-events: auto;
+      cursor: crosshair;
+    }
+    .lc-hairline {
+      position: absolute;
+      top: 0; bottom: 0;
+      left: 50%;
+      width: 0;
+      border-left: 1px dashed #CBD0D1;
+      opacity: 0;
+      transition: opacity 0.1s;
+      pointer-events: none;
+    }
+    .lc-col-zone:hover .lc-hairline { opacity: 1; }
+    /* Tooltip card */
+    .lc-tt {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      border: 1px solid #CBD0D1;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,35,0.10);
+      padding: 12px 14px;
+      width: 192px;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.15s;
-      z-index: 10;
+      z-index: 20;
     }
-    .lc-tip-point:hover .lc-tip-pop { opacity: 1; }
+    .lc-col-zone:hover .lc-tt { opacity: 1; }
+    .lc-col-zone.tt-left .lc-tt  { left: 0; transform: none; }
+    .lc-col-zone.tt-right .lc-tt { left: auto; right: 0; transform: none; }
+    .lc-tt-date { font-size: 13px; font-weight: 500; color: #000023; margin-bottom: 8px; }
+    .lc-tt-row  { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+    .lc-tt-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .lc-tt-lbl  { font-size: 12px; color: #676667; flex: 1; }
+    .lc-tt-val  { font-size: 12px; font-weight: 700; color: #000023; }
+    .lc-tt-sep  { height: 1px; background: #EBF0F2; margin: 8px 0; }
+    .lc-tt-foot { font-size: 12px; color: #676667; }
+
+    /* ── SLA Fix Rate Modal ── */
+    .sla-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,35,0.5);
+      z-index: 200;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow-y: auto;
+      padding: 32px 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .sla-modal-overlay.open { opacity: 1; pointer-events: auto; }
+    .sla-modal {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 12px 48px rgba(0,0,35,0.20);
+      width: 900px;
+      max-width: calc(100vw - 48px);
+      padding: 28px 32px;
+      position: relative;
+      transform: translateY(24px);
+      transition: transform 0.28s cubic-bezier(0.16,1,0.3,1);
+    }
+    .sla-modal-overlay.open .sla-modal { transform: translateY(0); }
+    .sla-modal-close {
+      position: absolute; top: 16px; right: 16px;
+      width: 32px; height: 32px;
+      border: none; background: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 6px; color: #676667;
+      transition: background 0.15s, color 0.15s;
+    }
+    .sla-modal-close:hover { background: #EBF0F2; color: #000023; }
+    .sla-modal-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 6px; padding-right: 40px;
+    }
+    .sla-modal-hdr-left { display: flex; align-items: center; gap: 12px; }
+    .sla-modal-title { font-size: 20px; font-weight: 600; color: #000023; letter-spacing: -0.2px; }
+    .sla-trend-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 12px; font-weight: 400; letter-spacing: 0.12px; line-height: 1.2;
+      text-transform: none; color: #333332;
+      background: #F0FDEA; border-radius: 100px; padding: 1px 8px;
+    }
+    /* DS btn-tab-group — scoped to modal */
+    .sla-modal .btn-tab-group { display: inline-flex; align-items: stretch; }
+    .sla-modal .btn-tab {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 25px; min-width: 56px; padding: 5px 15px;
+      border: 1px solid #CBD0D1; border-radius: 0;
+      background: #EBF0F2; color: #333332;
+      font-family: var(--font); font-size: 14px; font-weight: 500; letter-spacing: 0.14px;
+      cursor: pointer; white-space: nowrap;
+    }
+    .sla-modal .btn-tab-group .btn-tab:first-child { border-radius: 200px 0 0 200px; }
+    .sla-modal .btn-tab-group .btn-tab:last-child  { border-radius: 0 200px 200px 0; }
+    .sla-modal .btn-tab-group .btn-tab:not(:first-child) { border-left: none; }
+    .sla-modal .btn-tab.active { background: #0094FF; border-color: #0094FF; color: #fff; }
+    .sla-modal-sub { font-size: 13px; color: #676667; margin-bottom: 20px; line-height: 1.5; }
+    .sla-modal-sub strong { color: #000023; font-weight: 600; }
+    /* KPI cards */
+    .sla-ministats { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+    .sla-ms-card { background: #fff; border: 1px solid #EBF0F2; border-radius: 8px; padding: 20px; }
+    .sla-ms-card-row { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
+    .sla-ms-card-left { display: flex; flex-direction: column; gap: 5px; align-items: flex-start; }
+    .sla-ms-label {
+      font-size: 12px; font-weight: 400; letter-spacing: 0.12px; line-height: 1.2;
+      text-transform: none; color: #676667; position: relative; top: 16%;
+    }
+    .sla-ms-value { font-size: 24px; font-weight: 500; color: #000023; letter-spacing: normal; line-height: 1.4; }
+    .sla-ms-delta { font-size: 12px; font-weight: 400; display: inline-flex; align-items: center; gap: 5px; line-height: 1.2; letter-spacing: 0.12px; }
+    .sla-ms-delta.up   { background: #F0FDEA; border-radius: 100px; padding: 1px 8px; color: #333332; }
+    .sla-ms-delta.down { background: #FFF4F6; border-radius: 100px; padding: 1px 8px; color: #333332; }
+    .sla-ms-note { font-size: 11px; color: #676667; margin-top: 2px; line-height: 1.3; }
+    .sla-ms-note.danger { color: #D6213F; }
+    /* Series toggles */
+    .sla-toggles { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    /* DS btn-text-link */
+    .btn-text-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: none; border: none; padding: 0;
+      color: #333332; font-family: var(--font); font-size: 14px; font-weight: 400;
+      letter-spacing: 0.07px; line-height: 1.4;
+      text-decoration: none; cursor: pointer;
+    }
+    .btn-text-link:hover { color: #B86633; }
+    .btn-text-link--underline { text-decoration: underline; }
+
+    /* DS btn-filter — matches design system exactly */
+    .sla-toggles .btn-filter {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      height: 40px; padding: 10px 15px;
+      border: 1px solid #CBD0D1; border-radius: 40px;
+      background: transparent; color: #676667;
+      font-family: var(--font); font-size: 14px; font-weight: 400; letter-spacing: 0.14px;
+      cursor: pointer; white-space: nowrap; transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+    .sla-toggles .btn-filter:hover { border-color: #000023; color: #000023; }
+    .sla-toggles .btn-filter.active { background: #0094FF; border-color: #0094FF; color: #fff; font-weight: 500; }
+    /* Chart layout */
+    .sla-chart-wrap { display: flex; gap: 8px; align-items: stretch; }
+    .sla-y-labels {
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 4px 0; flex-shrink: 0;
+    }
+    .sla-y-label { font-size: 11px; color: #676667; text-align: right; white-space: nowrap; line-height: 1; }
+    .sla-chart-col { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .sla-chart-inner { position: relative; overflow: visible; }
+    .sla-chart-svg { width: 100%; height: auto; display: block; }
+    .sla-sla-label {
+      position: absolute; right: 6px; top: 16%; transform: translateY(-50%);
+      font-size: 11px; font-weight: 500; color: #5B4FFF; font-family: var(--font);
+      pointer-events: none; letter-spacing: 0.1px; white-space: nowrap;
+      background: #fff; border: 1px solid #D6D3FF; border-radius: 4px;
+      padding: 2px 6px; line-height: 1.4; z-index: 2;
+    }
+    .sla-x-labels { display: flex; justify-content: space-between; padding-top: 6px; padding-bottom: 4px; }
+    .sla-x-label { font-size: 11px; color: #676667; white-space: nowrap; letter-spacing: 0.1px; }
+    /* AI insight */
+    .sla-ai-block {
+      display: flex; gap: 20px; align-items: flex-start;
+      background: #F7F9FD; border: 1px solid #CBD0D1;
+      border-radius: 8px; padding: 30px; margin-top: 20px;
+    }
+    .sla-ai-text { font-size: 14px; font-weight: 400; color: #333332; line-height: 1.4; letter-spacing: 0.07px; }
+    .sla-ai-text strong { font-weight: 500; color: #333332; }
   </style>
 </head>
 <body>
@@ -2913,67 +3093,91 @@
       </div>
 
 
-      <!-- Average days to resolve issues in SLA — line chart -->
+      <!-- SLA fix rate — line chart -->
       <div class="stat-card line-chart-card" style="flex:2;min-width:0">
         <div class="lc-header">
-          <p class="donut-card-title">Average days to resolve issues in SLA</p>
+          <div style="display:flex;align-items:baseline;gap:16px;">
+            <p class="donut-card-title">SLA fix rate</p>
+            <button class="btn-text-link btn-text-link--underline" id="slaMoreInfo">View analysis</button>
+          </div>
           <div class="lc-legend">
+            <div class="lc-leg"><span class="lc-dot" style="background:#5B4FFF"></span><span class="lc-leg-text">All severities</span></div>
             <div class="lc-leg"><span class="lc-dot" style="background:#F32A4C"></span><span class="lc-leg-text">High</span></div>
             <div class="lc-leg"><span class="lc-dot" style="background:#FF6633"></span><span class="lc-leg-text">Medium</span></div>
             <div class="lc-leg"><span class="lc-dot" style="background:#0094FF"></span><span class="lc-leg-text">Low</span></div>
           </div>
         </div>
-        <!-- SVG line chart — viewBox 552×155, plot area x:40–548 y:5–125, Y range 0–90 -->
+        <!-- SVG line chart — viewBox 516×107, y-range 50%–100%, 7 weekly data points -->
         <div class="lc-svg-wrap">
-        <svg class="lc-svg" viewBox="0 0 556 155" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <!-- Horizontal grid lines -->
-          <line x1="40" y1="5"   x2="548" y2="5"   stroke="#EBF0F2" stroke-width="1"/>
-          <line x1="40" y1="45"  x2="548" y2="45"  stroke="#EBF0F2" stroke-width="1"/>
-          <line x1="40" y1="85"  x2="548" y2="85"  stroke="#EBF0F2" stroke-width="1"/>
-          <line x1="40" y1="125" x2="548" y2="125" stroke="#EBF0F2" stroke-width="1"/>
-          <!-- Y-axis labels -->
-          <text x="0" y="9"   text-anchor="start">90</text>
-          <text x="0" y="49"  text-anchor="start">60</text>
-          <text x="0" y="89"  text-anchor="start">30</text>
-          <text x="0" y="129" text-anchor="start">0</text>
-          <!-- X-axis labels (Nov–Apr, 6 pts, spacing ~101.6px, x0=40) -->
-          <text x="40"  y="143" text-anchor="start">Nov</text>
-          <text x="142" y="143" text-anchor="start">Dec</text>
-          <text x="243" y="143" text-anchor="start">Jan</text>
-          <text x="345" y="143" text-anchor="start">Feb</text>
-          <text x="446" y="143" text-anchor="start">Mar</text>
-          <text x="548" y="143" text-anchor="end"  >Apr</text>
-          <!-- High Risk line (red #F32A4C) -->
-          <polyline fill="none" stroke="#F32A4C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            points="40,48 142,50 243,57 345,66 446,76 548,88"/>
-          <!-- Medium Risk line (orange #FF6633) -->
-          <polyline fill="none" stroke="#FF6633" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            points="40,78 142,84 243,98 345,106 446,101 548,100"/>
-          <!-- Low Risk line (blue #0094FF) -->
-          <polyline fill="none" stroke="#0094FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            points="40,88 142,86 243,88 345,89 446,92 548,96"/>
-          <!-- Data point circles — High Risk -->
-          <circle cx="40"  cy="48" r="4" fill="#fff" stroke="#F32A4C" stroke-width="2"/>
-          <circle cx="142" cy="50" r="4" fill="#fff" stroke="#F32A4C" stroke-width="2"/>
-          <circle cx="243" cy="57" r="4" fill="#fff" stroke="#F32A4C" stroke-width="2"/>
-          <circle cx="345" cy="66" r="4" fill="#fff" stroke="#F32A4C" stroke-width="2"/>
-          <circle cx="446" cy="76" r="4" fill="#fff" stroke="#F32A4C" stroke-width="2"/>
-          <circle cx="548" cy="88" r="4" fill="#fff" stroke="#F32A4C" stroke-width="2"/>
-          <!-- Data point circles — Medium Risk -->
-          <circle cx="40"  cy="78"  r="4" fill="#fff" stroke="#FF6633" stroke-width="2"/>
-          <circle cx="142" cy="84"  r="4" fill="#fff" stroke="#FF6633" stroke-width="2"/>
-          <circle cx="243" cy="98"  r="4" fill="#fff" stroke="#FF6633" stroke-width="2"/>
-          <circle cx="345" cy="106" r="4" fill="#fff" stroke="#FF6633" stroke-width="2"/>
-          <circle cx="446" cy="101" r="4" fill="#fff" stroke="#FF6633" stroke-width="2"/>
-          <circle cx="548" cy="100" r="4" fill="#fff" stroke="#FF6633" stroke-width="2"/>
-          <!-- Data point circles — Low Risk -->
-          <circle cx="40"  cy="88" r="4" fill="#fff" stroke="#0094FF" stroke-width="2"/>
-          <circle cx="142" cy="86" r="4" fill="#fff" stroke="#0094FF" stroke-width="2"/>
-          <circle cx="243" cy="88" r="4" fill="#fff" stroke="#0094FF" stroke-width="2"/>
-          <circle cx="345" cy="89" r="4" fill="#fff" stroke="#0094FF" stroke-width="2"/>
-          <circle cx="446" cy="92" r="4" fill="#fff" stroke="#0094FF" stroke-width="2"/>
-          <circle cx="548" cy="96" r="4" fill="#fff" stroke="#0094FF" stroke-width="2"/>
-        </svg>
+          <div class="lc-main-row">
+            <!-- Y-axis labels: 6 items with padding:4px 0 → aligns with gridlines y=4,24,44,63,83,103 -->
+            <div class="lc-y-labels">
+              <span class="lc-leg-text">100%</span>
+              <span class="lc-leg-text">90%</span>
+              <span class="lc-leg-text">80%</span>
+              <span class="lc-leg-text">70%</span>
+              <span class="lc-leg-text">60%</span>
+              <span class="lc-leg-text">50%</span>
+            </div>
+            <div class="lc-chart-col">
+              <div class="lc-chart-inner">
+                <svg class="lc-svg" viewBox="0 0 516 107" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" overflow="visible">
+                  <defs>
+                    <linearGradient id="lc-area-grad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#D6D3FF" stop-opacity="1"/>
+                      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <!-- Area fill under All severities line -->
+                  <path id="lc-area" d="M4,103 L4,61 L88,67 L172,71 L256,46 L341,46 L427,32 L512,24 L512,103 Z"
+                        fill="url(#lc-area-grad)" stroke="none" opacity="0"/>
+                  <!-- Regular gridlines at 100% 80% 70% 60% 50% (y=4,44,63,83,103) -->
+                  <line x1="0" y1="4"   x2="516" y2="4"   stroke="#EBF0F2" stroke-width="1"/>
+                  <line x1="0" y1="44"  x2="516" y2="44"  stroke="#EBF0F2" stroke-width="1"/>
+                  <line x1="0" y1="63"  x2="516" y2="63"  stroke="#EBF0F2" stroke-width="1"/>
+                  <line x1="0" y1="83"  x2="516" y2="83"  stroke="#EBF0F2" stroke-width="1"/>
+                  <line x1="0" y1="103" x2="516" y2="103" stroke="#EBF0F2" stroke-width="1"/>
+                  <!-- SLA target dashed line at 90% (y=24) -->
+                  <line id="lc-sla-line" x1="0" y1="24" x2="516" y2="24"
+                        stroke="#5B4FFF" stroke-width="1.5" stroke-dasharray="4 3"/>
+                  <!-- All severities line (purple) -->
+                  <polyline fill="none" stroke="#5B4FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    points="4,61 88,67 172,71 256,46 341,46 427,32 512,24"/>
+                  <!-- High line (red) -->
+                  <polyline fill="none" stroke="#F32A4C" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+                    points="4,79 88,83 172,99 256,63 341,67 427,38 512,40"/>
+                  <!-- Medium line (orange) -->
+                  <polyline fill="none" stroke="#FF6633" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+                    points="4,54 88,59 172,67 256,46 341,46 427,40 512,36"/>
+                  <!-- Low line (blue) -->
+                  <polyline fill="none" stroke="#0094FF" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+                    points="4,42 88,44 172,38 256,40 341,36 427,30 512,22"/>
+                  <!-- Circles — All severities (purple) -->
+                  <circle cx="4"   cy="61" r="4" fill="#fff" stroke="#5B4FFF" stroke-width="2"/>
+                  <circle cx="88"  cy="67" r="4" fill="#fff" stroke="#5B4FFF" stroke-width="2"/>
+                  <circle cx="172" cy="71" r="4" fill="#fff" stroke="#5B4FFF" stroke-width="2"/>
+                  <circle cx="256" cy="46" r="4" fill="#fff" stroke="#5B4FFF" stroke-width="2"/>
+                  <circle cx="341" cy="46" r="4" fill="#fff" stroke="#5B4FFF" stroke-width="2"/>
+                  <circle cx="427" cy="32" r="4" fill="#fff" stroke="#5B4FFF" stroke-width="2"/>
+                  <circle cx="512" cy="24" r="4" fill="#fff" stroke="#5B4FFF" stroke-width="2"/>
+                </svg>
+                <!-- SLA target label -->
+                <span class="lc-sla-label">SLA target</span>
+                <!-- Column hover overlay (populated by JS) -->
+                <div class="lc-col-overlay" id="lcColOverlay"></div>
+              </div>
+              <!-- X-axis labels: 7 weekly dates -->
+              <div class="lc-x-labels">
+                <span class="lc-leg-text">Feb 3</span>
+                <span class="lc-leg-text">Feb 17</span>
+                <span class="lc-leg-text">Mar 3</span>
+                <span class="lc-leg-text">Mar 17</span>
+                <span class="lc-leg-text">Mar 31</span>
+                <span class="lc-leg-text">Apr 14</span>
+                <span class="lc-leg-text">Apr 21</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -8206,14 +8410,18 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     var svg = document.querySelector('.lc-svg');
     if (!svg) return;
 
+    var area      = svg.querySelector('#lc-area');
+    var slaLine   = svg.querySelector('#lc-sla-line');
+    var allLines  = svg.querySelectorAll('line');
     var polylines = svg.querySelectorAll('polyline');
     var circles   = svg.querySelectorAll('circle');
-    var gridLines = svg.querySelectorAll('line');
-    var texts     = svg.querySelectorAll('text');
+    // Separate regular gridlines from the SLA target line
+    var gridLines = Array.prototype.filter.call(allLines, function(l) { return l !== slaLine; });
 
-    // Set initial hidden state immediately (painted on first browser render)
+    // Set initial hidden state
+    if (area) area.style.opacity = '0';
+    if (slaLine) slaLine.style.opacity = '0';
     gridLines.forEach(function(l) { l.style.opacity = '0'; });
-    texts.forEach(function(t)     { t.style.opacity = '0'; });
 
     polylines.forEach(function(pl) {
       var len = Math.ceil(pl.getTotalLength());
@@ -8228,24 +8436,31 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       c.style.opacity         = '0';
     });
 
-    // Trigger animation after page has fully loaded and painted
     window.addEventListener('load', function() {
       setTimeout(function() {
+        // Fade in regular gridlines
         gridLines.forEach(function(l) {
           l.style.transition = 'opacity 0.5s ease';
           l.style.opacity = '1';
         });
-        texts.forEach(function(t) {
-          t.style.transition = 'opacity 0.5s ease 0.1s';
-          t.style.opacity = '1';
-        });
+        // Fade in SLA target dashed line
+        if (slaLine) {
+          slaLine.style.transition = 'opacity 0.5s ease 0.3s';
+          slaLine.style.opacity = '1';
+        }
+        // Draw in polylines (all sev first, then High, Medium, Low)
         polylines.forEach(function(pl, i) {
-          var len = pl.style.strokeDasharray;
-          pl.style.transition = 'stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1) ' + (0.2 + i * 0.1) + 's';
+          pl.style.transition = 'stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1) ' + (0.2 + i * 0.12) + 's';
           pl.style.strokeDashoffset = '0';
         });
+        // Fade in area fill after all-sev line starts drawing
+        if (area) {
+          area.style.transition = 'opacity 0.6s ease 0.4s';
+          area.style.opacity = '1';
+        }
+        // Pop in circles
         circles.forEach(function(c, i) {
-          var delay = (0.85 + i * 0.04).toFixed(2) + 's';
+          var delay = (0.85 + i * 0.035).toFixed(2) + 's';
           c.style.transition = 'transform 0.35s cubic-bezier(0.34,1.56,0.64,1) ' + delay + ', opacity 0.2s ease ' + delay;
           c.style.transform = 'scale(1)';
           c.style.opacity   = '1';
@@ -8256,36 +8471,99 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
 
   // ── Line chart circle tooltips ────────────────────────────────────────────
   (function() {
-    var MONTHS = ['Nov','Dec','Jan','Feb','Mar','Apr'];
-    var CX     = [40, 142, 243, 345, 446, 548];
-    var VBW = 556, VBH = 155;
+    var svg = document.querySelector('.lc-svg');
+    if (!svg) return;
+
+    var DATES  = ['Feb 3','Feb 17','Mar 3','Mar 17','Mar 31','Apr 14','Apr 21'];
+    var CLOSED = [12, 8, 15, 11, 9, 14, 7];
     var SERIES = [
-      { label: 'High',   cy: [48,50,57,66,76,88],       values: [58,56,51,44,37,28] },
-      { label: 'Medium', cy: [78,84,98,106,101,100],    values: [35,31,20,14,18,19] },
-      { label: 'Low',    cy: [88,86,88,89,92,96],       values: [28,29,28,27,25,22] }
+      { label: 'All severities', color: '#5B4FFF', values: [71, 68, 66, 79, 79, 86, 90] },
+      { label: 'High',           color: '#F32A4C', values: [62, 60, 52, 70, 68, 83, 82] },
+      { label: 'Medium',         color: '#FF6633', values: [75, 72, 66, 79, 79, 82, 84] },
+      { label: 'Low',            color: '#0094FF', values: [81, 80, 83, 82, 84, 87, 91] }
     ];
 
-    var wrap = document.querySelector('.lc-svg-wrap');
-    if (!wrap) return;
+    // Build a single reusable fixed-position tooltip
+    var tt = document.createElement('div');
+    tt.style.cssText = [
+      'position:fixed',
+      'display:none',
+      'pointer-events:none',
+      'z-index:100',
+      'background:#fff',
+      'border:1px solid #CBD0D1',
+      'border-radius:8px',
+      'box-shadow:0 0 10px rgba(0,0,35,0.10)',
+      'padding:12px 14px',
+      'width:192px'
+    ].join(';');
+    document.body.appendChild(tt);
 
-    var overlay = document.createElement('div');
-    overlay.className = 'lc-tip-overlay';
+    function buildTip(seriesIdx, colIdx) {
+      tt.innerHTML = '';
 
-    SERIES.forEach(function(s) {
-      CX.forEach(function(cx, i) {
-        var pt = document.createElement('div');
-        pt.className = 'lc-tip-point';
-        pt.style.left = (cx / VBW * 100).toFixed(2) + '%';
-        pt.style.top  = (s.cy[i] / VBH * 100).toFixed(2) + '%';
-        var pop = document.createElement('div');
-        pop.className = 'lc-tip-pop';
-        pop.textContent = s.label + ' \u00b7 ' + MONTHS[i] + ' \u00b7 ' + s.values[i] + ' days';
-        pt.appendChild(pop);
-        overlay.appendChild(pt);
+      var dateEl = document.createElement('div');
+      dateEl.className = 'lc-tt-date';
+      dateEl.textContent = DATES[colIdx];
+      tt.appendChild(dateEl);
+
+      SERIES.forEach(function(s, si) {
+        var row = document.createElement('div');
+        row.className = 'lc-tt-row';
+        // Bold the primary series being hovered
+        var valWeight = si === seriesIdx ? '700' : '500';
+        var lblColor  = si === seriesIdx ? '#000023' : '#676667';
+        row.innerHTML =
+          '<span class="lc-tt-dot" style="background:' + s.color + '"></span>' +
+          '<span class="lc-tt-lbl" style="color:' + lblColor + '">' + s.label + '</span>' +
+          '<span class="lc-tt-val" style="font-weight:' + valWeight + '">' + s.values[colIdx] + '%</span>';
+        tt.appendChild(row);
       });
-    });
 
-    wrap.appendChild(overlay);
+      var sep = document.createElement('div');
+      sep.className = 'lc-tt-sep';
+      tt.appendChild(sep);
+
+      var foot = document.createElement('div');
+      foot.className = 'lc-tt-foot';
+      foot.textContent = CLOSED[colIdx] + ' issues closed this week';
+      tt.appendChild(foot);
+    }
+
+    function showTip(seriesIdx, colIdx, circle) {
+      buildTip(seriesIdx, colIdx);
+      tt.style.display = 'block';
+
+      // Map SVG coordinate space → screen space
+      var svgRect = svg.getBoundingClientRect();
+      var scaleX  = svgRect.width  / 516;
+      var scaleY  = svgRect.height / 107;
+      var cx = parseFloat(circle.getAttribute('cx'));
+      var cy = parseFloat(circle.getAttribute('cy'));
+      var screenX = svgRect.left + cx * scaleX;
+      var screenY = svgRect.top  + cy * scaleY;
+
+      var ttW = tt.offsetWidth;
+      var ttH = tt.offsetHeight;
+      var left = screenX - ttW / 2;
+      var top  = screenY - ttH - 12;
+
+      // Clamp to viewport edges
+      left = Math.max(8, Math.min(left, window.innerWidth  - ttW - 8));
+      if (top < 8) top = screenY + 16;  // flip below if no room above
+
+      tt.style.left = Math.round(left) + 'px';
+      tt.style.top  = Math.round(top)  + 'px';
+    }
+
+    // Wire up 7 circles on the All severities line only
+    var circles = svg.querySelectorAll('circle');
+    circles.forEach(function(c, idx) {
+      c.style.cursor        = 'crosshair';
+      c.style.pointerEvents = 'all';
+      c.addEventListener('mouseenter', function() { showTip(0, idx, c); });
+      c.addEventListener('mouseleave', function() { tt.style.display = 'none'; });
+    });
   })();
 </script>
 
@@ -8548,5 +8826,404 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
 
   </div><!-- /sp-body -->
 </div><!-- /side-panel -->
+<!-- ══════════════════════════════════════════════════
+     SLA Fix Rate Modal
+════════════════════════════════════════════════════ -->
+<div class="sla-modal-overlay" id="slaModalOverlay">
+  <div class="sla-modal" role="dialog" aria-modal="true" aria-labelledby="slaModalTitle">
+
+    <button class="sla-modal-close" id="slaModalClose" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M12.5 3.5l-9 9M3.5 3.5l9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <!-- Header -->
+    <div class="sla-modal-hdr">
+      <div class="sla-modal-hdr-left">
+        <h2 class="sla-modal-title" id="slaModalTitle">SLA fix rate</h2>
+        <span class="sla-trend-pill"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M15 6C15 5.4477 15.4477 5 16 5H23C23.5523 5 24 5.4477 24 6V12.5C24 13.0523 23.5523 13.5 23 13.5C22.4477 13.5 22 13.0523 22 12.5V7H16C15.4477 7 15 6.5523 15 6Z" fill="#676667"/><path fill-rule="evenodd" clip-rule="evenodd" d="M23.7071 5.2929C24.0976 5.6834 24.0976 6.3166 23.7071 6.7071L15.2071 15.2071C14.8166 15.5976 14.1834 15.5976 13.7929 15.2071L9.5 10.9142L1.70711 18.7071C1.31658 19.0976 0.683417 19.0976 0.292893 18.7071C-0.097631 18.3166 -0.097631 17.6834 0.292893 17.2929L8.79289 8.7929C9.18342 8.4024 9.81658 8.4024 10.2071 8.7929L14.5 13.0858L22.2929 5.2929C22.6834 4.9024 23.3166 4.9024 23.7071 5.2929Z" fill="#676667"/></svg> Trending up</span>
+      </div>
+      <div class="btn-tab-group" id="slaRangeToggle">
+        <button class="btn-tab" data-range="4">4w</button>
+        <button class="btn-tab" data-range="8">8w</button>
+        <button class="btn-tab active" data-range="12">12w</button>
+      </div>
+    </div>
+
+    <!-- Subtitle -->
+    <p class="sla-modal-sub">% of issues closed within their SLA window, week by week · Target <strong>90%</strong></p>
+
+    <!-- KPI mini-stats -->
+    <div class="sla-ministats">
+      <div class="sla-ms-card">
+        <div class="sla-ms-card-row">
+          <div class="sla-ms-card-left">
+            <p class="sla-ms-label">This week</p>
+            <p class="sla-ms-value">89%</p>
+          </div>
+          <p class="sla-ms-delta up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M15 6C15 5.4477 15.4477 5 16 5H23C23.5523 5 24 5.4477 24 6V12.5C24 13.0523 23.5523 13.5 23 13.5C22.4477 13.5 22 13.0523 22 12.5V7H16C15.4477 7 15 6.5523 15 6Z" fill="#676667"/><path fill-rule="evenodd" clip-rule="evenodd" d="M23.7071 5.2929C24.0976 5.6834 24.0976 6.3166 23.7071 6.7071L15.2071 15.2071C14.8166 15.5976 14.1834 15.5976 13.7929 15.2071L9.5 10.9142L1.70711 18.7071C1.31658 19.0976 0.683417 19.0976 0.292893 18.7071C-0.097631 18.3166 -0.097631 17.6834 0.292893 17.2929L8.79289 8.7929C9.18342 8.4024 9.81658 8.4024 10.2071 8.7929L14.5 13.0858L22.2929 5.2929C22.6834 4.9024 23.3166 4.9024 23.7071 5.2929Z" fill="#676667"/></svg> 18%</p>
+        </div>
+      </div>
+      <div class="sla-ms-card">
+        <div class="sla-ms-card-row">
+          <div class="sla-ms-card-left">
+            <p class="sla-ms-label">High sev fix rate</p>
+            <p class="sla-ms-value" data-negative>82%</p>
+          </div>
+          <p class="sla-ms-delta down"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M15 18C15 18.5523 15.4477 19 16 19H23C23.5523 19 24 18.5523 24 18V11.5C24 10.9477 23.5523 10.5 23 10.5C22.4477 10.5 22 10.9477 22 11.5V17H16C15.4477 17 15 17.4477 15 18Z" fill="#676667"/><path fill-rule="evenodd" clip-rule="evenodd" d="M23.7071 18.7071C24.0976 18.3166 24.0976 17.6834 23.7071 17.2929L15.2071 8.79289C14.8166 8.40237 14.1834 8.40237 13.7929 8.79289L9.5 13.0858L1.70711 5.29289C1.31658 4.90237 0.683417 4.90237 0.292893 5.29289C-0.097631 5.68342 -0.097631 6.31658 0.292893 6.70711L8.79289 15.2071C9.18342 15.5976 9.81658 15.5976 10.2071 15.2071L14.5 10.9142L22.2929 18.7071C22.6834 19.0976 23.3166 19.0976 23.7071 18.7071Z" fill="#676667"/></svg> 8%</p>
+        </div>
+      </div>
+      <div class="sla-ms-card">
+        <div class="sla-ms-card-row">
+          <div class="sla-ms-card-left">
+            <p class="sla-ms-label">Avg time to fix</p>
+            <p class="sla-ms-value">3.8d</p>
+          </div>
+          <p class="sla-ms-delta up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M15 6C15 5.4477 15.4477 5 16 5H23C23.5523 5 24 5.4477 24 6V12.5C24 13.0523 23.5523 13.5 23 13.5C22.4477 13.5 22 13.0523 22 12.5V7H16C15.4477 7 15 6.5523 15 6Z" fill="#676667"/><path fill-rule="evenodd" clip-rule="evenodd" d="M23.7071 5.2929C24.0976 5.6834 24.0976 6.3166 23.7071 6.7071L15.2071 15.2071C14.8166 15.5976 14.1834 15.5976 13.7929 15.2071L9.5 10.9142L1.70711 18.7071C1.31658 19.0976 0.683417 19.0976 0.292893 18.7071C-0.097631 18.3166 -0.097631 17.6834 0.292893 17.2929L8.79289 8.7929C9.18342 8.4024 9.81658 8.4024 10.2071 8.7929L14.5 13.0858L22.2929 5.2929C22.6834 4.9024 23.3166 4.9024 23.7071 5.2929Z" fill="#676667"/></svg> −1.2d</p>
+        </div>
+      </div>
+      <div class="sla-ms-card">
+        <div class="sla-ms-card-row">
+          <div class="sla-ms-card-left">
+            <p class="sla-ms-label">Breached this week</p>
+            <p class="sla-ms-value" data-negative>1</p>
+          </div>
+          <p class="sla-ms-delta down"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M15 18C15 18.5523 15.4477 19 16 19H23C23.5523 19 24 18.5523 24 18V11.5C24 10.9477 23.5523 10.5 23 10.5C22.4477 10.5 22 10.9477 22 11.5V17H16C15.4477 17 15 17.4477 15 18Z" fill="#676667"/><path fill-rule="evenodd" clip-rule="evenodd" d="M23.7071 18.7071C24.0976 18.3166 24.0976 17.6834 23.7071 17.2929L15.2071 8.79289C14.8166 8.40237 14.1834 8.40237 13.7929 8.79289L9.5 13.0858L1.70711 5.29289C1.31658 4.90237 0.683417 4.90237 0.292893 5.29289C-0.097631 5.68342 -0.097631 6.31658 0.292893 6.70711L8.79289 15.2071C9.18342 15.5976 9.81658 15.5976 10.2071 15.2071L14.5 10.9142L22.2929 18.7071C22.6834 19.0976 23.3166 19.0976 23.7071 18.7071Z" fill="#676667"/></svg> +1</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Series toggles -->
+    <div class="sla-toggles" id="slaToggles">
+      <button class="btn-filter active" data-series="all">All severities</button>
+      <button class="btn-filter" data-series="high">High</button>
+      <button class="btn-filter" data-series="med">Medium</button>
+      <button class="btn-filter" data-series="low">Low</button>
+    </div>
+
+    <!-- Chart -->
+    <div class="sla-chart-wrap">
+      <div class="sla-y-labels">
+        <span class="sla-y-label">100%</span>
+        <span class="sla-y-label">90%</span>
+        <span class="sla-y-label">80%</span>
+        <span class="sla-y-label">70%</span>
+        <span class="sla-y-label">60%</span>
+        <span class="sla-y-label">50%</span>
+      </div>
+      <div class="sla-chart-col">
+        <div class="sla-chart-inner" id="slaChartInner">
+          <!-- SVG injected by JS -->
+          <span class="sla-sla-label">SLA target</span>
+        </div>
+        <div class="sla-x-labels" id="slaXLabels"></div>
+      </div>
+    </div>
+
+    <!-- AI insight -->
+    <div class="sla-ai-block">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0" aria-hidden="true">
+        <path d="M20.281 15.2093C15.9937 13.9771 15.0231 13.0065 13.7908 8.7191C13.7536 8.58935 13.6351 8.50012 13.5002 8.50012C13.3653 8.50012 13.2467 8.58935 13.2095 8.7191C11.977 13.0068 11.0064 13.9771 6.719 15.2093C6.58924 15.2465 6.50002 15.3651 6.50002 15.5C6.50002 15.6349 6.58924 15.7534 6.719 15.7906C11.0067 17.0232 11.977 17.9935 13.2095 22.2811C13.2467 22.4109 13.3653 22.5001 13.5002 22.5001C13.6351 22.5001 13.7536 22.4109 13.7908 22.2811C15.0231 17.9938 15.9934 17.0232 20.281 15.7906C20.4108 15.7534 20.5 15.6349 20.5 15.5C20.5 15.3651 20.4108 15.2468 20.281 15.2093Z" fill="#5B4FFF"/>
+        <path d="M22.7968 4.23013C20.1075 3.45742 19.5431 2.89269 18.7698 0.203212C18.7352 0.0828006 18.6252 0 18.5 0C18.3748 0 18.2648 0.0828006 18.2303 0.203212C17.4573 2.89269 16.8925 3.45742 14.2032 4.23013C14.0828 4.26465 14 4.37468 14 4.49986C14 4.62504 14.0828 4.73507 14.2032 4.76959C16.8925 5.54259 17.4573 6.10731 18.2303 8.79679C18.2648 8.9172 18.3748 9 18.5 9C18.6252 9 18.7352 8.9172 18.7698 8.79679C19.5431 6.10731 20.1075 5.54259 22.7968 4.76959C22.9172 4.73507 23 4.62532 23 4.49986C23 4.3744 22.9172 4.26465 22.7968 4.23013Z" fill="#5B4FFF"/>
+        <path d="M11 7.50009C11 7.30786 10.8729 7.1389 10.6879 7.08589C7.49971 6.16911 6.83077 5.50017 5.91442 2.31193C5.86141 2.12703 5.69245 1.99988 5.50022 1.99988C5.30798 1.99988 5.13902 2.12703 5.08601 2.31193C4.16923 5.50017 3.50029 6.16911 0.312057 7.08589C0.12715 7.1389 0 7.30743 0 7.50009C0 7.69276 0.12715 7.86129 0.312057 7.9143C3.49986 8.83021 4.16923 9.49958 5.08601 12.6878C5.13902 12.8727 5.30798 12.9999 5.50022 12.9999C5.69245 12.9999 5.86141 12.8727 5.91442 12.6878C6.83077 9.49958 7.50014 8.83021 10.6879 7.9143C10.8729 7.86086 11 7.69233 11 7.50009Z" fill="#5B4FFF"/>
+      </svg>
+      <p class="sla-ai-text"><strong>AI Insight:</strong> High severity fix rates show a strong upward trend (+20pp over 12 weeks). At the current rate of improvement, all severities are on track to meet the 90% SLA target within 2 weeks. Medium and Low are already at or above target — 1 active breach on /v1/users should be prioritised immediately.</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── 12-week weekly dataset ── */
+  var DATA = [
+    {date:'Feb 3',  all:71,high:62,med:74,low:82,vol:14},
+    {date:'Feb 10', all:68,high:60,med:70,low:80,vol:18},
+    {date:'Feb 17', all:74,high:65,med:78,low:84,vol:16},
+    {date:'Feb 24', all:70,high:58,med:72,low:86,vol:21},
+    {date:'Mar 3',  all:66,high:52,med:68,low:83,vol:24},
+    {date:'Mar 10', all:72,high:60,med:74,low:85,vol:19},
+    {date:'Mar 17', all:78,high:66,med:80,low:88,vol:17},
+    {date:'Mar 24', all:81,high:70,med:84,low:90,vol:15},
+    {date:'Mar 31', all:79,high:68,med:82,low:89,vol:16},
+    {date:'Apr 7',  all:84,high:74,med:86,low:92,vol:13},
+    {date:'Apr 14', all:87,high:79,med:88,low:94,vol:12},
+    {date:'Apr 21', all:89,high:82,med:90,low:95,vol:12}
+  ];
+
+  var SERIES = [
+    {key:'all',  label:'All severities', color:'#5B4FFF', w:2},
+    {key:'high', label:'High',           color:'#F32A4C', w:1},
+    {key:'med',  label:'Medium',         color:'#FF6633', w:1},
+    {key:'low',  label:'Low',            color:'#0094FF', w:1}
+  ];
+
+  /* ── State ── */
+  var vis   = {all:true, high:false, med:false, low:false};
+  var range = 12;
+
+  /* ── Elements ── */
+  var overlay    = document.getElementById('slaModalOverlay');
+  var closeBtn   = document.getElementById('slaModalClose');
+  var chartInner = document.getElementById('slaChartInner');
+  var xLabels    = document.getElementById('slaXLabels');
+  var moreInfoBtn = document.getElementById('slaMoreInfo');
+  if (!overlay || !moreInfoBtn) return;
+
+  /* ── SVG helpers ── */
+  var NS = 'http://www.w3.org/2000/svg';
+  var VW = 760, VH = 200, YMIN = 50, YMAX = 100;
+
+  function mkEl(tag, attrs) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function svgY(v)   { return 10 + (YMAX - v) / (YMAX - YMIN) * 180; }
+  function svgX(i,n) { return n <= 1 ? VW/2 : 4 + i * (VW - 8) / (n - 1); }
+
+  /* ── Floating tooltip ── */
+  var tt = document.createElement('div');
+  tt.style.cssText = 'position:fixed;display:none;pointer-events:none;z-index:400;' +
+    'background:#fff;border:1px solid #CBD0D1;border-radius:8px;' +
+    'box-shadow:0 4px 16px rgba(0,0,35,0.12);padding:12px 14px;min-width:200px';
+  document.body.appendChild(tt);
+
+  /* ── Build & inject SVG ── */
+  function render() {
+    var slice = DATA.slice(-range);
+    var n = slice.length;
+    var step = n > 1 ? (VW - 8) / (n - 1) : VW;
+
+    var svg = mkEl('svg', {
+      class:'sla-chart-svg', viewBox:'0 0 '+VW+' '+VH,
+      overflow:'visible', xmlns:NS, 'aria-hidden':'true'
+    });
+
+    /* Gradient defs */
+    var defs = mkEl('defs', {});
+    var grad = mkEl('linearGradient', {id:'sm-grad', x1:'0', y1:'0', x2:'0', y2:'1'});
+    grad.appendChild(mkEl('stop', {offset:'0%',  'stop-color':'#D6D3FF', 'stop-opacity':'0.85'}));
+    grad.appendChild(mkEl('stop', {offset:'100%','stop-color':'#fff',    'stop-opacity':'0'}));
+    defs.appendChild(grad);
+    svg.appendChild(defs);
+
+    /* Gridlines */
+    [100,90,80,70,60,50].forEach(function(v) {
+      svg.appendChild(mkEl('line', {x1:0, y1:svgY(v), x2:VW, y2:svgY(v), stroke:'#EBF0F2', 'stroke-width':1}));
+    });
+
+    /* SLA 90% target dashed line */
+    svg.appendChild(mkEl('line', {
+      x1:0, y1:svgY(90), x2:VW, y2:svgY(90),
+      stroke:'#5B4FFF', 'stroke-width':'1.5', 'stroke-dasharray':'4 3'
+    }));
+
+    /* Area fill under "All severities" */
+    if (vis.all) {
+      var pts = slice.map(function(d,i){ return svgX(i,n)+','+svgY(d.all); });
+      svg.appendChild(mkEl('path', {
+        d: 'M'+svgX(0,n)+','+VH+' L'+pts.join(' L')+' L'+svgX(n-1,n)+','+VH+' Z',
+        fill:'url(#sm-grad)', stroke:'none'
+      }));
+    }
+
+    /* Series polylines */
+    SERIES.forEach(function(s) {
+      if (!vis[s.key]) return;
+      var pts = slice.map(function(d,i){ return svgX(i,n)+','+svgY(d[s.key]); }).join(' ');
+      svg.appendChild(mkEl('polyline', {
+        fill:'none', stroke:s.color, 'stroke-width':s.w,
+        'stroke-linecap':'round', 'stroke-linejoin':'round', points:pts
+      }));
+    });
+
+    /* Circles — "All severities" only */
+    if (vis.all) {
+      slice.forEach(function(d,i) {
+        svg.appendChild(mkEl('circle', {
+          cx:svgX(i,n), cy:svgY(d.all), r:4,
+          fill:'#fff', stroke:'#5B4FFF', 'stroke-width':2,
+          style:'pointer-events:none'
+        }));
+      });
+    }
+
+    /* Column hover hairline (hidden initially) */
+    var hairline = mkEl('line', {
+      id:'sm-hair', x1:380, y1:0, x2:380, y2:VH,
+      stroke:'#CBD0D1', 'stroke-width':1, 'stroke-dasharray':'3 2',
+      opacity:0, 'pointer-events':'none'
+    });
+    svg.appendChild(hairline);
+
+    /* Invisible column hover rects (topmost in stack) */
+    slice.forEach(function(d,i) {
+      var cx  = svgX(i,n);
+      var rx  = Math.max(0, cx - step/2);
+      var rw  = Math.min(VW, cx + step/2) - rx;
+      var rect = mkEl('rect', {
+        x:rx, y:0, width:rw, height:VH,
+        fill:'transparent', style:'cursor:crosshair;pointer-events:all'
+      });
+      (function(dcx, dd) {
+        rect.addEventListener('mouseenter', function() { showTt(dcx, dd, svg, hairline); });
+        rect.addEventListener('mouseleave', function() { hideTt(hairline); });
+      })(cx, d);
+      svg.appendChild(rect);
+    });
+
+    /* Swap in new SVG */
+    var old = chartInner.querySelector('svg');
+    if (old) old.remove();
+    chartInner.insertBefore(svg, chartInner.firstChild);
+
+    /* Update X labels */
+    xLabels.innerHTML = '';
+    slice.forEach(function(d) {
+      var s = document.createElement('span');
+      s.className = 'sla-x-label';
+      s.textContent = d.date;
+      xLabels.appendChild(s);
+    });
+
+    /* Animate lines & circles */
+    var lines = svg.querySelectorAll('polyline');
+    var circs = svg.querySelectorAll('circle');
+    lines.forEach(function(pl) {
+      var len = Math.ceil(pl.getTotalLength());
+      pl.style.strokeDasharray = len;
+      pl.style.strokeDashoffset = len;
+    });
+    circs.forEach(function(c) {
+      c.style.transformBox = 'fill-box';
+      c.style.transformOrigin = 'center';
+      c.style.transform = 'scale(0)';
+      c.style.opacity = '0';
+    });
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        lines.forEach(function(pl, i) {
+          pl.style.transition = 'stroke-dashoffset 0.8s cubic-bezier(0.4,0,0.2,1) ' + (i * 0.1) + 's';
+          pl.style.strokeDashoffset = '0';
+        });
+        circs.forEach(function(c, i) {
+          var d = (0.6 + i * 0.05).toFixed(2) + 's';
+          c.style.transition = 'transform 0.3s cubic-bezier(0.34,1.56,0.64,1) ' + d + ', opacity 0.15s ease ' + d;
+          c.style.transform = 'scale(1)';
+          c.style.opacity = '1';
+        });
+      });
+    });
+  }
+
+  /* ── Tooltip show/hide ── */
+  function showTt(cx, d, svg, hairline) {
+    hairline.setAttribute('x1', cx);
+    hairline.setAttribute('x2', cx);
+    hairline.setAttribute('opacity', 1);
+
+    tt.innerHTML = '';
+    var hdr = document.createElement('div');
+    hdr.style.cssText = 'font-size:13px;font-weight:500;color:#000023;margin-bottom:8px';
+    hdr.textContent = 'Week of ' + d.date;
+    tt.appendChild(hdr);
+
+    SERIES.forEach(function(s) {
+      if (!vis[s.key]) return;
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:2px 0';
+      row.innerHTML =
+        '<span style="width:8px;height:8px;border-radius:50%;background:' + s.color + ';flex-shrink:0;display:inline-block"></span>' +
+        '<span style="font-size:12px;color:#676667;flex:1">' + s.label + '</span>' +
+        '<span style="font-size:12px;font-weight:700;color:#000023">' + d[s.key] + '%</span>';
+      tt.appendChild(row);
+    });
+
+    var sep = document.createElement('div');
+    sep.style.cssText = 'height:1px;background:#EBF0F2;margin:8px 0';
+    tt.appendChild(sep);
+
+    var foot = document.createElement('div');
+    foot.style.cssText = 'font-size:12px;color:#676667';
+    foot.textContent = d.vol + ' issues closed this week';
+    tt.appendChild(foot);
+
+    tt.style.display = 'block';
+
+    /* Position relative to SVG */
+    var svgEl = chartInner.querySelector('svg');
+    if (!svgEl) return;
+    var rect = svgEl.getBoundingClientRect();
+    var scaleX = rect.width / VW;
+    var scaleY = rect.height / VH;
+    var tipY = vis.all ? svgY(d.all) : VH / 2;
+    var sx = rect.left + cx * scaleX;
+    var sy = rect.top  + tipY * scaleY;
+    var tw = tt.offsetWidth  || 210;
+    var th = tt.offsetHeight || 120;
+    var left = sx - tw / 2;
+    var top  = sy - th - 14;
+    left = Math.max(8, Math.min(left, window.innerWidth - tw - 8));
+    if (top < 8) top = sy + 14;
+    tt.style.left = Math.round(left) + 'px';
+    tt.style.top  = Math.round(top)  + 'px';
+  }
+
+  function hideTt(hairline) {
+    tt.style.display = 'none';
+    if (hairline) hairline.setAttribute('opacity', 0);
+  }
+
+  /* ── Open / close ── */
+  function openModal() {
+    overlay.classList.add('open');
+    render();
+  }
+  function closeModal() {
+    overlay.classList.remove('open');
+    tt.style.display = 'none';
+  }
+
+  moreInfoBtn.addEventListener('click', openModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+  });
+
+  /* ── Range toggle ── */
+  document.querySelectorAll('#slaRangeToggle .btn-tab').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#slaRangeToggle .btn-tab').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      range = parseInt(btn.getAttribute('data-range'), 10);
+      render();
+    });
+  });
+
+  /* ── Series toggles ── */
+  document.querySelectorAll('#slaToggles .btn-filter').forEach(function(tog) {
+    tog.addEventListener('click', function() {
+      var key = tog.getAttribute('data-series');
+      vis[key] = !vis[key];
+      tog.classList.toggle('active', vis[key]);
+      render();
+    });
+  });
+
+  /* ── Mini-stat values: Red 1 (#F32A51) for negative numbers ── */
+  document.querySelectorAll('.sla-ms-value').forEach(function(el) {
+    if (/^\s*-/.test(el.textContent) || el.hasAttribute('data-negative')) {
+      el.style.color = '#F32A51';
+    }
+  });
+
+})();
+</script>
+
 </body>
 </html>
