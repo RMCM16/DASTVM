@@ -820,150 +820,43 @@
     }
     .field-select-sm { height: 30px !important; }
 
-    /* ── SITE SELECTION DROPDOWN ──────────────────────────────────── */
-    .site-select {
-      position: relative;
-      width: 299px;
+    /* ── SITE SELECTION DROPDOWN — folder/site tree with multi-select ── */
+    .ds-st-wrap { width: 340px; background: white; border: 1px solid #333332; border-radius: 4px; overflow: hidden; }
+    .st-select-all-row { display: flex; align-items: center; gap: 10px; height: 30px; padding: 0 10px; background: #F7F9FD; flex-shrink: 0; }
+    .st-search-wrap { padding: 6px 10px 10px; position: relative; }
+    .st-search {
+      width: 100%; box-sizing: border-box; height: 30px;
+      background: #F0F8FB; border: 1px solid #CBD0D1; border-radius: 4px;
+      padding: 0 30px 0 10px; font-family: var(--font); font-size: 14px; color: #333332; outline: none;
     }
-    .site-select-trigger {
-      display: flex;
-      align-items: center;
-      height: 40px;
-      background: #F0F8FB;
-      border: 1px solid #CBD0D1;
-      border-radius: 4px;
-      padding: 0 12px 0 15px;
-      cursor: pointer;
-      gap: 8px;
-      user-select: none;
+    .st-search::placeholder { color: #676667; }
+    .st-search:focus { border-color: #000023; }
+    .st-search-icon { position: absolute; right: 17px; top: 50%; transform: translateY(-28%); pointer-events: none; }
+    .st-items { padding: 0 1px 10px; max-height: 300px; overflow-y: auto; }
+    .st-folder-row, .st-site-row { display: flex; align-items: center; gap: 10px; height: 35px; padding: 0 10px; background: white; }
+    .st-row-label { font-family: var(--font); font-size: 14px; font-weight: 400; color: #333332; line-height: 1.4; white-space: nowrap; flex: 1; overflow: hidden; text-overflow: ellipsis; }
+    .st-count-badge { background: #EBF0F2; padding: 1px 8px; border-radius: 100px; font-size: 12px; color: #333332; flex-shrink: 0; font-family: var(--font); }
+    .st-cb {
+      -webkit-appearance: none; appearance: none;
+      width: 16px; height: 16px; flex-shrink: 0;
+      border: 1px solid #676667; border-radius: 4px;
+      background: white; cursor: pointer; position: relative; display: inline-block;
     }
-    .site-select-trigger:hover { border-color: #333332; }
-    .site-select.is-open .site-select-trigger {
-      border-color: #333332;
-      border-radius: 4px 4px 0 0;
-      border-bottom-color: transparent;
+    .st-site-cb { margin-right: 27px; }
+    .st-cb:checked, .st-cb:indeterminate { background: #0094FF; border-color: #0094FF; }
+    .st-cb:checked {
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='8' viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4l3 3 5-6' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: center; background-size: 10px 8px;
     }
-    .site-select-value {
-      flex: 1;
-      font-size: 14px;
-      color: #333332;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      min-width: 0;
-    }
-    .site-select-chevron {
-      flex-shrink: 0;
-      color: #333332;
-      transition: transform 0.15s;
-    }
-    .site-select.is-open .site-select-chevron { transform: rotate(180deg); }
-    .site-select-panel {
-      background: #fff;
-      border: 1px solid #333332;
-      border-top: none;
-      border-radius: 0 0 4px 4px;
-    }
-    .site-select-search-row {
-      padding: 10px 10.5px;
-    }
-    .site-select-search {
-      display: flex;
-      align-items: center;
-      height: 30px;
-      background: #F0F8FB;
-      border: 1px solid #CBD0D1;
-      border-radius: 4px;
-      padding: 0 8px 0 10px;
-      gap: 6px;
-    }
-    .site-select-search-inp {
-      flex: 1;
-      min-width: 0;
-      background: transparent;
-      border: none;
-      outline: none;
-      font-family: var(--font);
-      font-size: 14px;
-      color: #333332;
-    }
-    .site-select-search-inp::placeholder { color: #676667; }
-    .site-select-search-icon { flex-shrink: 0; color: #676667; display: flex; align-items: center; }
-    .site-select-list { margin: 0; padding: 0; list-style: none; }
-    .site-select-item {
-      display: flex;
-      align-items: center;
-      height: 35px;
-      padding: 0 10px;
-      gap: 6px;
-      cursor: pointer;
-      background: #fff;
-    }
-    .site-select-item:hover { background: #F0F8FB; }
-    .site-select-item.is-child { padding-left: 37px; }
-    .site-select-item.is-child-2 { padding-left: 52px; }
-    .site-item-expand {
-      flex-shrink: 0;
-      width: 6px;
-      height: 10px;
-      color: #676667;
-      display: flex;
-      align-items: center;
-    }
-    .site-item-expand svg { transition: transform 0.15s ease; }
-    .site-select-item.is-expanded .site-item-expand svg { transform: rotate(90deg); }
-    .site-item-icon {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      color: #676667;
-    }
-    .site-item-name {
-      flex: 1;
-      font-size: 14px;
-      color: #333332;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      min-width: 0;
-    }
-    .site-item-count {
-      flex-shrink: 0;
-      height: 16px;
-      min-width: 23px;
-      padding: 0 5px;
-      background: #EBF0F2;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 500;
-      color: #333332;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      letter-spacing: 0;
-    }
-    .site-select-footer {
-      border-top: 1px solid #CBD0D1;
-      padding: 11px 0;
-      display: flex;
-      justify-content: center;
-    }
-    .site-select-footer-btn {
-      width: 148px;
-      height: 30px;
-      background: transparent;
-      border: 1px solid #000023;
-      border-radius: 15px;
-      font-family: var(--font);
-      font-size: 14px;
-      font-weight: 400;
-      color: #000023;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .site-select-footer-btn:hover { background: #000023; color: #fff; }
+    .st-cb:indeterminate::after { content: ''; position: absolute; top: 50%; left: 3px; right: 3px; height: 2px; background: white; border-radius: 1px; transform: translateY(-50%); }
+    .st-chevron-btn { display: flex; align-items: center; justify-content: center; width: 14px; height: 14px; background: none; border: none; padding: 0; cursor: pointer; flex-shrink: 0; }
+    .st-chevron-btn svg { display: block; transition: transform 150ms ease; }
+    .st-chevron-btn.is-collapsed svg { transform: rotate(-90deg); }
+    .st-chevron-spacer { width: 14px; height: 14px; flex-shrink: 0; }
+    .st-folder-icon, .st-site-icon { flex-shrink: 0; display: block; }
+    .st-folder-children { display: none; }
+    .st-folder-children.is-open { display: block; }
+    .st-folder-group[data-hidden="1"] { display: none; }
 
     /* ── SELECTORS ──────────────────────────────────────────────────── */
 
@@ -5973,119 +5866,191 @@ padding: 10px; resize: vertical; line-height: 1.4;
 
     <!-- ── SITE SELECTION DROPDOWN ────────────────────────────────── -->
     <div class="ds-subsection">
-      <div class="ds-subsection-title">Site Selection Dropdown <span style="font-size:12px;font-weight:400;color:#676667">— tree-view with expandable sites</span></div>
+      <div class="ds-subsection-title">Site Selection Dropdown <span style="font-size:12px;font-weight:400;color:#676667">— folder/site tree with multi-select checkboxes</span></div>
       <div class="ds-preview" style="gap:48px;align-items:flex-start;flex-wrap:wrap;">
 
         <!-- Closed state -->
         <div style="display:flex;flex-direction:column;gap:8px;">
           <span style="font-size:11px;color:#676667;font-weight:500;letter-spacing:0.5px;text-transform:uppercase">Closed</span>
-          <div class="field-group" style="width:299px;">
-            <div class="field-label">Site</div>
-            <div class="site-select-trigger">
-              <span class="site-select-value">https://ginandjuice.shop</span>
-              <svg class="site-select-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="filter-chip" style="width:max-content;cursor:pointer;">
+              Site (0)
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <span style="font-size:11px;color:#676667;font-weight:500;letter-spacing:0.5px;text-transform:uppercase;margin-top:12px;">Active</span>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="filter-chip has-active" style="width:max-content;cursor:pointer;">
+              Site (2)
+              <button class="fc-clear-btn" style="display:flex;"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 2l6 6M8 2l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><path d="M4 6l3 3 3-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
             </div>
           </div>
         </div>
 
-        <!-- Open state -->
+        <!-- Interactive panel -->
         <div style="display:flex;flex-direction:column;gap:8px;">
-          <span style="font-size:11px;color:#676667;font-weight:500;letter-spacing:0.5px;text-transform:uppercase">Open</span>
-          <div class="field-group" style="width:299px;">
-            <div class="field-label">Site</div>
-            <div class="site-select is-open">
-              <div class="site-select-trigger">
-                <span class="site-select-value">https://ginandjuice.shop</span>
-                <svg class="site-select-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </div>
-              <div class="site-select-panel">
-                <!-- Search -->
-                <div class="site-select-search-row">
-                  <div class="site-select-search">
-                    <input type="text" class="site-select-search-inp" placeholder="Search">
-                    <span class="site-select-search-icon">
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M9.5 9.5L12 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
-                    </span>
+          <span style="font-size:11px;color:#676667;font-weight:500;letter-spacing:0.5px;text-transform:uppercase">Open — interactive</span>
+          <div class="ds-st-wrap" id="dsSitePanel">
+            <div class="st-select-all-row">
+              <input type="checkbox" class="st-cb" id="ds-st-all">
+              <span class="st-row-label">Select all</span>
+            </div>
+            <div class="st-search-wrap">
+              <input class="st-search" type="text" placeholder="Search" id="ds-st-search">
+              <svg class="st-search-icon" width="15" height="15" viewBox="0 0 12.5 12.5" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M1.25 5.625C1.25 3.20875 3.20875 1.25 5.625 1.25C8.04125 1.25 10 3.20875 10 5.625C10 6.80373 9.53385 7.87359 8.77584 8.66028C8.75446 8.67671 8.7339 8.69472 8.71432 8.7143C8.69474 8.73389 8.67673 8.75444 8.66029 8.77582C7.8736 9.53384 6.80374 10 5.625 10C3.20875 10 1.25 8.04125 1.25 5.625ZM9.13606 10.0199C8.17377 10.7897 6.95314 11.25 5.625 11.25C2.5184 11.25 0 8.7316 0 5.625C0 2.5184 2.5184 0 5.625 0C8.7316 0 11.25 2.5184 11.25 5.625C11.25 6.95313 10.7897 8.17375 10.0199 9.13604L12.317 11.4331C12.561 11.6771 12.561 12.0729 12.317 12.3169C12.0729 12.561 11.6772 12.561 11.4331 12.3169L9.13606 10.0199Z" fill="#676667"/></svg>
+            </div>
+            <div class="st-items" id="ds-st-items">
+              <!-- Production — expanded -->
+              <div class="st-folder-group" data-folder="pf1">
+                <div class="st-folder-row">
+                  <input type="checkbox" class="st-cb ds-st-fcb" data-folder="pf1">
+                  <button class="st-chevron-btn" data-folder="pf1" aria-label="Toggle Production">
+                    <svg width="14" height="14" viewBox="0 0 14 8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.292893 0.292893C0.683418-0.0976311 1.31658-0.0976311 1.70711 0.292893L7 5.58579L12.2929 0.292893C12.6834-0.0976311 13.3166-0.0976311 13.7071 0.292893C14.0976 0.683418 14.0976 1.31658 13.7071 1.70711L7.70711 7.70711C7.31658 8.09763 6.68342 8.09763 6.29289 7.70711L0.292893 1.70711C-0.0976311 1.31658-0.0976311 0.683418 0.292893 0.292893Z" fill="#676667"/></svg>
+                  </button>
+                  <svg class="st-folder-icon" width="18" height="18" viewBox="0 0 16.5 15" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 1.5C2.05109 1.5 1.86032 1.57902 1.71967 1.71967C1.57902 1.86032 1.5 2.05109 1.5 2.25V12.75C1.5 12.9489 1.57902 13.1397 1.71967 13.2803C1.86032 13.421 2.05109 13.5 2.25 13.5H14.25C14.4489 13.5 14.6397 13.421 14.7803 13.2803C14.921 13.1397 15 12.9489 15 12.75V4.5C15 4.30109 14.921 4.11032 14.7803 3.96967C14.6397 3.82902 14.4489 3.75 14.25 3.75H7.5C7.24923 3.75 7.01506 3.62467 6.87596 3.41602L5.59861 1.5H2.25ZM0.65901 0.65901C1.08097 0.237053 1.65326 0 2.25 0H6C6.25076 0 6.48494 0.125326 6.62404 0.333975L7.90139 2.25H14.25C14.8467 2.25 15.419 2.48705 15.841 2.90901C16.2629 3.33097 16.5 3.90326 16.5 4.5V12.75C16.5 13.3467 16.2629 13.919 15.841 14.341C15.419 14.7629 14.8467 15 14.25 15H2.25C1.65326 15 1.08097 14.7629 0.65901 14.341C0.237053 13.919 0 13.3467 0 12.75V2.25C0 1.65326 0.237053 1.08097 0.65901 0.65901Z" fill="#676667"/></svg>
+                  <span class="st-row-label">Production</span>
+                  <span class="st-count-badge">3</span>
+                </div>
+                <div class="st-folder-children is-open" data-children="pf1">
+                  <div class="st-site-row">
+                    <input type="checkbox" class="st-cb st-site-cb ds-st-scb" data-site="Feil LLC" data-folder="pf1">
+                    <span class="st-chevron-spacer"></span>
+                    <svg class="st-site-icon" width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+                    <span class="st-row-label">Feil LLC</span>
+                  </div>
+                  <div class="st-site-row">
+                    <input type="checkbox" class="st-cb st-site-cb ds-st-scb" data-site="Zenith Corp" data-folder="pf1">
+                    <span class="st-chevron-spacer"></span>
+                    <svg class="st-site-icon" width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+                    <span class="st-row-label">Zenith Corp</span>
+                  </div>
+                  <div class="st-site-row">
+                    <input type="checkbox" class="st-cb st-site-cb ds-st-scb" data-site="DataShield" data-folder="pf1">
+                    <span class="st-chevron-spacer"></span>
+                    <svg class="st-site-icon" width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+                    <span class="st-row-label">DataShield</span>
                   </div>
                 </div>
-                <!-- Site list -->
-                <ul class="site-select-list">
-                  <!-- Parent 1: ginandjuice.shop — starts expanded -->
-                  <li class="site-select-item is-expanded" data-expandable data-group="g1">
-                    <span class="site-item-expand"><svg width="6" height="10" viewBox="0 0 6 10" fill="none"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <span class="site-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 4C3.73478 4 3.48043 4.10536 3.29289 4.29289C3.10536 4.48043 3 4.73478 3 5V19C3 19.2652 3.10536 19.5196 3.29289 19.7071C3.48043 19.8946 3.73478 20 4 20H20C20.2652 20 20.5196 19.8946 20.7071 19.7071C20.8946 19.5196 21 19.2652 21 19V8C21 7.73478 20.8946 7.48043 20.7071 7.29289C20.5196 7.10536 20.2652 7 20 7H11C10.6656 7 10.3534 6.8329 10.1679 6.5547L8.46482 4H4ZM1.87868 2.87868C2.44129 2.31607 3.20435 2 4 2H9C9.33435 2 9.64658 2.1671 9.83205 2.4453L11.5352 5H20C20.7957 5 21.5587 5.31607 22.1213 5.87868C22.6839 6.44129 23 7.20435 23 8V19C23 19.7957 22.6839 20.5587 22.1213 21.1213C21.5587 21.6839 20.7957 22 20 22H4C3.20435 22 2.44129 21.6839 1.87868 21.1213C1.31607 20.5587 1 19.7957 1 19V5C1 4.20435 1.31607 3.44129 1.87868 2.87868Z" fill="currentColor"/></svg></span>
-                    <span class="site-item-name">https://ginandjuice.shop</span>
-                    <span class="site-item-count">2</span>
-                  </li>
-                  <li class="site-select-item is-child" data-parent="g1">
-                    <span class="site-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.0001 22.9001C18.02 22.9001 22.9001 18.02 22.9001 12.0001C22.9001 5.98019 18.02 1.1001 12.0001 1.1001C5.98019 1.1001 1.1001 5.98019 1.1001 12.0001C1.1001 18.02 5.98019 22.9001 12.0001 22.9001ZM9.95412 3.13102C6.19746 3.9941 3.32865 7.18258 2.94404 11.1001H7.14267C7.35879 8.23426 8.33304 5.48516 9.95412 3.13102ZM14.0461 3.13102C15.6672 5.48516 16.6414 8.23426 16.8575 11.1001H21.0562C20.6716 7.18258 17.8027 3.9941 14.0461 3.13102ZM15.0518 11.1001C14.8128 8.28555 13.7509 5.60341 12.0001 3.38873C10.2493 5.60341 9.1874 8.28555 8.94842 11.1001H15.0518ZM8.94842 12.9001H15.0518C14.8128 15.7146 13.7509 18.3968 12.0001 20.6115C10.2493 18.3968 9.1874 15.7146 8.94842 12.9001ZM7.14267 12.9001H2.94404C3.32865 16.8176 6.19746 20.0061 9.95413 20.8692C8.33305 18.515 7.35879 15.7659 7.14267 12.9001ZM14.0461 20.8692C15.6671 18.515 16.6414 15.7659 16.8575 12.9001H21.0562C20.6715 16.8176 17.8027 20.0061 14.0461 20.8692Z" fill="currentColor"/></svg></span>
-                    <span class="site-item-name">https://api.ginandjuice.shop</span>
-                  </li>
-                  <li class="site-select-item is-child" data-parent="g1">
-                    <span class="site-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.0001 22.9001C18.02 22.9001 22.9001 18.02 22.9001 12.0001C22.9001 5.98019 18.02 1.1001 12.0001 1.1001C5.98019 1.1001 1.1001 5.98019 1.1001 12.0001C1.1001 18.02 5.98019 22.9001 12.0001 22.9001ZM9.95412 3.13102C6.19746 3.9941 3.32865 7.18258 2.94404 11.1001H7.14267C7.35879 8.23426 8.33304 5.48516 9.95412 3.13102ZM14.0461 3.13102C15.6672 5.48516 16.6414 8.23426 16.8575 11.1001H21.0562C20.6716 7.18258 17.8027 3.9941 14.0461 3.13102ZM15.0518 11.1001C14.8128 8.28555 13.7509 5.60341 12.0001 3.38873C10.2493 5.60341 9.1874 8.28555 8.94842 11.1001H15.0518ZM8.94842 12.9001H15.0518C14.8128 15.7146 13.7509 18.3968 12.0001 20.6115C10.2493 18.3968 9.1874 15.7146 8.94842 12.9001ZM7.14267 12.9001H2.94404C3.32865 16.8176 6.19746 20.0061 9.95413 20.8692C8.33305 18.515 7.35879 15.7659 7.14267 12.9001ZM14.0461 20.8692C15.6671 18.515 16.6414 15.7659 16.8575 12.9001H21.0562C20.6715 16.8176 17.8027 20.0061 14.0461 20.8692Z" fill="currentColor"/></svg></span>
-                    <span class="site-item-name">https://shop.ginandjuice.shop</span>
-                  </li>
-                  <!-- Parent 2: portswigger.net — starts collapsed -->
-                  <li class="site-select-item" data-expandable data-group="g2">
-                    <span class="site-item-expand"><svg width="6" height="10" viewBox="0 0 6 10" fill="none"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <span class="site-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 4C3.73478 4 3.48043 4.10536 3.29289 4.29289C3.10536 4.48043 3 4.73478 3 5V19C3 19.2652 3.10536 19.5196 3.29289 19.7071C3.48043 19.8946 3.73478 20 4 20H20C20.2652 20 20.5196 19.8946 20.7071 19.7071C20.8946 19.5196 21 19.2652 21 19V8C21 7.73478 20.8946 7.48043 20.7071 7.29289C20.5196 7.10536 20.2652 7 20 7H11C10.6656 7 10.3534 6.8329 10.1679 6.5547L8.46482 4H4ZM1.87868 2.87868C2.44129 2.31607 3.20435 2 4 2H9C9.33435 2 9.64658 2.1671 9.83205 2.4453L11.5352 5H20C20.7957 5 21.5587 5.31607 22.1213 5.87868C22.6839 6.44129 23 7.20435 23 8V19C23 19.7957 22.6839 20.5587 22.1213 21.1213C21.5587 21.6839 20.7957 22 20 22H4C3.20435 22 2.44129 21.6839 1.87868 21.1213C1.31607 20.5587 1 19.7957 1 19V5C1 4.20435 1.31607 3.44129 1.87868 2.87868Z" fill="currentColor"/></svg></span>
-                    <span class="site-item-name">https://portswigger.net</span>
-                    <span class="site-item-count">1</span>
-                  </li>
-                  <li class="site-select-item is-child" data-parent="g2" style="display:none;">
-                    <span class="site-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.0001 22.9001C18.02 22.9001 22.9001 18.02 22.9001 12.0001C22.9001 5.98019 18.02 1.1001 12.0001 1.1001C5.98019 1.1001 1.1001 5.98019 1.1001 12.0001C1.1001 18.02 5.98019 22.9001 12.0001 22.9001ZM9.95412 3.13102C6.19746 3.9941 3.32865 7.18258 2.94404 11.1001H7.14267C7.35879 8.23426 8.33304 5.48516 9.95412 3.13102ZM14.0461 3.13102C15.6672 5.48516 16.6414 8.23426 16.8575 11.1001H21.0562C20.6716 7.18258 17.8027 3.9941 14.0461 3.13102ZM15.0518 11.1001C14.8128 8.28555 13.7509 5.60341 12.0001 3.38873C10.2493 5.60341 9.1874 8.28555 8.94842 11.1001H15.0518ZM8.94842 12.9001H15.0518C14.8128 15.7146 13.7509 18.3968 12.0001 20.6115C10.2493 18.3968 9.1874 15.7146 8.94842 12.9001ZM7.14267 12.9001H2.94404C3.32865 16.8176 6.19746 20.0061 9.95413 20.8692C8.33305 18.515 7.35879 15.7659 7.14267 12.9001ZM14.0461 20.8692C15.6671 18.515 16.6414 15.7659 16.8575 12.9001H21.0562C20.6715 16.8176 17.8027 20.0061 14.0461 20.8692Z" fill="currentColor"/></svg></span>
-                    <span class="site-item-name">https://community.portswigger.net</span>
-                  </li>
-                  <!-- Leaf items (no children) -->
-                  <li class="site-select-item">
-                    <span class="site-item-expand" style="visibility:hidden;"><svg width="6" height="10" viewBox="0 0 6 10" fill="none"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <span class="site-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 4C3.73478 4 3.48043 4.10536 3.29289 4.29289C3.10536 4.48043 3 4.73478 3 5V19C3 19.2652 3.10536 19.5196 3.29289 19.7071C3.48043 19.8946 3.73478 20 4 20H20C20.2652 20 20.5196 19.8946 20.7071 19.7071C20.8946 19.5196 21 19.2652 21 19V8C21 7.73478 20.8946 7.48043 20.7071 7.29289C20.5196 7.10536 20.2652 7 20 7H11C10.6656 7 10.3534 6.8329 10.1679 6.5547L8.46482 4H4ZM1.87868 2.87868C2.44129 2.31607 3.20435 2 4 2H9C9.33435 2 9.64658 2.1671 9.83205 2.4453L11.5352 5H20C20.7957 5 21.5587 5.31607 22.1213 5.87868C22.6839 6.44129 23 7.20435 23 8V19C23 19.7957 22.6839 20.5587 22.1213 21.1213C21.5587 21.6839 20.7957 22 20 22H4C3.20435 22 2.44129 21.6839 1.87868 21.1213C1.31607 20.5587 1 19.7957 1 19V5C1 4.20435 1.31607 3.44129 1.87868 2.87868Z" fill="currentColor"/></svg></span>
-                    <span class="site-item-name">https://target.burpsuite.net</span>
-                  </li>
-                  <li class="site-select-item">
-                    <span class="site-item-expand" style="visibility:hidden;"><svg width="6" height="10" viewBox="0 0 6 10" fill="none"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <span class="site-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 4C3.73478 4 3.48043 4.10536 3.29289 4.29289C3.10536 4.48043 3 4.73478 3 5V19C3 19.2652 3.10536 19.5196 3.29289 19.7071C3.48043 19.8946 3.73478 20 4 20H20C20.2652 20 20.5196 19.8946 20.7071 19.7071C20.8946 19.5196 21 19.2652 21 19V8C21 7.73478 20.8946 7.48043 20.7071 7.29289C20.5196 7.10536 20.2652 7 20 7H11C10.6656 7 10.3534 6.8329 10.1679 6.5547L8.46482 4H4ZM1.87868 2.87868C2.44129 2.31607 3.20435 2 4 2H9C9.33435 2 9.64658 2.1671 9.83205 2.4453L11.5352 5H20C20.7957 5 21.5587 5.31607 22.1213 5.87868C22.6839 6.44129 23 7.20435 23 8V19C23 19.7957 22.6839 20.5587 22.1213 21.1213C21.5587 21.6839 20.7957 22 20 22H4C3.20435 22 2.44129 21.6839 1.87868 21.1213C1.31607 20.5587 1 19.7957 1 19V5C1 4.20435 1.31607 3.44129 1.87868 2.87868Z" fill="currentColor"/></svg></span>
-                    <span class="site-item-name">https://staging.example.com</span>
-                  </li>
-                  <li class="site-select-item">
-                    <span class="site-item-expand" style="visibility:hidden;"><svg width="6" height="10" viewBox="0 0 6 10" fill="none"><path d="M1 1L5 5L1 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                    <span class="site-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 4C3.73478 4 3.48043 4.10536 3.29289 4.29289C3.10536 4.48043 3 4.73478 3 5V19C3 19.2652 3.10536 19.5196 3.29289 19.7071C3.48043 19.8946 3.73478 20 4 20H20C20.2652 20 20.5196 19.8946 20.7071 19.7071C20.8946 19.5196 21 19.2652 21 19V8C21 7.73478 20.8946 7.48043 20.7071 7.29289C20.5196 7.10536 20.2652 7 20 7H11C10.6656 7 10.3534 6.8329 10.1679 6.5547L8.46482 4H4ZM1.87868 2.87868C2.44129 2.31607 3.20435 2 4 2H9C9.33435 2 9.64658 2.1671 9.83205 2.4453L11.5352 5H20C20.7957 5 21.5587 5.31607 22.1213 5.87868C22.6839 6.44129 23 7.20435 23 8V19C23 19.7957 22.6839 20.5587 22.1213 21.1213C21.5587 21.6839 20.7957 22 20 22H4C3.20435 22 2.44129 21.6839 1.87868 21.1213C1.31607 20.5587 1 19.7957 1 19V5C1 4.20435 1.31607 3.44129 1.87868 2.87868Z" fill="currentColor"/></svg></span>
-                    <span class="site-item-name">https://old.example.com</span>
-                  </li>
-                </ul>
-                <!-- Footer -->
-                <div class="site-select-footer">
-                  <button class="site-select-footer-btn">View all sites</button>
+              </div>
+              <!-- Staging — collapsed -->
+              <div class="st-folder-group" data-folder="pf2">
+                <div class="st-folder-row">
+                  <input type="checkbox" class="st-cb ds-st-fcb" data-folder="pf2">
+                  <button class="st-chevron-btn is-collapsed" data-folder="pf2" aria-label="Toggle Staging">
+                    <svg width="14" height="14" viewBox="0 0 14 8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.292893 0.292893C0.683418-0.0976311 1.31658-0.0976311 1.70711 0.292893L7 5.58579L12.2929 0.292893C12.6834-0.0976311 13.3166-0.0976311 13.7071 0.292893C14.0976 0.683418 14.0976 1.31658 13.7071 1.70711L7.70711 7.70711C7.31658 8.09763 6.68342 8.09763 6.29289 7.70711L0.292893 1.70711C-0.0976311 1.31658-0.0976311 0.683418 0.292893 0.292893Z" fill="#676667"/></svg>
+                  </button>
+                  <svg class="st-folder-icon" width="18" height="18" viewBox="0 0 16.5 15" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 1.5C2.05109 1.5 1.86032 1.57902 1.71967 1.71967C1.57902 1.86032 1.5 2.05109 1.5 2.25V12.75C1.5 12.9489 1.57902 13.1397 1.71967 13.2803C1.86032 13.421 2.05109 13.5 2.25 13.5H14.25C14.4489 13.5 14.6397 13.421 14.7803 13.2803C14.921 13.1397 15 12.9489 15 12.75V4.5C15 4.30109 14.921 4.11032 14.7803 3.96967C14.6397 3.82902 14.4489 3.75 14.25 3.75H7.5C7.24923 3.75 7.01506 3.62467 6.87596 3.41602L5.59861 1.5H2.25ZM0.65901 0.65901C1.08097 0.237053 1.65326 0 2.25 0H6C6.25076 0 6.48494 0.125326 6.62404 0.333975L7.90139 2.25H14.25C14.8467 2.25 15.419 2.48705 15.841 2.90901C16.2629 3.33097 16.5 3.90326 16.5 4.5V12.75C16.5 13.3467 16.2629 13.919 15.841 14.341C15.419 14.7629 14.8467 15 14.25 15H2.25C1.65326 15 1.08097 14.7629 0.65901 14.341C0.237053 13.919 0 13.3467 0 12.75V2.25C0 1.65326 0.237053 1.08097 0.65901 0.65901Z" fill="#676667"/></svg>
+                  <span class="st-row-label">Staging</span>
+                  <span class="st-count-badge">2</span>
                 </div>
-              </div><!-- /panel -->
-            </div><!-- /site-select -->
+                <div class="st-folder-children" data-children="pf2">
+                  <div class="st-site-row">
+                    <input type="checkbox" class="st-cb st-site-cb ds-st-scb" data-site="SecureNet" data-folder="pf2">
+                    <span class="st-chevron-spacer"></span>
+                    <svg class="st-site-icon" width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+                    <span class="st-row-label">SecureNet</span>
+                  </div>
+                  <div class="st-site-row">
+                    <input type="checkbox" class="st-cb st-site-cb ds-st-scb" data-site="Nova Solutions" data-folder="pf2">
+                    <span class="st-chevron-spacer"></span>
+                    <svg class="st-site-icon" width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+                    <span class="st-row-label">Nova Solutions</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Development — collapsed -->
+              <div class="st-folder-group" data-folder="pf3">
+                <div class="st-folder-row">
+                  <input type="checkbox" class="st-cb ds-st-fcb" data-folder="pf3">
+                  <button class="st-chevron-btn is-collapsed" data-folder="pf3" aria-label="Toggle Development">
+                    <svg width="14" height="14" viewBox="0 0 14 8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.292893 0.292893C0.683418-0.0976311 1.31658-0.0976311 1.70711 0.292893L7 5.58579L12.2929 0.292893C12.6834-0.0976311 13.3166-0.0976311 13.7071 0.292893C14.0976 0.683418 14.0976 1.31658 13.7071 1.70711L7.70711 7.70711C7.31658 8.09763 6.68342 8.09763 6.29289 7.70711L0.292893 1.70711C-0.0976311 1.31658-0.0976311 0.683418 0.292893 0.292893Z" fill="#676667"/></svg>
+                  </button>
+                  <svg class="st-folder-icon" width="18" height="18" viewBox="0 0 16.5 15" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 1.5C2.05109 1.5 1.86032 1.57902 1.71967 1.71967C1.57902 1.86032 1.5 2.05109 1.5 2.25V12.75C1.5 12.9489 1.57902 13.1397 1.71967 13.2803C1.86032 13.421 2.05109 13.5 2.25 13.5H14.25C14.4489 13.5 14.6397 13.421 14.7803 13.2803C14.921 13.1397 15 12.9489 15 12.75V4.5C15 4.30109 14.921 4.11032 14.7803 3.96967C14.6397 3.82902 14.4489 3.75 14.25 3.75H7.5C7.24923 3.75 7.01506 3.62467 6.87596 3.41602L5.59861 1.5H2.25ZM0.65901 0.65901C1.08097 0.237053 1.65326 0 2.25 0H6C6.25076 0 6.48494 0.125326 6.62404 0.333975L7.90139 2.25H14.25C14.8467 2.25 15.419 2.48705 15.841 2.90901C16.2629 3.33097 16.5 3.90326 16.5 4.5V12.75C16.5 13.3467 16.2629 13.919 15.841 14.341C15.419 14.7629 14.8467 15 14.25 15H2.25C1.65326 15 1.08097 14.7629 0.65901 14.341C0.237053 13.919 0 13.3467 0 12.75V2.25C0 1.65326 0.237053 1.08097 0.65901 0.65901Z" fill="#676667"/></svg>
+                  <span class="st-row-label">Development</span>
+                  <span class="st-count-badge">3</span>
+                </div>
+                <div class="st-folder-children" data-children="pf3">
+                  <div class="st-site-row">
+                    <input type="checkbox" class="st-cb st-site-cb ds-st-scb" data-site="Apex Digital" data-folder="pf3">
+                    <span class="st-chevron-spacer"></span>
+                    <svg class="st-site-icon" width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+                    <span class="st-row-label">Apex Digital</span>
+                  </div>
+                  <div class="st-site-row">
+                    <input type="checkbox" class="st-cb st-site-cb ds-st-scb" data-site="CyberGuard Inc." data-folder="pf3">
+                    <span class="st-chevron-spacer"></span>
+                    <svg class="st-site-icon" width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+                    <span class="st-row-label">CyberGuard Inc.</span>
+                  </div>
+                  <div class="st-site-row">
+                    <input type="checkbox" class="st-cb st-site-cb ds-st-scb" data-site="BlockSec" data-folder="pf3">
+                    <span class="st-chevron-spacer"></span>
+                    <svg class="st-site-icon" width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+                    <span class="st-row-label">BlockSec</span>
+                  </div>
+                </div>
+              </div>
+              <!-- External — collapsed -->
+              <div class="st-folder-group" data-folder="pf4">
+                <div class="st-folder-row">
+                  <input type="checkbox" class="st-cb ds-st-fcb" data-folder="pf4">
+                  <button class="st-chevron-btn is-collapsed" data-folder="pf4" aria-label="Toggle External">
+                    <svg width="14" height="14" viewBox="0 0 14 8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.292893 0.292893C0.683418-0.0976311 1.31658-0.0976311 1.70711 0.292893L7 5.58579L12.2929 0.292893C12.6834-0.0976311 13.3166-0.0976311 13.7071 0.292893C14.0976 0.683418 14.0976 1.31658 13.7071 1.70711L7.70711 7.70711C7.31658 8.09763 6.68342 8.09763 6.29289 7.70711L0.292893 1.70711C-0.0976311 1.31658-0.0976311 0.683418 0.292893 0.292893Z" fill="#676667"/></svg>
+                  </button>
+                  <svg class="st-folder-icon" width="18" height="18" viewBox="0 0 16.5 15" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 1.5C2.05109 1.5 1.86032 1.57902 1.71967 1.71967C1.57902 1.86032 1.5 2.05109 1.5 2.25V12.75C1.5 12.9489 1.57902 13.1397 1.71967 13.2803C1.86032 13.421 2.05109 13.5 2.25 13.5H14.25C14.4489 13.5 14.6397 13.421 14.7803 13.2803C14.921 13.1397 15 12.9489 15 12.75V4.5C15 4.30109 14.921 4.11032 14.7803 3.96967C14.6397 3.82902 14.4489 3.75 14.25 3.75H7.5C7.24923 3.75 7.01506 3.62467 6.87596 3.41602L5.59861 1.5H2.25ZM0.65901 0.65901C1.08097 0.237053 1.65326 0 2.25 0H6C6.25076 0 6.48494 0.125326 6.62404 0.333975L7.90139 2.25H14.25C14.8467 2.25 15.419 2.48705 15.841 2.90901C16.2629 3.33097 16.5 3.90326 16.5 4.5V12.75C16.5 13.3467 16.2629 13.919 15.841 14.341C15.419 14.7629 14.8467 15 14.25 15H2.25C1.65326 15 1.08097 14.7629 0.65901 14.341C0.237053 13.919 0 13.3467 0 12.75V2.25C0 1.65326 0.237053 1.08097 0.65901 0.65901Z" fill="#676667"/></svg>
+                  <span class="st-row-label">External</span>
+                  <span class="st-count-badge">2</span>
+                </div>
+                <div class="st-folder-children" data-children="pf4">
+                  <div class="st-site-row">
+                    <input type="checkbox" class="st-cb st-site-cb ds-st-scb" data-site="TechVault" data-folder="pf4">
+                    <span class="st-chevron-spacer"></span>
+                    <svg class="st-site-icon" width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+                    <span class="st-row-label">TechVault</span>
+                  </div>
+                  <div class="st-site-row">
+                    <input type="checkbox" class="st-cb st-site-cb ds-st-scb" data-site="CloudFirst" data-folder="pf4">
+                    <span class="st-chevron-spacer"></span>
+                    <svg class="st-site-icon" width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+                    <span class="st-row-label">CloudFirst</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
       </div>
-      <div class="ds-code"><span class="tok-class">.site-select</span>  <span class="tok-com">/* width: 299px | position: relative */</span>
+      <div class="ds-code"><span class="tok-class">.ds-st-wrap</span>  <span class="tok-com">/* width: 340px | border: 1px solid #333332 | radius 4px | overflow hidden */</span>
 
-<span class="tok-class">.site-select-trigger</span>  <span class="tok-com">/* 40px | bg #F0F8FB | border 1px solid #CBD0D1 | radius 4px */</span>
-padding: 0 12px 0 15px;  <span class="tok-com">/* site URL left, chevron right */</span>
-<span class="tok-prop">:hover</span>  border-color: <span class="tok-val">#333332</span>;
-<span class="tok-prop">.is-open .site-select-trigger</span>  border-color: <span class="tok-val">#333332</span>; border-radius: 4px 4px 0 0; border-bottom: transparent;
+<span class="tok-class">.st-select-all-row</span>  height: 30px; padding: 0 10px; bg: <span class="tok-val">#F7F9FD</span>; gap: 10px;
+<span class="tok-class">.st-search-wrap</span>      padding: 6px 10px 10px; position: relative;
+<span class="tok-class">.st-search</span>           h: 30px; bg: <span class="tok-val">#F0F8FB</span>; border: 1px solid <span class="tok-val">#CBD0D1</span>; radius: 4px;
+                     padding: 0 30px 0 10px; 14px; <span class="tok-prop">:focus</span> border-color: <span class="tok-val">#000023</span>;
+<span class="tok-class">.st-search-icon</span>      position: absolute; right: 17px; pointer-events: none;
 
-<span class="tok-class">.site-select-panel</span>  <span class="tok-com">/* bg white | border 1px solid #333332 | border-top: none | radius 0 0 4px 4px */</span>
-<span class="tok-class">.site-select-search</span>  <span class="tok-com">/* 30px | #F0F8FB | #CBD0D1 border | search icon right */</span>
+<span class="tok-class">.st-items</span>  padding: 0 1px 10px; max-height: 300px; overflow-y: auto;
 
-<span class="tok-class">.site-select-item</span>  <span class="tok-com">/* height 35px | flex row | gap 6px */</span>
-<span class="tok-prop">:hover</span>  background: <span class="tok-val">#F0F8FB</span>;
-<span class="tok-prop">.is-child</span>  padding-left: 37px;  <span class="tok-com">/* 10px base + 27px indent */</span>
-<span class="tok-class">.site-item-expand</span>  5×10px right-chevron; color: <span class="tok-val">#676667</span>; (hidden if leaf)
-<span class="tok-class">.site-item-icon</span>  15×15px document icon; color: <span class="tok-val">#676667</span>;
-<span class="tok-class">.site-item-name</span>  14px; color: <span class="tok-val">#333332</span>; flex: 1; text-overflow: ellipsis;
-<span class="tok-class">.site-item-count</span>  h: 16px; min-w: 23px; bg: <span class="tok-val">#EBF0F2</span>; radius: 8px; 11px 500;
+<span class="tok-class">.st-folder-row</span>  flex row; gap: 10px; height: 35px; padding: 0 10px; bg: white;
+<span class="tok-class">.st-site-row</span>    same as folder-row;
+<span class="tok-class">.st-row-label</span>   14px; color: <span class="tok-val">#333332</span>; flex: 1; ellipsis;
+<span class="tok-class">.st-count-badge</span> bg: <span class="tok-val">#EBF0F2</span>; radius: 100px; 12px; padding: 1px 8px;
 
-<span class="tok-class">.site-select-footer</span>  border-top: 1px solid <span class="tok-val">#CBD0D1</span>; padding: 11px 0; centered;
-<span class="tok-class">.site-select-footer-btn</span>  148×30px pill; border: 1px solid <span class="tok-val">#000023</span>; transparent bg;
-<span class="tok-prop">:hover</span>  background: <span class="tok-val">#000023</span>; color: #fff;</div>
+<span class="tok-class">.st-cb</span>  <span class="tok-com">/* 16×16px | border 1px solid #676667 | radius 4px */</span>
+<span class="tok-prop">:checked, :indeterminate</span>  bg: <span class="tok-val">#0094FF</span>; border-color: <span class="tok-val">#0094FF</span>;
+<span class="tok-prop">:checked</span>  white checkmark SVG, background-image centered;
+<span class="tok-prop">:indeterminate::after</span>  2px white dash, inset 3px;
+<span class="tok-class">.st-site-cb</span>  margin-right: <span class="tok-val">27px</span>;  <span class="tok-com">/* extra indent aligns sites under folder label */</span>
+
+<span class="tok-class">.st-chevron-btn</span>  14×14px; no border; cursor pointer;
+<span class="tok-prop">.is-collapsed svg</span>  transform: rotate(-90deg);
+<span class="tok-class">.st-chevron-spacer</span>  14×14px; placeholder for site rows (no chevron);
+
+<span class="tok-class">.st-folder-children</span>  display: none;
+<span class="tok-prop">.is-open</span>  display: block;</div>
     </div>
-    <!-- ── FILTER CHIP ───────────────────────────────────────────────── -->
+        <!-- ── FILTER CHIP ───────────────────────────────────────────────── -->
     <div class="ds-subsection">
       <div class="ds-subsection-title">Filter Chip</div>
       <div class="ds-preview" style="flex-direction:column;align-items:flex-start;gap:12px;">
@@ -9291,6 +9256,97 @@ Folder icon: 18×18 Chevron Right + 18×18 Folder  (gap: 10px)</div>
       renderSlbl(scTarget, newId);
       closeSlblModal();
     });
+  })();
+
+  // ── Site tree demo (Site Selection Dropdown section) ─────────────────────
+  (function () {
+    var panel = document.getElementById('dsSitePanel');
+    if (!panel) return;
+
+    // Expand/collapse chevrons
+    panel.querySelectorAll('.st-chevron-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var fid = btn.dataset.folder;
+        btn.classList.toggle('is-collapsed');
+        var ch = panel.querySelector('.st-folder-children[data-children="' + fid + '"]');
+        if (ch) ch.classList.toggle('is-open');
+      });
+    });
+
+    // Site checkbox → sync folder tri-state → sync select-all
+    panel.querySelectorAll('.ds-st-scb').forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        syncFolder(cb.dataset.folder);
+        syncAll();
+      });
+    });
+
+    // Folder checkbox → check/uncheck all children
+    panel.querySelectorAll('.ds-st-fcb').forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        var fid = cb.dataset.folder;
+        panel.querySelectorAll('.ds-st-scb[data-folder="' + fid + '"]').forEach(function (s) {
+          s.checked = cb.checked;
+          s.indeterminate = false;
+        });
+        syncAll();
+      });
+    });
+
+    // Select all
+    var allCb = panel.querySelector('#ds-st-all');
+    if (allCb) {
+      allCb.addEventListener('change', function () {
+        panel.querySelectorAll('.ds-st-scb, .ds-st-fcb').forEach(function (c) {
+          c.checked = allCb.checked;
+          c.indeterminate = false;
+        });
+      });
+    }
+
+    // Search filter
+    var searchEl = panel.querySelector('#ds-st-search');
+    if (searchEl) {
+      searchEl.addEventListener('input', function () {
+        var q = searchEl.value.toLowerCase().trim();
+        panel.querySelectorAll('.st-folder-group').forEach(function (fg) {
+          var sites = fg.querySelectorAll('.st-site-row');
+          var anyMatch = false;
+          sites.forEach(function (sr) {
+            var label = sr.querySelector('.st-row-label').textContent.toLowerCase();
+            var show = !q || label.includes(q);
+            sr.style.display = show ? '' : 'none';
+            if (show) anyMatch = true;
+          });
+          fg.style.display = (!q || anyMatch) ? '' : 'none';
+          if (q && anyMatch) {
+            var ch = fg.querySelector('.st-folder-children');
+            if (ch) ch.classList.add('is-open');
+            var btn = fg.querySelector('.st-chevron-btn');
+            if (btn) btn.classList.remove('is-collapsed');
+          }
+        });
+      });
+    }
+
+    function syncFolder(fid) {
+      var siteCbs = Array.from(panel.querySelectorAll('.ds-st-scb[data-folder="' + fid + '"]'));
+      var checked = siteCbs.filter(function (c) { return c.checked; }).length;
+      var fcb = panel.querySelector('.ds-st-fcb[data-folder="' + fid + '"]');
+      if (!fcb) return;
+      if (checked === 0) { fcb.checked = false; fcb.indeterminate = false; }
+      else if (checked === siteCbs.length) { fcb.checked = true; fcb.indeterminate = false; }
+      else { fcb.checked = false; fcb.indeterminate = true; }
+    }
+
+    function syncAll() {
+      if (!allCb) return;
+      var siteCbs = Array.from(panel.querySelectorAll('.ds-st-scb'));
+      var checked = siteCbs.filter(function (c) { return c.checked; }).length;
+      if (checked === 0) { allCb.checked = false; allCb.indeterminate = false; }
+      else if (checked === siteCbs.length) { allCb.checked = true; allCb.indeterminate = false; }
+      else { allCb.checked = false; allCb.indeterminate = true; }
+    }
   })();
 </script>
 
