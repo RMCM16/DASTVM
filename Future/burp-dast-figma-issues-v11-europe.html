@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Burp Suite DAST — Issues (v10)</title>
+  <title>Burp Suite DAST — Europe / Issues (v11)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
@@ -1059,7 +1059,6 @@
       min-width: 0;
     }
 
-    /* ── Table scroll buttons ── */
     /* ── Sticky scrollbar ── */
     #stickyScrollbar {
       position: fixed;
@@ -2417,7 +2416,8 @@
     .sp-tab-pane.active { display: block; }
 
     /* ── Timeline ────────────────────────────────────────────────────────────── */
-    .tl-filters { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 20px; }
+    .tl-filters { display: flex; gap: 10px; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 0 20px; padding-bottom: 2px; -webkit-mask-image: linear-gradient(to right, black calc(100% - 48px), transparent 100%); mask-image: linear-gradient(to right, black calc(100% - 48px), transparent 100%); }
+    .tl-filters::-webkit-scrollbar { display: none; }
     .tl-filter-btn {
       height: 25px; padding: 0 15px; border-radius: 200px;
       font-family: var(--font); font-size: 14px; cursor: pointer;
@@ -2654,12 +2654,6 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 14px 20px; border-top: 1px solid #EBF0F2;
     }
-    .sp-ai-not-investigated {
-      display: none; padding: 20px;
-      font-family: var(--font); font-size: 14px; color: #676667;
-      text-align: center; line-height: 1.5;
-    }
-    .sp-ai-not-investigated p { margin: 0 0 12px; }
 
     /* Sparkle (✦) SVG used inline */
     .sparkle-svg { display: inline; vertical-align: middle; }
@@ -2667,7 +2661,8 @@
     /* ── SLA fix rate — line chart card ── */
     .stats-chart-row { margin-bottom: 20px; }
     .line-chart-card { padding: 0 0 20px; display: flex; flex-direction: column; gap: 0; overflow: visible; }
-    @media (max-width: 1599px) { .line-chart-card { display: none; } }
+    .stat-card.line-chart-card { overflow: visible; }
+    @media (max-width: 1899px) { .line-chart-card { display: none; } }
     .lc-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 20px 20px; }
     .lc-header .donut-card-title { padding: 0; }
     .lc-download-btn { display:flex; align-items:center; justify-content:center; width:32px; height:32px; border:none; background:none; cursor:pointer; color:#676667; border-radius:4px; padding:0; flex-shrink:0; transition:color 0.15s,background 0.15s; }
@@ -2869,21 +2864,344 @@
     .sla-x-label { font-size: 11px; color: #676667; white-space: nowrap; letter-spacing: 0.1px; }
     /* AI insight */
 
-    /* ── Sites nav dropdown ── */
+    /* ── v11 layout ── */
+    .page-body {
+      display: flex;
+      min-height: calc(100vh - 70px);
+      background: #F7F9FD;
+    }
+
+    /* Site panel */
+    .site-panel {
+      width: 360px;
+      flex-shrink: 0;
+      background: white;
+      border-right: 1px solid #EBF0F2;
+      position: sticky;
+      top: 70px;
+      height: calc(100vh - 70px);
+      overflow: hidden;
+      transition: width 0.35s ease;
+    }
+    .site-panel-inner {
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: 100%;
+      min-width: 360px;
+    }
+    .site-panel-hdr {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 15px;
+      height: 70px;
+      flex-shrink: 0;
+      background: white;
+      border-bottom: 1px solid #EBF0F2;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    .site-panel-title {
+      font: 500 16px/1.4 var(--font);
+      color: #B86633;
+      letter-spacing: 0.16px;
+    }
+    .site-panel-count {
+      background: #EBF0F2;
+      border-radius: 100px;
+      padding: 1px 8px;
+      font: 400 12px/1.2 var(--font);
+      color: #333332;
+    }
+    .site-panel-divider { height: 1px; background: #EBF0F2; width: 100%; flex-shrink: 0; }
+    .site-panel-filters {
+      display: flex;
+      gap: 16px;
+      padding: 15px 20px;
+    }
+    .site-panel-filter-ctrl {
+      height: 30px;
+      flex: 1;
+      background: #F0F8FB;
+      border: 1px solid #CBD0D1;
+      border-radius: 4px;
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .site-panel-filter-label {
+      font: 400 14px/1.4 var(--font);
+      color: #333332;
+      letter-spacing: 0.14px;
+      white-space: nowrap;
+    }
+    .site-panel-filter-placeholder {
+      font: 400 14px/1.4 var(--font);
+      color: #676667;
+      white-space: nowrap;
+    }
+    .site-panel-filter-icon {
+      width: 14px; height: 14px;
+      flex-shrink: 0;
+      display: flex;
+      color: #676667;
+    }
+    .site-panel-filter-chevron {
+      width: 18px; height: 18px;
+      flex-shrink: 0;
+      display: flex;
+      color: #676667;
+    }
+    .site-panel-search-icon {
+      width: 15px; height: 15px;
+      flex-shrink: 0;
+      display: flex;
+      color: #676667;
+    }
+    .site-panel-filter-icon svg,
+    .site-panel-filter-chevron svg,
+    .site-panel-search-icon svg { width: 100%; height: 100%; display: block; }
+
+    /* Tree */
+    .tree-list { display: flex; flex-direction: column; padding: 0 20px; }
+    .tree-row {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid #EBF0F2;
+      width: 100%;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+    .tree-row:hover { background: #F7F9FD; }
+    .tree-row.is-selected { background: #F7F9FD; }
+    .tree-chevron {
+      width: 14px; height: 14px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tree-chevron svg { display: block; }
+    .tree-chevron-spacer { width: 14px; flex-shrink: 0; }
+    .tree-folder-icon, .tree-site-icon { flex-shrink: 0; display: flex; line-height: 0; }
+    .tree-label {
+      font: 400 14px/1.4 var(--font);
+      color: #333332;
+      letter-spacing: 0.07px;
+      white-space: nowrap;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tree-count {
+      background: #EBF0F2;
+      border-radius: 100px;
+      padding: 1px 8px;
+      font: 400 12px/1.2 var(--font);
+      color: #333332;
+      flex-shrink: 0;
+    }
+
+    /* Panel toggle button — fixed so it's never clipped by the panel's overflow */
+    .site-panel-close {
+      position: fixed;
+      top: calc(70px + 16px);
+      left: 350px;
+      width: 20px; height: 20px;
+      background: white;
+      border: 1px solid #EBF0F2;
+      border-radius: 70px;
+      box-shadow: 0 0 10px rgba(0,0,35,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 50;
+      color: #333332;
+      transition: left 0.35s ease;
+      padding: 0;
+    }
+
+    /* Content panel */
+    .content-panel {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      padding: 20px;
+    }
+
+    /* Folder header */
+    .folder-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      flex-shrink: 0;
+    }
+    .folder-hdr-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex: 1;
+      min-width: 0;
+    }
+    .folder-hdr-folder-icon {
+      width: 24px; height: 24px;
+      flex-shrink: 0;
+      display: flex;
+      color: #333332;
+    }
+    .folder-hdr-folder-icon svg { width: 100%; height: 100%; display: block; }
+    .folder-hdr-name-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .folder-hdr-name {
+      font: 500 24px/1.2 var(--font);
+      color: #000023;
+      letter-spacing: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .folder-hdr-edit-icon {
+      width: 24px; height: 24px;
+      flex-shrink: 0;
+      display: flex;
+      color: #333332;
+      cursor: pointer;
+    }
+    .folder-hdr-edit-icon svg { width: 100%; height: 100%; display: block; }
+    .folder-hdr-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .btn-tert-sm {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      height: 30px;
+      padding: 0 20px;
+      border: 1px solid #CBD0D1;
+      border-radius: 200px;
+      background: transparent;
+      font: 500 16px/1.2 var(--font);
+      color: #333332;
+      letter-spacing: 0.16px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-tert-sm:hover { border-color: #000023; color: #000023; }
+    .btn-primary-sm {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      height: 30px;
+      padding: 0 20px;
+      border: none;
+      border-radius: 200px;
+      background: #FF6633;
+      font: 500 16px/1.2 var(--font);
+      color: white;
+      letter-spacing: 0.16px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-primary-sm:hover { background: #e55520; }
+    .btn-icon { width: 16px; height: 16px; flex-shrink: 0; display: flex; line-height: 0; }
+    .btn-icon svg { width: 100%; height: 100%; display: block; }
+
+    /* Tab bar — folder tabs (override the global .tab-bar/.tab styles for this context) */
+    .folder-tab-bar { display: flex; flex-direction: column; width: 100%; flex-shrink: 0; }
+    .folder-tab-row { display: flex; gap: 30px; }
+    .folder-tab {
+      height: 34px;
+      display: flex;
+      align-items: flex-start;
+      font: 400 16px/1.4 var(--font);
+      color: #333332;
+      cursor: pointer;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .folder-tab:hover { color: #000023; }
+    .folder-tab.is-active {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: #000023;
+    }
+    .folder-tab-active-bar { height: 3px; background: #0094FF; width: 100%; border-radius: 1px 1px 0 0; }
+    .folder-tab-divider { height: 1px; background: #CBD0D1; width: 100%; }
+
+    /* Issues panel (white card) */
+    .issues-panel {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Adjust filter bar within issues panel */
+    .issues-panel .filter-bar {
+      margin: 0;
+      padding: 0 0 20px;
+      top: 70px;
+    }
+    .issues-panel .table-header-sticky-wrap {
+      top: 120px;
+    }
+
+    /* Override table-section inside issues-panel — panel already provides padding/background */
+    .issues-panel .table-section {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+    }
+
+    /* Override download-row inside issues-panel */
+    .issues-panel .download-row {
+      padding: 0 0 16px;
+    }
+
+    /* Override page-content styles for v11 (no padding — layout handled by content-panel) */
+    body { background: #F7F9FD; }
+
+    /* ── SLA severity donut stat cards row ─────────────────────────────────── */
+    .stats-cards-sla {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .stats-cards-sla .stat-card {
+      flex: 1;
+    }
+  
     .sites-dd {
       position: fixed;
-      z-index: 200;
+      z-index: 950;
       display: none;
       flex-direction: column;
       align-items: center;
       filter: drop-shadow(0 0 10px rgba(0,0,35,0.10));
     }
     .sites-dd.is-open { display: flex; }
-    .sites-dd-caret {
-      width: 34px;
-      height: 16px;
-      flex-shrink: 0;
-    }
+    .sites-dd-caret { width: 34px; height: 16px; flex-shrink: 0; }
     .sites-dd-caret svg { display: block; }
     .sites-dd-card {
       background: #fff;
@@ -2899,7 +3217,6 @@
       font-size: 14px;
       font-weight: 400;
       line-height: 1.4;
-      letter-spacing: 0.07px;
       color: #333332;
       cursor: pointer;
       text-decoration: none;
@@ -2907,11 +3224,7 @@
       white-space: nowrap;
     }
     .sites-dd-item:hover { color: #FF6633; }
-    .sites-dd-divider {
-      height: 1px;
-      background: #EBF0F2;
-      width: 100%;
-    }
+    .sites-dd-divider { height: 1px; background: #EBF0F2; width: 100%; }
     .sites-dd-add {
       display: flex;
       align-items: center;
@@ -2920,28 +3233,18 @@
       font-size: 14px;
       font-weight: 400;
       line-height: 1.4;
-      letter-spacing: 0.07px;
       color: #333332;
       cursor: pointer;
       text-decoration: none;
     }
     .sites-dd-add:hover { color: #FF6633; }
-    .sites-dd-add-icon {
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-      display: flex;
-      line-height: 0;
-      color: #333332;
-    }
+    .sites-dd-add-icon { width: 16px; height: 16px; flex-shrink: 0; display: flex; line-height: 0; color: #333332; }
     .sites-dd-add-icon svg { width: 100%; height: 100%; display: block; }
-    /* Chevron rotates when dropdown is open */
     .header-nav-item.sites-active .header-nav-chevron { transform: rotate(180deg); }
   </style>
 </head>
 <body>
 
-<!-- ── Header ── -->
 <header class="app-header">
   <div class="header-left">
     <a href="#" class="header-logo">
@@ -3077,67 +3380,465 @@
   </div>
 </header>
 
-<!-- ── Page content ── -->
-<div class="page-content">
+<div class="page-body">
 
-  <!-- Stats section -->
-  <div class="stats-section">
-    <h1 class="page-title">Home</h1>
+  <!-- ── Site panel (left) ── -->
+  <div class="site-panel" id="sitePanel">
+  <div class="site-panel-inner">
 
-    <!-- Tab bar -->
-    <div class="tab-bar">
-      <a href="#" class="tab">Dashboard</a>
-      <a href="#" class="tab active">Issues</a>
-      <a href="#" class="tab">Quicklinks</a>
-      <div class="tab-bar-spacer"></div>
+    <!-- Panel header -->
+    <div class="site-panel-hdr">
+      <!-- Arrow-left-circle icon -->
+      <a href="file:///Users/ric.corbally/burp-dast-table.html" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="color:#B86633;flex-shrink:0"><circle cx="12" cy="12" r="10" stroke="#B86633" stroke-width="1.5"/><path d="M13 8l-4 4 4 4" stroke="#B86633" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="site-panel-title">Sites</span>
+      </a>
+      <span class="site-panel-count">172</span>
     </div>
 
-    <div class="stats-body" id="statsBody">
+    <!-- Divider -->
+    <div class="site-panel-divider"></div>
 
-    <!-- Stats cards — severity donut charts (Figma-accurate) -->
-    <div class="stats-cards">
+    <!-- Filter controls -->
+    <div class="site-panel-filters">
+      <!-- Filter by dropdown -->
+      <div class="site-panel-filter-ctrl">
+        <span class="site-panel-filter-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M7 12h10M11 18h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+        <span class="site-panel-filter-label">Filter by</span>
+        <span class="site-panel-filter-chevron">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="#676667" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+      <!-- Search field -->
+      <div class="site-panel-filter-ctrl">
+        <span class="site-panel-filter-placeholder">Search</span>
+        <span class="site-panel-search-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M16.5 16.5l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </span>
+      </div>
+    </div>
+
+    <!-- Tree rows -->
+    <div class="tree-list">
+
+      <!-- Root folder (pl: 10px, chevron-down, folder, "Root folder", count:123) -->
+      <div class="tree-row" style="padding-left:10px;">
+        <span class="tree-chevron">
+          <svg width="14" height="14" viewBox="0 0 14 8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.292893 0.292893C0.683418-0.0976311 1.31658-0.0976311 1.70711 0.292893L7 5.58579L12.2929 0.292893C12.6834-0.0976311 13.3166-0.0976311 13.7071 0.292893C14.0976 0.683418 14.0976 1.31658 13.7071 1.70711L7.70711 7.70711C7.31658 8.09763 6.68342 8.09763 6.29289 7.70711L0.292893 1.70711C-0.0976311 1.31658-0.0976311 0.683418 0.292893 0.292893Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-folder-icon">
+          <svg width="18" height="18" viewBox="0 0 16.5 15" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 1.5C2.05109 1.5 1.86032 1.57902 1.71967 1.71967C1.57902 1.86032 1.5 2.05109 1.5 2.25V12.75C1.5 12.9489 1.57902 13.1397 1.71967 13.2803C1.86032 13.421 2.05109 13.5 2.25 13.5H14.25C14.4489 13.5 14.6397 13.421 14.7803 13.2803C14.921 13.1397 15 12.9489 15 12.75V4.5C15 4.30109 14.921 4.11032 14.7803 3.96967C14.6397 3.82902 14.4489 3.75 14.25 3.75H7.5C7.24923 3.75 7.01506 3.62467 6.87596 3.41602L5.59861 1.5H2.25ZM0.65901 0.65901C1.08097 0.237053 1.65326 0 2.25 0H6C6.25076 0 6.48494 0.125326 6.62404 0.333975L7.90139 2.25H14.25C14.8467 2.25 15.419 2.48705 15.841 2.90901C16.2629 3.33097 16.5 3.90326 16.5 4.5V12.75C16.5 13.3467 16.2629 13.919 15.841 14.341C15.419 14.7629 14.8467 15 14.25 15H2.25C1.65326 15 1.08097 14.7629 0.65901 14.341C0.237053 13.919 0 13.3467 0 12.75V2.25C0 1.65326 0.237053 1.08097 0.65901 0.65901Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Root folder</span>
+        <span class="tree-count">123</span>
+      </div>
+
+      <!-- Europe (pl: 37px, chevron-down, folder, "Europe", count:12) SELECTED EXPANDED -->
+      <div class="tree-row is-selected" style="padding-left:37px;">
+        <span class="tree-chevron">
+          <svg width="14" height="14" viewBox="0 0 14 8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.292893 0.292893C0.683418-0.0976311 1.31658-0.0976311 1.70711 0.292893L7 5.58579L12.2929 0.292893C12.6834-0.0976311 13.3166-0.0976311 13.7071 0.292893C14.0976 0.683418 14.0976 1.31658 13.7071 1.70711L7.70711 7.70711C7.31658 8.09763 6.68342 8.09763 6.29289 7.70711L0.292893 1.70711C-0.0976311 1.31658-0.0976311 0.683418 0.292893 0.292893Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-folder-icon">
+          <svg width="18" height="18" viewBox="0 0 16.5 15" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 1.5C2.05109 1.5 1.86032 1.57902 1.71967 1.71967C1.57902 1.86032 1.5 2.05109 1.5 2.25V12.75C1.5 12.9489 1.57902 13.1397 1.71967 13.2803C1.86032 13.421 2.05109 13.5 2.25 13.5H14.25C14.4489 13.5 14.6397 13.421 14.7803 13.2803C14.921 13.1397 15 12.9489 15 12.75V4.5C15 4.30109 14.921 4.11032 14.7803 3.96967C14.6397 3.82902 14.4489 3.75 14.25 3.75H7.5C7.24923 3.75 7.01506 3.62467 6.87596 3.41602L5.59861 1.5H2.25ZM0.65901 0.65901C1.08097 0.237053 1.65326 0 2.25 0H6C6.25076 0 6.48494 0.125326 6.62404 0.333975L7.90139 2.25H14.25C14.8467 2.25 15.419 2.48705 15.841 2.90901C16.2629 3.33097 16.5 3.90326 16.5 4.5V12.75C16.5 13.3467 16.2629 13.919 15.841 14.341C15.419 14.7629 14.8467 15 14.25 15H2.25C1.65326 15 1.08097 14.7629 0.65901 14.341C0.237053 13.919 0 13.3467 0 12.75V2.25C0 1.65326 0.237053 1.08097 0.65901 0.65901Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Europe</span>
+        <span class="tree-count">12</span>
+      </div>
+
+      <!-- Zenith Corp (pl: 63px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Zenith Corp</span>
+      </div>
+
+      <!-- DataShield (pl: 63px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">DataShield</span>
+      </div>
+
+      <!-- SecureNet (pl: 63px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">SecureNet</span>
+      </div>
+
+      <!-- North America (pl: 37px, chevron-right, folder, "North America", count:12) COLLAPSED -->
+      <div class="tree-row" style="padding-left:37px;">
+        <span class="tree-chevron">
+          <svg width="14" height="14" viewBox="0 0 14 8" fill="none" style="transform:rotate(-90deg)"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.292893 0.292893C0.683418-0.0976311 1.31658-0.0976311 1.70711 0.292893L7 5.58579L12.2929 0.292893C12.6834-0.0976311 13.3166-0.0976311 13.7071 0.292893C14.0976 0.683418 14.0976 1.31658 13.7071 1.70711L7.70711 7.70711C7.31658 8.09763 6.68342 8.09763 6.29289 7.70711L0.292893 1.70711C-0.0976311 1.31658-0.0976311 0.683418 0.292893 0.292893Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-folder-icon">
+          <svg width="18" height="18" viewBox="0 0 16.5 15" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 1.5C2.05109 1.5 1.86032 1.57902 1.71967 1.71967C1.57902 1.86032 1.5 2.05109 1.5 2.25V12.75C1.5 12.9489 1.57902 13.1397 1.71967 13.2803C1.86032 13.421 2.05109 13.5 2.25 13.5H14.25C14.4489 13.5 14.6397 13.421 14.7803 13.2803C14.921 13.1397 15 12.9489 15 12.75V4.5C15 4.30109 14.921 4.11032 14.7803 3.96967C14.6397 3.82902 14.4489 3.75 14.25 3.75H7.5C7.24923 3.75 7.01506 3.62467 6.87596 3.41602L5.59861 1.5H2.25ZM0.65901 0.65901C1.08097 0.237053 1.65326 0 2.25 0H6C6.25076 0 6.48494 0.125326 6.62404 0.333975L7.90139 2.25H14.25C14.8467 2.25 15.419 2.48705 15.841 2.90901C16.2629 3.33097 16.5 3.90326 16.5 4.5V12.75C16.5 13.3467 16.2629 13.919 15.841 14.341C15.419 14.7629 14.8467 15 14.25 15H2.25C1.65326 15 1.08097 14.7629 0.65901 14.341C0.237053 13.919 0 13.3467 0 12.75V2.25C0 1.65326 0.237053 1.08097 0.65901 0.65901Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">North America</span>
+        <span class="tree-count">12</span>
+      </div>
+
+      <!-- Nova Solutions (pl: 63px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Nova Solutions</span>
+      </div>
+
+      <!-- Apex Digital (pl: 63px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Apex Digital</span>
+      </div>
+
+      <!-- CyberGuard Inc. (pl: 63px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">CyberGuard Inc.</span>
+      </div>
+
+      <!-- Asia (pl: 37px, chevron-right, folder, "Asia", count:12) -->
+      <div class="tree-row" style="padding-left:37px;">
+        <span class="tree-chevron">
+          <svg width="14" height="14" viewBox="0 0 14 8" fill="none" style="transform:rotate(-90deg)"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.292893 0.292893C0.683418-0.0976311 1.31658-0.0976311 1.70711 0.292893L7 5.58579L12.2929 0.292893C12.6834-0.0976311 13.3166-0.0976311 13.7071 0.292893C14.0976 0.683418 14.0976 1.31658 13.7071 1.70711L7.70711 7.70711C7.31658 8.09763 6.68342 8.09763 6.29289 7.70711L0.292893 1.70711C-0.0976311 1.31658-0.0976311 0.683418 0.292893 0.292893Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-folder-icon">
+          <svg width="18" height="18" viewBox="0 0 16.5 15" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 1.5C2.05109 1.5 1.86032 1.57902 1.71967 1.71967C1.57902 1.86032 1.5 2.05109 1.5 2.25V12.75C1.5 12.9489 1.57902 13.1397 1.71967 13.2803C1.86032 13.421 2.05109 13.5 2.25 13.5H14.25C14.4489 13.5 14.6397 13.421 14.7803 13.2803C14.921 13.1397 15 12.9489 15 12.75V4.5C15 4.30109 14.921 4.11032 14.7803 3.96967C14.6397 3.82902 14.4489 3.75 14.25 3.75H7.5C7.24923 3.75 7.01506 3.62467 6.87596 3.41602L5.59861 1.5H2.25ZM0.65901 0.65901C1.08097 0.237053 1.65326 0 2.25 0H6C6.25076 0 6.48494 0.125326 6.62404 0.333975L7.90139 2.25H14.25C14.8467 2.25 15.419 2.48705 15.841 2.90901C16.2629 3.33097 16.5 3.90326 16.5 4.5V12.75C16.5 13.3467 16.2629 13.919 15.841 14.341C15.419 14.7629 14.8467 15 14.25 15H2.25C1.65326 15 1.08097 14.7629 0.65901 14.341C0.237053 13.919 0 13.3467 0 12.75V2.25C0 1.65326 0.237053 1.08097 0.65901 0.65901Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Asia</span>
+        <span class="tree-count">12</span>
+      </div>
+
+      <!-- Feil LLC (pl: 63px, no-chevron, site-icon, "Feil LLC") -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Feil LLC</span>
+      </div>
+
+      <!-- O'Conner LLC (pl: 63px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">O'Conner LLC</span>
+      </div>
+
+      <!-- Mitchell Group (pl: 63px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Mitchell Group</span>
+      </div>
+
+      <!-- South America (pl: 37px, chevron-right, folder) COLLAPSED -->
+      <div class="tree-row" style="padding-left:37px;">
+        <span class="tree-chevron">
+          <svg width="14" height="14" viewBox="0 0 14 8" fill="none" style="transform:rotate(-90deg)"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.292893 0.292893C0.683418-0.0976311 1.31658-0.0976311 1.70711 0.292893L7 5.58579L12.2929 0.292893C12.6834-0.0976311 13.3166-0.0976311 13.7071 0.292893C14.0976 0.683418 14.0976 1.31658 13.7071 1.70711L7.70711 7.70711C7.31658 8.09763 6.68342 8.09763 6.29289 7.70711L0.292893 1.70711C-0.0976311 1.31658-0.0976311 0.683418 0.292893 0.292893Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-folder-icon">
+          <svg width="18" height="18" viewBox="0 0 16.5 15" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 1.5C2.05109 1.5 1.86032 1.57902 1.71967 1.71967C1.57902 1.86032 1.5 2.05109 1.5 2.25V12.75C1.5 12.9489 1.57902 13.1397 1.71967 13.2803C1.86032 13.421 2.05109 13.5 2.25 13.5H14.25C14.4489 13.5 14.6397 13.421 14.7803 13.2803C14.921 13.1397 15 12.9489 15 12.75V4.5C15 4.30109 14.921 4.11032 14.7803 3.96967C14.6397 3.82902 14.4489 3.75 14.25 3.75H7.5C7.24923 3.75 7.01506 3.62467 6.87596 3.41602L5.59861 1.5H2.25ZM0.65901 0.65901C1.08097 0.237053 1.65326 0 2.25 0H6C6.25076 0 6.48494 0.125326 6.62404 0.333975L7.90139 2.25H14.25C14.8467 2.25 15.419 2.48705 15.841 2.90901C16.2629 3.33097 16.5 3.90326 16.5 4.5V12.75C16.5 13.3467 16.2629 13.919 15.841 14.341C15.419 14.7629 14.8467 15 14.25 15H2.25C1.65326 15 1.08097 14.7629 0.65901 14.341C0.237053 13.919 0 13.3467 0 12.75V2.25C0 1.65326 0.237053 1.08097 0.65901 0.65901Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">South America</span>
+      </div>
+
+      <!-- Santos Digital (pl: 63px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Santos Digital</span>
+      </div>
+
+      <!-- Lima Corp (pl: 63px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Lima Corp</span>
+      </div>
+
+      <!-- Vargas Systems (pl: 63px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Vargas Systems</span>
+      </div>
+
+      <!-- Pentest group only (pl: 37px, chevron-right, folder) COLLAPSED -->
+      <div class="tree-row" style="padding-left:37px;">
+        <span class="tree-chevron">
+          <svg width="14" height="14" viewBox="0 0 14 8" fill="none" style="transform:rotate(-90deg)"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.292893 0.292893C0.683418-0.0976311 1.31658-0.0976311 1.70711 0.292893L7 5.58579L12.2929 0.292893C12.6834-0.0976311 13.3166-0.0976311 13.7071 0.292893C14.0976 0.683418 14.0976 1.31658 13.7071 1.70711L7.70711 7.70711C7.31658 8.09763 6.68342 8.09763 6.29289 7.70711L0.292893 1.70711C-0.0976311 1.31658-0.0976311 0.683418 0.292893 0.292893Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-folder-icon">
+          <svg width="18" height="18" viewBox="0 0 16.5 15" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 1.5C2.05109 1.5 1.86032 1.57902 1.71967 1.71967C1.57902 1.86032 1.5 2.05109 1.5 2.25V12.75C1.5 12.9489 1.57902 13.1397 1.71967 13.2803C1.86032 13.421 2.05109 13.5 2.25 13.5H14.25C14.4489 13.5 14.6397 13.421 14.7803 13.2803C14.921 13.1397 15 12.9489 15 12.75V4.5C15 4.30109 14.921 4.11032 14.7803 3.96967C14.6397 3.82902 14.4489 3.75 14.25 3.75H7.5C7.24923 3.75 7.01506 3.62467 6.87596 3.41602L5.59861 1.5H2.25ZM0.65901 0.65901C1.08097 0.237053 1.65326 0 2.25 0H6C6.25076 0 6.48494 0.125326 6.62404 0.333975L7.90139 2.25H14.25C14.8467 2.25 15.419 2.48705 15.841 2.90901C16.2629 3.33097 16.5 3.90326 16.5 4.5V12.75C16.5 13.3467 16.2629 13.919 15.841 14.341C15.419 14.7629 14.8467 15 14.25 15H2.25C1.65326 15 1.08097 14.7629 0.65901 14.341C0.237053 13.919 0 13.3467 0 12.75V2.25C0 1.65326 0.237053 1.08097 0.65901 0.65901Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Pentest group only</span>
+      </div>
+
+      <!-- Mills, Anderson and Douglas (pl: 63px) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Mills, Anderson and Douglas</span>
+      </div>
+
+      <!-- Koepp and Sons (pl: 63px) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Koepp and Sons</span>
+      </div>
+
+      <!-- Braun, Gutkowski and Reichel (pl: 63px) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Braun, Gutkowski and Reichel</span>
+      </div>
+
+      <!-- Conn LLC (pl: 63px) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Conn LLC</span>
+      </div>
+
+      <!-- Cruickshank and Sons (pl: 63px) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Cruickshank and Sons</span>
+      </div>
+
+      <!-- Stark Inc (pl: 63px) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Stark Inc</span>
+      </div>
+
+      <!-- O'Kon - Jenkins (pl: 63px) -->
+      <div class="tree-row" style="padding-left:63px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">O'Kon - Jenkins</span>
+      </div>
+
+      <!-- Kassulke - King (pl: 37px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:37px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Kassulke - King</span>
+      </div>
+
+      <!-- Schaden - Schulist (pl: 37px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:37px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Schaden - Schulist</span>
+      </div>
+
+      <!-- Moen, Hauck and Ebert (pl: 37px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:37px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Moen, Hauck and Ebert</span>
+      </div>
+
+      <!-- Kris, Treutel and Cartwright (pl: 37px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:37px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Kris, Treutel and Cartwright</span>
+      </div>
+
+      <!-- Kirlin, Sipes and Torp (pl: 37px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:37px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Kirlin, Sipes and Torp</span>
+      </div>
+
+      <!-- Brakus - Green (pl: 37px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:37px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Brakus - Green</span>
+      </div>
+
+      <!-- Feeney, Sauer and Gleason (pl: 37px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:37px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Feeney, Sauer and Gleason</span>
+      </div>
+
+      <!-- Mraz, Klein and White (pl: 37px, no-chevron, site-icon) -->
+      <div class="tree-row" style="padding-left:37px;">
+        <span class="tree-chevron-spacer"></span>
+        <span class="tree-site-icon">
+          <svg width="18" height="18" viewBox="0 0 21.8 21.8" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9 21.8C16.9199 21.8 21.8 16.9199 21.8 10.9C21.8 4.8801 16.9199 0 10.9 0C4.8801 0 0 4.8801 0 10.9C0 16.9199 4.8801 21.8 10.9 21.8ZM8.85402 2.03092C5.09736 2.894 2.22855 6.08248 1.84394 10H6.04257C6.25869 7.13417 7.23294 4.38506 8.85402 2.03092ZM12.946 2.03092C14.5671 4.38506 15.5413 7.13417 15.7574 10H19.9561C19.5715 6.08248 16.7026 2.894 12.946 2.03092ZM13.9517 10C13.7127 7.18545 12.6508 4.50331 10.9 2.28863C9.1492 4.50331 8.0873 7.18545 7.84832 10H13.9517ZM7.84832 11.8H13.9517C13.7127 14.6145 12.6508 17.2967 10.9 19.5114C9.1492 17.2967 8.08731 14.6145 7.84832 11.8ZM6.04257 11.8H1.84394C2.22855 15.7175 5.09736 18.906 8.85403 19.7691C7.23295 17.4149 6.2587 14.6658 6.04257 11.8ZM12.946 19.7691C14.5671 17.4149 15.5413 14.6658 15.7574 11.8H19.9561C19.5715 15.7175 16.7026 18.906 12.946 19.7691Z" fill="#676667"/></svg>
+        </span>
+        <span class="tree-label">Mraz, Klein and White</span>
+      </div>
+
+    </div><!-- /tree-list -->
+
+  </div><!-- /site-panel-inner -->
+  </div><!-- /site-panel -->
+
+  <!-- Toggle button — sits outside site-panel so it's never clipped -->
+  <button class="site-panel-close" id="sitePanelToggle" title="Close panel">
+    <svg id="sitePanelToggleIcon" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+
+  <!-- ── Content panel (right) ── -->
+  <div class="content-panel">
+
+    <!-- Folder header row -->
+    <div class="folder-hdr">
+      <div class="folder-hdr-left">
+        <span class="folder-hdr-folder-icon">
+          <svg width="24" height="24" viewBox="0 0 16.5 15" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 1.5C2.05109 1.5 1.86032 1.57902 1.71967 1.71967C1.57902 1.86032 1.5 2.05109 1.5 2.25V12.75C1.5 12.9489 1.57902 13.1397 1.71967 13.2803C1.86032 13.421 2.05109 13.5 2.25 13.5H14.25C14.4489 13.5 14.6397 13.421 14.7803 13.2803C14.921 13.1397 15 12.9489 15 12.75V4.5C15 4.30109 14.921 4.11032 14.7803 3.96967C14.6397 3.82902 14.4489 3.75 14.25 3.75H7.5C7.24923 3.75 7.01506 3.62467 6.87596 3.41602L5.59861 1.5H2.25ZM0.65901 0.65901C1.08097 0.237053 1.65326 0 2.25 0H6C6.25076 0 6.48494 0.125326 6.62404 0.333975L7.90139 2.25H14.25C14.8467 2.25 15.419 2.48705 15.841 2.90901C16.2629 3.33097 16.5 3.90326 16.5 4.5V12.75C16.5 13.3467 16.2629 13.919 15.841 14.341C15.419 14.7629 14.8467 15 14.25 15H2.25C1.65326 15 1.08097 14.7629 0.65901 14.341C0.237053 13.919 0 13.3467 0 12.75V2.25C0 1.65326 0.237053 1.08097 0.65901 0.65901Z" fill="#0094FF"/></svg>
+        </span>
+        <div class="folder-hdr-name-group">
+          <span class="folder-hdr-name">Europe</span>
+          <span class="folder-hdr-edit-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.2574 5.52943L18.4763 1.74828C17.9828 1.28474 17.3361 1.01877 16.6593 1.00096C15.9825 0.983145 15.3227 1.21474 14.8056 1.65168L2.38573 14.0715C1.93968 14.5213 1.66194 15.1109 1.59915 15.7413L1.00575 21.4958C0.987164 21.6979 1.01339 21.9017 1.08257 22.0925C1.15174 22.2833 1.26216 22.4565 1.40595 22.5998C1.53489 22.7277 1.68782 22.8289 1.85595 22.8975C2.02408 22.9662 2.20412 23.001 2.38573 23H2.50993L8.26445 22.4756C8.89482 22.4128 9.4844 22.1351 9.93423 21.689L22.354 9.26917C22.8361 8.75992 23.0966 8.08033 23.0785 7.37934C23.0604 6.67835 22.7651 6.01312 22.2574 5.52943ZM8.01605 19.7156L3.87611 20.102L4.24871 15.9621L12.0456 8.26179L15.7715 11.9877L8.01605 19.7156ZM17.5655 10.1386L13.8672 6.44021L16.5581 3.68025L20.3255 7.4476L17.5655 10.1386Z" fill="#676667"/></svg>
+          </span>
+        </div>
+      </div>
+      <div class="folder-hdr-right">
+        <!-- Delete folder button (tertiary outlined) -->
+        <button class="btn-tert-sm">
+          <span class="btn-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g transform="translate(2, 1)"><path d="M8 9C8.55228 9 9 9.44771 9 10V16C9 16.5523 8.55228 17 8 17C7.44772 17 7 16.5523 7 16V10C7 9.44771 7.44772 9 8 9Z" fill="currentColor"/><path d="M13 16V10C13 9.44771 12.5523 9 12 9C11.4477 9 11 9.44771 11 10V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M5 4V3C5 2.20435 5.31607 1.44129 5.87868 0.87868C6.44129 0.31607 7.20435 0 8 0H12C12.7956 0 13.5587 0.31607 14.1213 0.87868C14.6839 1.44129 15 2.20435 15 3V4H19C19.5523 4 20 4.44772 20 5C20 5.55228 19.5523 6 19 6H18V19C18 19.7957 17.6839 20.5587 17.1213 21.1213C16.5587 21.6839 15.7957 22 15 22H5C4.20435 22 3.44129 21.6839 2.87868 21.1213C2.31607 20.5587 2 19.7957 2 19V6H1C0.447715 6 0 5.55228 0 5C0 4.44772 0.447715 4 1 4H5ZM7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H12C12.2652 2 12.5196 2.10536 12.7071 2.29289C12.8946 2.48043 13 2.73478 13 3V4H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289ZM4 6V19C4 19.2652 4.10536 19.5196 4.29289 19.7071C4.48043 19.8946 4.73478 20 5 20H15C15.2652 20 15.5196 19.8946 15.7071 19.7071C15.8946 19.5196 16 19.2652 16 19V6H4Z" fill="currentColor"/></g></svg>
+          </span>
+          Delete folder
+        </button>
+        <!-- New site button (primary orange) -->
+        <button class="btn-primary-sm">
+          <span class="btn-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+          New site
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="folder-tab-bar">
+      <div class="folder-tab-row">
+        <a href="#" class="folder-tab">Dashboard</a>
+        <a href="#" class="folder-tab">Scans</a>
+        <a href="#" class="folder-tab">Scheduled scans</a>
+        <a href="#" class="folder-tab is-active">
+          Issues
+          <span class="folder-tab-active-bar"></span>
+        </a>
+        <a href="#" class="folder-tab">Details</a>
+      </div>
+      <div class="folder-tab-divider"></div>
+    </div>
+
+    <!-- Stats cards: severity donuts + SLA fix rate -->
+    <div class="stats-cards-sla" id="statsCards">
 
       <!-- HIGH severity donut
            Track #FFF4F6 · Within SLA #FEBEC9 · At risk #F07088 · Overdue #D6213F -->
       <div class="stat-card stat-donut-card">
         <p class="donut-card-title">High severity open issues</p>
         <div class="donut-card-body">
-        <div class="donut-card-left">
-          <div class="donut-legend">
-            <div class="donut-leg">
-              <span class="donut-dot" style="background:#FEBEC9;"></span>
-              <span class="donut-leg-text"><span id="donut-lbl-ok-high">—</span> within SLA</span>
-            </div>
-            <div class="donut-leg">
-              <span class="donut-dot" style="background:#F07088;"></span>
-              <span class="donut-leg-text"><span id="donut-lbl-warn-high">—</span> at risk</span>
-            </div>
-            <div class="donut-leg">
-              <span class="donut-dot" style="background:#D6213F;"></span>
-              <span class="donut-leg-text"><span id="donut-lbl-over-high">—</span> overdue</span>
+          <div class="donut-card-left">
+            <div class="donut-legend">
+              <div class="donut-leg">
+                <span class="donut-dot" style="background:#FEBEC9;"></span>
+                <span class="donut-leg-text"><span id="donut-lbl-ok-high">—</span> within SLA</span>
+              </div>
+              <div class="donut-leg">
+                <span class="donut-dot" style="background:#F07088;"></span>
+                <span class="donut-leg-text"><span id="donut-lbl-warn-high">—</span> at risk</span>
+              </div>
+              <div class="donut-leg">
+                <span class="donut-dot" style="background:#D6213F;"></span>
+                <span class="donut-leg-text"><span id="donut-lbl-over-high">—</span> overdue</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="donut-card-right">
-          <svg viewBox="0 0 100 100" class="donut-svg">
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#FFF4F6" stroke-width="12"/>
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#FEBEC9" stroke-width="12"
-              id="donut-arc-ok-high" class="donut-arc"
-              stroke-dasharray="0 239" stroke-dashoffset="0"
-              transform="rotate(-90 50 50)"/>
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#F07088" stroke-width="12"
-              id="donut-arc-warn-high" class="donut-arc"
-              stroke-dasharray="0 239" stroke-dashoffset="0"
-              transform="rotate(-90 50 50)"/>
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#D6213F" stroke-width="12"
-              id="donut-arc-over-high" class="donut-arc"
-              stroke-dasharray="0 239" stroke-dashoffset="0"
-              transform="rotate(-90 50 50)"/>
-            <text x="50" y="50" text-anchor="middle" dominant-baseline="middle"
-              font-family="Roboto, sans-serif" font-size="22" font-weight="500" fill="#000023"
-              id="donut-count-high">—</text>
-          </svg>
-        </div>
+          <div class="donut-card-right">
+            <svg viewBox="0 0 100 100" class="donut-svg">
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#FFF4F6" stroke-width="12"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#FEBEC9" stroke-width="12"
+                id="donut-arc-ok-high" class="donut-arc"
+                stroke-dasharray="0 239" stroke-dashoffset="0"
+                transform="rotate(-90 50 50)"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#F07088" stroke-width="12"
+                id="donut-arc-warn-high" class="donut-arc"
+                stroke-dasharray="0 239" stroke-dashoffset="0"
+                transform="rotate(-90 50 50)"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#D6213F" stroke-width="12"
+                id="donut-arc-over-high" class="donut-arc"
+                stroke-dasharray="0 239" stroke-dashoffset="0"
+                transform="rotate(-90 50 50)"/>
+              <text x="50" y="50" text-anchor="middle" dominant-baseline="middle"
+                font-family="Roboto, sans-serif" font-size="22" font-weight="500" fill="#000023"
+                id="donut-count-high">—</text>
+            </svg>
+          </div>
         </div><!-- /donut-card-body -->
       </div>
 
@@ -3146,42 +3847,42 @@
       <div class="stat-card stat-donut-card">
         <p class="donut-card-title">Medium severity open issues</p>
         <div class="donut-card-body">
-        <div class="donut-card-left">
-          <div class="donut-legend">
-            <div class="donut-leg">
-              <span class="donut-dot" style="background:#FFCFBE;"></span>
-              <span class="donut-leg-text"><span id="donut-lbl-ok-med">—</span> within SLA</span>
-            </div>
-            <div class="donut-leg">
-              <span class="donut-dot" style="background:#FF8A60;"></span>
-              <span class="donut-leg-text"><span id="donut-lbl-warn-med">—</span> at risk</span>
-            </div>
-            <div class="donut-leg">
-              <span class="donut-dot" style="background:#D0551B;"></span>
-              <span class="donut-leg-text"><span id="donut-lbl-over-med">—</span> overdue</span>
+          <div class="donut-card-left">
+            <div class="donut-legend">
+              <div class="donut-leg">
+                <span class="donut-dot" style="background:#FFCFBE;"></span>
+                <span class="donut-leg-text"><span id="donut-lbl-ok-med">—</span> within SLA</span>
+              </div>
+              <div class="donut-leg">
+                <span class="donut-dot" style="background:#FF8A60;"></span>
+                <span class="donut-leg-text"><span id="donut-lbl-warn-med">—</span> at risk</span>
+              </div>
+              <div class="donut-leg">
+                <span class="donut-dot" style="background:#D0551B;"></span>
+                <span class="donut-leg-text"><span id="donut-lbl-over-med">—</span> overdue</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="donut-card-right">
-          <svg viewBox="0 0 100 100" class="donut-svg">
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#FFF3EE" stroke-width="12"/>
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#FFCFBE" stroke-width="12"
-              id="donut-arc-ok-med" class="donut-arc"
-              stroke-dasharray="0 239" stroke-dashoffset="0"
-              transform="rotate(-90 50 50)"/>
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#FF8A60" stroke-width="12"
-              id="donut-arc-warn-med" class="donut-arc"
-              stroke-dasharray="0 239" stroke-dashoffset="0"
-              transform="rotate(-90 50 50)"/>
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#D0551B" stroke-width="12"
-              id="donut-arc-over-med" class="donut-arc"
-              stroke-dasharray="0 239" stroke-dashoffset="0"
-              transform="rotate(-90 50 50)"/>
-            <text x="50" y="50" text-anchor="middle" dominant-baseline="middle"
-              font-family="Roboto, sans-serif" font-size="22" font-weight="500" fill="#000023"
-              id="donut-count-med">—</text>
-          </svg>
-        </div>
+          <div class="donut-card-right">
+            <svg viewBox="0 0 100 100" class="donut-svg">
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#FFF3EE" stroke-width="12"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#FFCFBE" stroke-width="12"
+                id="donut-arc-ok-med" class="donut-arc"
+                stroke-dasharray="0 239" stroke-dashoffset="0"
+                transform="rotate(-90 50 50)"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#FF8A60" stroke-width="12"
+                id="donut-arc-warn-med" class="donut-arc"
+                stroke-dasharray="0 239" stroke-dashoffset="0"
+                transform="rotate(-90 50 50)"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#D0551B" stroke-width="12"
+                id="donut-arc-over-med" class="donut-arc"
+                stroke-dasharray="0 239" stroke-dashoffset="0"
+                transform="rotate(-90 50 50)"/>
+              <text x="50" y="50" text-anchor="middle" dominant-baseline="middle"
+                font-family="Roboto, sans-serif" font-size="22" font-weight="500" fill="#000023"
+                id="donut-count-med">—</text>
+            </svg>
+          </div>
         </div><!-- /donut-card-body -->
       </div>
 
@@ -3190,45 +3891,44 @@
       <div class="stat-card stat-donut-card">
         <p class="donut-card-title">Low severity open issues</p>
         <div class="donut-card-body">
-        <div class="donut-card-left">
-          <div class="donut-legend">
-            <div class="donut-leg">
-              <span class="donut-dot" style="background:#B8DAFF;"></span>
-              <span class="donut-leg-text"><span id="donut-lbl-ok-low">—</span> within SLA</span>
-            </div>
-            <div class="donut-leg">
-              <span class="donut-dot" style="background:#55AAEE;"></span>
-              <span class="donut-leg-text"><span id="donut-lbl-warn-low">—</span> at risk</span>
-            </div>
-            <div class="donut-leg">
-              <span class="donut-dot" style="background:#0060A8;"></span>
-              <span class="donut-leg-text"><span id="donut-lbl-over-low">—</span> overdue</span>
+          <div class="donut-card-left">
+            <div class="donut-legend">
+              <div class="donut-leg">
+                <span class="donut-dot" style="background:#B8DAFF;"></span>
+                <span class="donut-leg-text"><span id="donut-lbl-ok-low">—</span> within SLA</span>
+              </div>
+              <div class="donut-leg">
+                <span class="donut-dot" style="background:#55AAEE;"></span>
+                <span class="donut-leg-text"><span id="donut-lbl-warn-low">—</span> at risk</span>
+              </div>
+              <div class="donut-leg">
+                <span class="donut-dot" style="background:#0060A8;"></span>
+                <span class="donut-leg-text"><span id="donut-lbl-over-low">—</span> overdue</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="donut-card-right">
-          <svg viewBox="0 0 100 100" class="donut-svg">
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#EBF5FF" stroke-width="12"/>
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#B8DAFF" stroke-width="12"
-              id="donut-arc-ok-low" class="donut-arc"
-              stroke-dasharray="0 239" stroke-dashoffset="0"
-              transform="rotate(-90 50 50)"/>
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#55AAEE" stroke-width="12"
-              id="donut-arc-warn-low" class="donut-arc"
-              stroke-dasharray="0 239" stroke-dashoffset="0"
-              transform="rotate(-90 50 50)"/>
-            <circle cx="50" cy="50" r="38" fill="none" stroke="#0060A8" stroke-width="12"
-              id="donut-arc-over-low" class="donut-arc"
-              stroke-dasharray="0 239" stroke-dashoffset="0"
-              transform="rotate(-90 50 50)"/>
-            <text x="50" y="50" text-anchor="middle" dominant-baseline="middle"
-              font-family="Roboto, sans-serif" font-size="22" font-weight="500" fill="#000023"
-              id="donut-count-low">—</text>
-          </svg>
-        </div>
+          <div class="donut-card-right">
+            <svg viewBox="0 0 100 100" class="donut-svg">
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#EBF5FF" stroke-width="12"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#B8DAFF" stroke-width="12"
+                id="donut-arc-ok-low" class="donut-arc"
+                stroke-dasharray="0 239" stroke-dashoffset="0"
+                transform="rotate(-90 50 50)"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#55AAEE" stroke-width="12"
+                id="donut-arc-warn-low" class="donut-arc"
+                stroke-dasharray="0 239" stroke-dashoffset="0"
+                transform="rotate(-90 50 50)"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="#0060A8" stroke-width="12"
+                id="donut-arc-over-low" class="donut-arc"
+                stroke-dasharray="0 239" stroke-dashoffset="0"
+                transform="rotate(-90 50 50)"/>
+              <text x="50" y="50" text-anchor="middle" dominant-baseline="middle"
+                font-family="Roboto, sans-serif" font-size="22" font-weight="500" fill="#000023"
+                id="donut-count-low">—</text>
+            </svg>
+          </div>
         </div><!-- /donut-card-body -->
       </div>
-
 
       <!-- SLA fix rate — line chart -->
       <div class="stat-card line-chart-card" style="flex:2;min-width:0">
@@ -3246,10 +3946,8 @@
             <div class="lc-leg"><span class="lc-dot" style="background:#0094FF"></span><span class="lc-leg-text">Low</span></div>
           </div>
         </div>
-        <!-- SVG line chart — viewBox 516×107, y-range 50%–100%, 7 weekly data points -->
         <div class="lc-svg-wrap">
           <div class="lc-main-row">
-            <!-- Y-axis labels: 6 items with padding:4px 0 → aligns with gridlines y=4,24,44,63,83,103 -->
             <div class="lc-y-labels">
               <span class="lc-leg-text">100%</span>
               <span class="lc-leg-text">90%</span>
@@ -3261,26 +3959,23 @@
             <div class="lc-chart-col">
               <div class="lc-chart-inner">
                 <svg class="lc-svg" viewBox="0 0 516 107" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" overflow="visible">
-                  <!-- Regular gridlines at 100% 80% 70% 60% 50% (y=4,44,63,83,103) -->
                   <line x1="0" y1="4"   x2="516" y2="4"   stroke="#EBF0F2" stroke-width="1"/>
                   <line x1="0" y1="44"  x2="516" y2="44"  stroke="#EBF0F2" stroke-width="1"/>
                   <line x1="0" y1="63"  x2="516" y2="63"  stroke="#EBF0F2" stroke-width="1"/>
                   <line x1="0" y1="83"  x2="516" y2="83"  stroke="#EBF0F2" stroke-width="1"/>
                   <line x1="0" y1="103" x2="516" y2="103" stroke="#EBF0F2" stroke-width="1"/>
-                  <!-- High line (red) -->
+                  <!-- High (54→74%) -->
                   <polyline fill="none" stroke="#F32A4C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                    points="4,79 88,83 172,99 256,63 341,67 427,38 512,40"/>
-                  <!-- Medium line (orange) -->
+                    points="4,71 88,77 172,63 256,59 341,61 427,48 512,52"/>
+                  <!-- Medium (68→79%) -->
                   <polyline fill="none" stroke="#FF6633" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                    points="4,54 88,59 172,67 256,46 341,46 427,40 512,36"/>
-                  <!-- Low line (blue) -->
+                    points="4,52 88,56 172,48 256,44 341,46 427,40 512,38"/>
+                  <!-- Low (79→88%) -->
                   <polyline fill="none" stroke="#0094FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                    points="4,42 88,44 172,38 256,40 341,36 427,30 512,22"/>
+                    points="4,38 88,40 172,34 256,32 341,34 427,28 512,26"/>
                 </svg>
-                <!-- Column hover overlay (populated by JS) -->
                 <div class="lc-col-overlay" id="lcColOverlay"></div>
               </div>
-              <!-- X-axis labels: 7 weekly dates -->
               <div class="lc-x-labels">
                 <span class="lc-leg-text">Feb 3</span>
                 <span class="lc-leg-text">Feb 17</span>
@@ -3295,9 +3990,10 @@
         </div>
       </div>
 
-    </div><!-- /stats-cards -->
+    </div><!-- /stats-cards-sla -->
 
-    </div><!-- /stats-body -->
+    <!-- Issues panel (white card) -->
+    <div class="issues-panel">
 
   <!-- Table section -->
   <div class="table-section">
@@ -4810,8 +5506,11 @@
 
 
   </div><!-- /table-section -->
-  </div><!-- /stats-section -->
-</div><!-- /page-content -->
+
+  </div><!-- /issues-panel -->
+  </div><!-- /content-panel -->
+</div><!-- /page-body -->
+
 
 <!-- Bulk action bar -->
 <div class="bulk-bar" id="bulkBar">
@@ -4996,6 +5695,35 @@
 
 
 <script>
+// ── SITE PANEL TOGGLE ─────────────────────────────────────────────────────────
+(function () {
+  var PANEL_WIDTH = 360;
+  var BTN_OFFSET  = PANEL_WIDTH - 10; // button centre at right edge of panel
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var panel  = document.getElementById('sitePanel');
+    var btn    = document.getElementById('sitePanelToggle');
+    var icon   = document.getElementById('sitePanelToggleIcon');
+    var isOpen = true;
+
+    var ICON_LEFT  = '<path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+    var ICON_RIGHT = '<path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+
+    btn.addEventListener('click', function () {
+      if (isOpen) {
+        panel.style.width = '0';
+        btn.style.left    = '10px';
+        icon.innerHTML    = ICON_RIGHT;
+      } else {
+        panel.style.width = PANEL_WIDTH + 'px';
+        btn.style.left    = BTN_OFFSET + 'px';
+        icon.innerHTML    = ICON_LEFT;
+      }
+      isOpen = !isOpen;
+    });
+  });
+}());
+
 // ── AI STATUS ICONS — DS icon set, currentColor for theming ──────────────────
 // "check"          → Issue Confirmed  (#5B4FFF)
 // "help"           → Inconclusive     (#5B4FFF)
@@ -7633,6 +8361,22 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     }
   }
 
+  function refreshTlFilterBar() {
+    const tlCards = document.getElementById('tlCards');
+    if (!tlCards) return;
+    const raw = new Set(Array.from(tlCards.children).map(c => c.dataset.tlType));
+    const types = new Set();
+    raw.forEach(t => types.add(t === 'status-change' ? 'status' : t));
+    document.querySelectorAll('.tl-filter-btn[data-filter]').forEach(btn => {
+      if (btn.dataset.filter === 'all') return;
+      const f = btn.dataset.filter;
+      const has = f === 'integrations' ? (types.has('gitlab') || types.has('jira')) : types.has(f);
+      btn.style.display = has ? '' : 'none';
+    });
+    const bar = document.querySelector('.tl-filters');
+    if (bar) bar.style.display = types.size <= 1 ? 'none' : '';
+  }
+
   function renderTimeline(rowIndex) {
     const events   = TIMELINE_DATA[rowIndex];
     const tlCards  = document.getElementById('tlCards');
@@ -7647,16 +8391,10 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       tlDotCol.appendChild(dot);
     });
     // Reset filters
-    document.querySelectorAll('.tl-filter-btn').forEach(b => b.classList.remove('active', 'disabled'));
+    document.querySelectorAll('.tl-filter-btn').forEach(b => b.classList.remove('active'));
     const allBtn = document.querySelector('.tl-filter-btn[data-filter="all"]');
     if (allBtn) allBtn.classList.add('active');
-    const types = new Set(events.map(ev => ev.type === 'status-change' ? 'status' : ev.type));
-    document.querySelectorAll('.tl-filter-btn[data-filter]').forEach(btn => {
-      if (btn.dataset.filter === 'all') return;
-      const f = btn.dataset.filter;
-      const active = f === 'integrations' ? (types.has('gitlab') || types.has('jira')) : types.has(f);
-      if (!active) btn.classList.add('disabled');
-    });
+    refreshTlFilterBar();
   }
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -7736,9 +8474,8 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       setTimeout(() => card.classList.remove('tl-card-new', 'tl-card-new-fade'), 300);
     }, 1000);
 
-    // Enable the comment filter chip if it was disabled
-    const commentChip = document.querySelector('.tl-filter-btn[data-filter="comment"]');
-    if (commentChip) commentChip.classList.remove('disabled');
+    // Re-evaluate filter bar after adding comment
+    refreshTlFilterBar();
 
     // If a non-"all" filter is active, make the new card respect it
     const activeFilter = document.querySelector('.tl-filter-btn.active')?.dataset.filter;
@@ -7852,7 +8589,6 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     const aiOutputRow  = document.getElementById('spAIOutputRow');
     const aiOutputVal  = document.getElementById('spAIOutputVal');
     const aiContent    = document.getElementById('spAIContent');
-    const aiNotInvest  = document.getElementById('spAINotInvestigated');
 
     const AI_BADGE_HTML = {
       confirmed:    '<span class="ai-badge">' + AI_SVG_CHECK + '<span class="ai-badge-text">Issue Confirmed</span></span>',
@@ -7865,7 +8601,6 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       if (aiOutputRow) aiOutputRow.style.display = 'flex';
       if (aiOutputVal) aiOutputVal.innerHTML = AI_BADGE_HTML[aiState] || '';
       if (aiContent)   aiContent.style.display   = 'flex';
-      if (aiNotInvest) aiNotInvest.style.display  = 'none';
       // Populate AI content
       if (aiData) {
         const sumEl    = document.getElementById('spAISummary');
@@ -7883,9 +8618,6 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       // No AI output — hide badge, show not-investigated prompt
       if (aiOutputRow) aiOutputRow.style.display = 'none';
       if (aiContent)   aiContent.style.display   = 'none';
-      if (aiNotInvest) aiNotInvest.style.display  = 'flex';
-      if (aiNotInvest) aiNotInvest.style.flexDirection = 'column';
-      if (aiNotInvest) aiNotInvest.style.alignItems = 'center';
     }
 
     if (activeRow) activeRow.classList.remove('row-panel-active');
@@ -8881,11 +9613,11 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     if (!overlay) return;
 
     var DATES  = ['Feb 3','Feb 17','Mar 3','Mar 17','Mar 31','Apr 14','Apr 21'];
-    var CLOSED = [12, 8, 15, 11, 9, 14, 7];
+    var CLOSED = [8, 6, 10, 9, 7, 11, 8];
     var SERIES = [
-      { label: 'High',   color: '#F32A4C', values: [62, 60, 52, 70, 68, 83, 82] },
-      { label: 'Medium', color: '#FF6633', values: [75, 72, 66, 79, 79, 82, 84] },
-      { label: 'Low',    color: '#0094FF', values: [81, 80, 83, 82, 84, 87, 91] }
+      { label: 'High',   color: '#F32A4C', values: [66, 63, 70, 72, 71, 78, 76] },
+      { label: 'Medium', color: '#FF6633', values: [76, 74, 78, 80, 79, 82, 83] },
+      { label: 'Low',    color: '#0094FF', values: [83, 82, 85, 86, 85, 88, 89] }
     ];
     var X_POS = [4, 88, 172, 256, 341, 427, 512];
     var VW = 516;
@@ -9131,19 +9863,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
             </div>
           </div>
         </div>
-
-        <!-- Burp AI — not yet investigated (inline in Advisory tab) -->
-        <div class="sp-ai-not-investigated" id="spAINotInvestigated">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style="margin:0 auto 12px;display:block;color:#C8CACC"><path d="M20.281 15.2093C15.9937 13.9771 15.0231 13.0065 13.7908 8.7191C13.7536 8.58935 13.6351 8.50012 13.5002 8.50012C13.3653 8.50012 13.2467 8.58935 13.2095 8.7191C11.977 13.0068 11.0064 13.9771 6.719 15.2093C6.58924 15.2465 6.50002 15.3651 6.50002 15.5C6.50002 15.6349 6.58924 15.7534 6.719 15.7906C11.0067 17.0232 11.977 17.9935 13.2095 22.2811C13.2467 22.4109 13.3653 22.5001 13.5002 22.5001C13.6351 22.5001 13.7536 22.4109 13.7908 22.2811C15.0231 17.9938 15.9934 17.0232 20.281 15.7906C20.4108 15.7534 20.5 15.6349 20.5 15.5C20.5 15.3651 20.4108 15.2468 20.281 15.2093Z" fill="currentColor"/><path d="M22.7968 4.23013C20.1075 3.45742 19.5431 2.89269 18.7698 0.203212C18.7352 0.0828006 18.6252 0 18.5 0C18.3748 0 18.2648 0.0828006 18.2303 0.203212C17.4573 2.89269 16.8925 3.45742 14.2032 4.23013C14.0828 4.26465 14 4.37468 14 4.49986C14 4.62504 14.0828 4.73507 14.2032 4.76959C16.8925 5.54259 17.4573 6.10731 18.2303 8.79679C18.2648 8.9172 18.3748 9 18.5 9C18.6252 9 18.7352 8.9172 18.7698 8.79679C19.5431 6.10731 20.1075 5.54259 22.7968 4.76959C22.9172 4.73507 23 4.62532 23 4.49986C23 4.3744 22.9172 4.26465 22.7968 4.23013Z" fill="currentColor"/><path d="M11 7.50009C11 7.30786 10.8729 7.1389 10.6879 7.08589C7.49971 6.16911 6.83077 5.50017 5.91442 2.31193C5.86141 2.12703 5.69245 1.99988 5.50022 1.99988C5.30798 1.99988 5.13902 2.12703 5.08601 2.31193C4.16923 5.50017 3.50029 6.16911 0.312057 7.08589C0.12715 7.1389 0 7.30743 0 7.50009C0 7.69276 0.12715 7.86129 0.312057 7.9143C3.49986 8.83021 4.16923 9.49958 5.08601 12.6878C5.13902 12.8727 5.30798 12.9999 5.50022 12.9999C5.69245 12.9999 5.86141 12.8727 5.91442 12.6878C6.83077 9.49958 7.50014 8.83021 10.6879 7.9143C10.8729 7.86086 11 7.69233 11 7.50009Z" fill="currentColor"/></svg>
-          <p>This issue has not been investigated by Burp AI.</p>
-          <p>Burp AI was not scoped to investigate this issue in the original scan. You can trigger a manual investigation below.</p>
-          <button class="sp-investigate-btn" style="margin:4px auto 0;display:flex;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:white"><path d="M20.281 15.2093C15.9937 13.9771 15.0231 13.0065 13.7908 8.7191C13.7536 8.58935 13.6351 8.50012 13.5002 8.50012C13.3653 8.50012 13.2467 8.58935 13.2095 8.7191C11.977 13.0068 11.0064 13.9771 6.719 15.2093C6.58924 15.2465 6.50002 15.3651 6.50002 15.5C6.50002 15.6349 6.58924 15.7534 6.719 15.7906C11.0067 17.0232 11.977 17.9935 13.2095 22.2811C13.2467 22.4109 13.3653 22.5001 13.5002 22.5001C13.6351 22.5001 13.7536 22.4109 13.7908 22.2811C15.0231 17.9938 15.9934 17.0232 20.281 15.7906C20.4108 15.7534 20.5 15.6349 20.5 15.5C20.5 15.3651 20.4108 15.2468 20.281 15.2093Z" fill="currentColor"/><path d="M22.7968 4.23013C20.1075 3.45742 19.5431 2.89269 18.7698 0.203212C18.7352 0.0828006 18.6252 0 18.5 0C18.3748 0 18.2648 0.0828006 18.2303 0.203212C17.4573 2.89269 16.8925 3.45742 14.2032 4.23013C14.0828 4.26465 14 4.37468 14 4.49986C14 4.62504 14.0828 4.73507 14.2032 4.76959C16.8925 5.54259 17.4573 6.10731 18.2303 8.79679C18.2648 8.9172 18.3748 9 18.5 9C18.6252 9 18.7352 8.9172 18.7698 8.79679C19.5431 6.10731 20.1075 5.54259 22.7968 4.76959C22.9172 4.73507 23 4.62532 23 4.49986C23 4.3744 22.9172 4.26465 22.7968 4.23013Z" fill="currentColor"/><path d="M11 7.50009C11 7.30786 10.8729 7.1389 10.6879 7.08589C7.49971 6.16911 6.83077 5.50017 5.91442 2.31193C5.86141 2.12703 5.69245 1.99988 5.50022 1.99988C5.30798 1.99988 5.13902 2.12703 5.08601 2.31193C4.16923 5.50017 3.50029 6.16911 0.312057 7.08589C0.12715 7.1389 0 7.30743 0 7.50009C0 7.69276 0.12715 7.86129 0.312057 7.9143C3.49986 8.83021 4.16923 9.49958 5.08601 12.6878C5.13902 12.8727 5.30798 12.9999 5.50022 12.9999C5.69245 12.9999 5.86141 12.8727 5.91442 12.6878C6.83077 9.49958 7.50014 8.83021 10.6879 7.9143C10.8729 7.86086 11 7.69233 11 7.50009Z" fill="currentColor"/></svg>
-            Investigate issue
-          </button>
-        </div>
-
-        <div class="sp-accordions">
+<div class="sp-accordions">
           <div class="sp-accordion open">
             <div class="sp-acc-header">
               <span class="sp-acc-title">Issue detail</span>
@@ -9184,7 +9904,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     <!-- Timeline pane -->
     <div class="sp-tab-pane" id="spPaneTimeline">
       <div class="tl-filters">
-        <button class="tl-filter-btn active" data-filter="all">All activity</button>
+        <button class="tl-filter-btn active" data-filter="all">All</button>
         <button class="tl-filter-btn" data-filter="status">Status changes</button>
         <button class="tl-filter-btn" data-filter="retest">Re-tests</button>
         <button class="tl-filter-btn" data-filter="comment">Comments</button>
@@ -9243,27 +9963,27 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         <div class="sla-ms-card-row">
           <div class="sla-ms-card-left">
             <p class="sla-ms-label">This week</p>
-            <p class="sla-ms-value">89%</p>
+            <p class="sla-ms-value">83%</p>
           </div>
-          <p class="sla-ms-delta up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M15 6C15 5.4477 15.4477 5 16 5H23C23.5523 5 24 5.4477 24 6V12.5C24 13.0523 23.5523 13.5 23 13.5C22.4477 13.5 22 13.0523 22 12.5V7H16C15.4477 7 15 6.5523 15 6Z" fill="#676667"/><path fill-rule="evenodd" clip-rule="evenodd" d="M23.7071 5.2929C24.0976 5.6834 24.0976 6.3166 23.7071 6.7071L15.2071 15.2071C14.8166 15.5976 14.1834 15.5976 13.7929 15.2071L9.5 10.9142L1.70711 18.7071C1.31658 19.0976 0.683417 19.0976 0.292893 18.7071C-0.097631 18.3166 -0.097631 17.6834 0.292893 17.2929L8.79289 8.7929C9.18342 8.4024 9.81658 8.4024 10.2071 8.7929L14.5 13.0858L22.2929 5.2929C22.6834 4.9024 23.3166 4.9024 23.7071 5.2929Z" fill="#676667"/></svg> 18%</p>
+          <p class="sla-ms-delta up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M15 6C15 5.4477 15.4477 5 16 5H23C23.5523 5 24 5.4477 24 6V12.5C24 13.0523 23.5523 13.5 23 13.5C22.4477 13.5 22 13.0523 22 12.5V7H16C15.4477 7 15 6.5523 15 6Z" fill="#676667"/><path fill-rule="evenodd" clip-rule="evenodd" d="M23.7071 5.2929C24.0976 5.6834 24.0976 6.3166 23.7071 6.7071L15.2071 15.2071C14.8166 15.5976 14.1834 15.5976 13.7929 15.2071L9.5 10.9142L1.70711 18.7071C1.31658 19.0976 0.683417 19.0976 0.292893 18.7071C-0.097631 18.3166 -0.097631 17.6834 0.292893 17.2929L8.79289 8.7929C9.18342 8.4024 9.81658 8.4024 10.2071 8.7929L14.5 13.0858L22.2929 5.2929C22.6834 4.9024 23.3166 4.9024 23.7071 5.2929Z" fill="#676667"/></svg> +7%</p>
         </div>
       </div>
       <div class="sla-ms-card">
         <div class="sla-ms-card-row">
           <div class="sla-ms-card-left">
             <p class="sla-ms-label">High sev fix rate</p>
-            <p class="sla-ms-value" data-negative>82%</p>
+            <p class="sla-ms-value" data-negative>76%</p>
           </div>
-          <p class="sla-ms-delta down"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M15 18C15 18.5523 15.4477 19 16 19H23C23.5523 19 24 18.5523 24 18V11.5C24 10.9477 23.5523 10.5 23 10.5C22.4477 10.5 22 10.9477 22 11.5V17H16C15.4477 17 15 17.4477 15 18Z" fill="#676667"/><path fill-rule="evenodd" clip-rule="evenodd" d="M23.7071 18.7071C24.0976 18.3166 24.0976 17.6834 23.7071 17.2929L15.2071 8.79289C14.8166 8.40237 14.1834 8.40237 13.7929 8.79289L9.5 13.0858L1.70711 5.29289C1.31658 4.90237 0.683417 4.90237 0.292893 5.29289C-0.097631 5.68342 -0.097631 6.31658 0.292893 6.70711L8.79289 15.2071C9.18342 15.5976 9.81658 15.5976 10.2071 15.2071L14.5 10.9142L22.2929 18.7071C22.6834 19.0976 23.3166 19.0976 23.7071 18.7071Z" fill="#676667"/></svg> 8%</p>
+          <p class="sla-ms-delta down"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M15 18C15 18.5523 15.4477 19 16 19H23C23.5523 19 24 18.5523 24 18V11.5C24 10.9477 23.5523 10.5 23 10.5C22.4477 10.5 22 10.9477 22 11.5V17H16C15.4477 17 15 17.4477 15 18Z" fill="#676667"/><path fill-rule="evenodd" clip-rule="evenodd" d="M23.7071 18.7071C24.0976 18.3166 24.0976 17.6834 23.7071 17.2929L15.2071 8.79289C14.8166 8.40237 14.1834 8.40237 13.7929 8.79289L9.5 13.0858L1.70711 5.29289C1.31658 4.90237 0.683417 4.90237 0.292893 5.29289C-0.097631 5.68342 -0.097631 6.31658 0.292893 6.70711L8.79289 15.2071C9.18342 15.5976 9.81658 15.5976 10.2071 15.2071L14.5 10.9142L22.2929 18.7071C22.6834 19.0976 23.3166 19.0976 23.7071 18.7071Z" fill="#676667"/></svg> −2%</p>
         </div>
       </div>
       <div class="sla-ms-card">
         <div class="sla-ms-card-row">
           <div class="sla-ms-card-left">
             <p class="sla-ms-label">Avg time to fix</p>
-            <p class="sla-ms-value">3.8d</p>
+            <p class="sla-ms-value">3.6d</p>
           </div>
-          <p class="sla-ms-delta up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M15 6C15 5.4477 15.4477 5 16 5H23C23.5523 5 24 5.4477 24 6V12.5C24 13.0523 23.5523 13.5 23 13.5C22.4477 13.5 22 13.0523 22 12.5V7H16C15.4477 7 15 6.5523 15 6Z" fill="#676667"/><path fill-rule="evenodd" clip-rule="evenodd" d="M23.7071 5.2929C24.0976 5.6834 24.0976 6.3166 23.7071 6.7071L15.2071 15.2071C14.8166 15.5976 14.1834 15.5976 13.7929 15.2071L9.5 10.9142L1.70711 18.7071C1.31658 19.0976 0.683417 19.0976 0.292893 18.7071C-0.097631 18.3166 -0.097631 17.6834 0.292893 17.2929L8.79289 8.7929C9.18342 8.4024 9.81658 8.4024 10.2071 8.7929L14.5 13.0858L22.2929 5.2929C22.6834 4.9024 23.3166 4.9024 23.7071 5.2929Z" fill="#676667"/></svg> −1.2d</p>
+          <p class="sla-ms-delta up"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M15 6C15 5.4477 15.4477 5 16 5H23C23.5523 5 24 5.4477 24 6V12.5C24 13.0523 23.5523 13.5 23 13.5C22.4477 13.5 22 13.0523 22 12.5V7H16C15.4477 7 15 6.5523 15 6Z" fill="#676667"/><path fill-rule="evenodd" clip-rule="evenodd" d="M23.7071 5.2929C24.0976 5.6834 24.0976 6.3166 23.7071 6.7071L15.2071 15.2071C14.8166 15.5976 14.1834 15.5976 13.7929 15.2071L9.5 10.9142L1.70711 18.7071C1.31658 19.0976 0.683417 19.0976 0.292893 18.7071C-0.097631 18.3166 -0.097631 17.6834 0.292893 17.2929L8.79289 8.7929C9.18342 8.4024 9.81658 8.4024 10.2071 8.7929L14.5 13.0858L22.2929 5.2929C22.6834 4.9024 23.3166 4.9024 23.7071 5.2929Z" fill="#676667"/></svg> −0.4d</p>
         </div>
       </div>
       <div class="sla-ms-card">
@@ -9272,7 +9992,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
             <p class="sla-ms-label">Breached this week</p>
             <p class="sla-ms-value" data-negative>1</p>
           </div>
-          <p class="sla-ms-delta down"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M15 18C15 18.5523 15.4477 19 16 19H23C23.5523 19 24 18.5523 24 18V11.5C24 10.9477 23.5523 10.5 23 10.5C22.4477 10.5 22 10.9477 22 11.5V17H16C15.4477 17 15 17.4477 15 18Z" fill="#676667"/><path fill-rule="evenodd" clip-rule="evenodd" d="M23.7071 18.7071C24.0976 18.3166 24.0976 17.6834 23.7071 17.2929L15.2071 8.79289C14.8166 8.40237 14.1834 8.40237 13.7929 8.79289L9.5 13.0858L1.70711 5.29289C1.31658 4.90237 0.683417 4.90237 0.292893 5.29289C-0.097631 5.68342 -0.097631 6.31658 0.292893 6.70711L8.79289 15.2071C9.18342 15.5976 9.81658 15.5976 10.2071 15.2071L14.5 10.9142L22.2929 18.7071C22.6834 19.0976 23.3166 19.0976 23.7071 18.7071Z" fill="#676667"/></svg> +1</p>
+          <p class="sla-ms-delta down"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M15 18C15 18.5523 15.4477 19 16 19H23C23.5523 19 24 18.5523 24 18V11.5C24 10.9477 23.5523 10.5 23 10.5C22.4477 10.5 22 10.9477 22 11.5V17H16C15.4477 17 15 17.4477 15 18Z" fill="#676667"/><path fill-rule="evenodd" clip-rule="evenodd" d="M23.7071 18.7071C24.0976 18.3166 24.0976 17.6834 23.7071 17.2929L15.2071 8.79289C14.8166 8.40237 14.1834 8.40237 13.7929 8.79289L9.5 13.0858L1.70711 5.29289C1.31658 4.90237 0.683417 4.90237 0.292893 5.29289C-0.097631 5.68342 -0.097631 6.31658 0.292893 6.70711L8.79289 15.2071C9.18342 15.5976 9.81658 15.5976 10.2071 15.2071L14.5 10.9142L22.2929 18.7071C22.6834 19.0976 23.3166 19.0976 23.7071 18.7071Z" fill="#676667"/></svg> −1</p>
         </div>
       </div>
     </div>
@@ -9320,21 +10040,13 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
 (function () {
   'use strict';
 
-  /* ── Per-site multipliers — shifts base data when a site is selected ── */
+  /* ── Per-site multipliers for Europe folder sites ── */
   var SITE_DATA = {
-    'Feil LLC':        {high:0.93, med:0.97, low:1.02},
-    'Zenith Corp':     {high:0.86, med:1.06, low:0.93},
-    'DataShield':      {high:1.09, med:0.87, low:1.05},
-    'SecureNet':       {high:0.77, med:1.11, low:0.97},
-    'Nova Solutions':  {high:1.13, med:0.91, low:0.89},
-    'Apex Digital':    {high:0.95, med:1.09, low:1.05},
-    'CyberGuard Inc.': {high:0.87, med:0.83, low:0.85},
-    'BlockSec':        {high:0.73, med:1.05, low:1.11},
-    'TechVault':       {high:1.11, med:0.97, low:0.91},
-    'CloudFirst':      {high:1.06, med:0.89, low:1.09},
+    'Zenith Corp': {high:0.94, med:1.03, low:0.99},
+    'DataShield':  {high:1.06, med:0.97, low:1.02},
+    'SecureNet':   {high:0.92, med:1.02, low:0.98},
   };
-  var ALL_SITES = ['Feil LLC','Zenith Corp','DataShield','SecureNet','Nova Solutions',
-                   'Apex Digital','CyberGuard Inc.','BlockSec','TechVault','CloudFirst'];
+  var ALL_SITES = ['Zenith Corp','DataShield','SecureNet'];
   var selectedSites = new Set();
 
   function getDisplayData() {
@@ -9353,20 +10065,20 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     });
   }
 
-  /* ── 12-week weekly dataset ── */
+  /* ── Europe folder 12-week dataset ── */
   var DATA = [
-    {date:'Feb 3',  all:71,high:62,med:74,low:82,vol:14},
-    {date:'Feb 10', all:68,high:60,med:70,low:80,vol:18},
-    {date:'Feb 17', all:74,high:65,med:78,low:84,vol:16},
-    {date:'Feb 24', all:70,high:58,med:72,low:86,vol:21},
-    {date:'Mar 3',  all:66,high:52,med:68,low:83,vol:24},
-    {date:'Mar 10', all:72,high:60,med:74,low:85,vol:19},
-    {date:'Mar 17', all:78,high:66,med:80,low:88,vol:17},
-    {date:'Mar 24', all:81,high:70,med:84,low:90,vol:15},
-    {date:'Mar 31', all:79,high:68,med:82,low:89,vol:16},
-    {date:'Apr 7',  all:84,high:74,med:86,low:92,vol:13},
-    {date:'Apr 14', all:87,high:79,med:88,low:94,vol:12},
-    {date:'Apr 21', all:89,high:82,med:90,low:95,vol:12}
+    {date:'Feb 3',  all:74,high:66,med:76,low:83,vol:8},
+    {date:'Feb 10', all:72,high:64,med:74,low:81,vol:6},
+    {date:'Feb 17', all:74,high:66,med:77,low:83,vol:10},
+    {date:'Feb 24', all:72,high:64,med:75,low:84,vol:9},
+    {date:'Mar 3',  all:76,high:69,med:78,low:85,vol:9},
+    {date:'Mar 10', all:75,high:68,med:77,low:85,vol:7},
+    {date:'Mar 17', all:76,high:70,med:78,low:85,vol:11},
+    {date:'Mar 24', all:78,high:72,med:80,low:86,vol:8},
+    {date:'Mar 31', all:77,high:71,med:79,low:85,vol:7},
+    {date:'Apr 7',  all:80,high:75,med:82,low:87,vol:11},
+    {date:'Apr 14', all:82,high:78,med:82,low:88,vol:8},
+    {date:'Apr 21', all:83,high:76,med:83,low:89,vol:8}
   ];
 
   var SERIES = [
@@ -9604,10 +10316,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
 
   // ── Site tree (reuses .st-* DS classes) ──────────────────────────────
   var M_FOLDERS = [
-    { id: 'mf1', name: 'Production',  sites: ['Feil LLC', 'Zenith Corp', 'DataShield'] },
-    { id: 'mf2', name: 'Staging',     sites: ['SecureNet', 'Nova Solutions'] },
-    { id: 'mf3', name: 'Development', sites: ['Apex Digital', 'CyberGuard Inc.', 'BlockSec'] },
-    { id: 'mf4', name: 'External',    sites: ['TechVault', 'CloudFirst'] },
+    { id: 'mf1', name: 'Europe', sites: ['Zenith Corp', 'DataShield', 'SecureNet'] },
   ];
   var M_SVG_CHEV  = '<svg width="14" height="14" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.292893 0.292893C0.683418-0.0976311 1.31658-0.0976311 1.70711 0.292893L7 5.58579L12.2929 0.292893C12.6834-0.0976311 13.3166-0.0976311 13.7071 0.292893C14.0976 0.683418 14.0976 1.31658 13.7071 1.70711L7.70711 7.70711C7.31658 8.09763 6.68342 8.09763 6.29289 7.70711L0.292893 1.70711C-0.0976311 1.31658-0.0976311 0.683418 0.292893 0.292893Z" fill="#676667"/></svg>';
   var M_SVG_FOLD  = '<svg class="st-folder-icon" width="18" height="18" viewBox="0 0 16.5 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M2.25 1.5C2.05109 1.5 1.86032 1.57902 1.71967 1.71967C1.57902 1.86032 1.5 2.05109 1.5 2.25V12.75C1.5 12.9489 1.57902 13.1397 1.71967 13.2803C1.86032 13.421 2.05109 13.5 2.25 13.5H14.25C14.4489 13.5 14.6397 13.421 14.7803 13.2803C14.921 13.1397 15 12.9489 15 12.75V4.5C15 4.30109 14.921 4.11032 14.7803 3.96967C14.6397 3.82902 14.4489 3.75 14.25 3.75H7.5C7.24923 3.75 7.01506 3.62467 6.87596 3.41602L5.59861 1.5H2.25ZM0.65901 0.65901C1.08097 0.237053 1.65326 0 2.25 0H6C6.25076 0 6.48494 0.125326 6.62404 0.333975L7.90139 2.25H14.25C14.8467 2.25 15.419 2.48705 15.841 2.90901C16.2629 3.33097 16.5 3.90326 16.5 4.5V12.75C16.5 13.3467 16.2629 13.919 15.841 14.341C15.419 14.7629 14.8467 15 14.25 15H2.25C1.65326 15 1.08097 14.7629 0.65901 14.341C0.237053 13.919 0 13.3467 0 12.75V2.25C0 1.65326 0.237053 1.08097 0.65901 0.65901Z" fill="#676667"/></svg>';
@@ -9762,6 +10471,71 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     }
   });
 
+})();
+</script>
+
+<script>
+  /* ── SLA severity donut charts — Europe folder hardcoded data ────────────── */
+  (function () {
+
+    var C = 2 * Math.PI * 38; // circumference for r=38 ≈ 238.76
+
+    // Europe folder data: { total, within, atRisk, overdue }
+    var DATA = {
+      high: { total: 22, within: 14, atRisk: 5, overdue: 3 },
+      med:  { total: 41, within: 30, atRisk: 7, overdue: 4 },
+      low:  { total: 35, within: 29, atRisk: 4, overdue: 2 }
+    };
+
+    function setArcs(key, d) {
+      var arcOver = document.getElementById('donut-arc-over-' + key);
+      var arcWarn = document.getElementById('donut-arc-warn-' + key);
+      var arcOk   = document.getElementById('donut-arc-ok-'   + key);
+
+      function set(arc, len, offset) {
+        if (!arc) return;
+        arc.setAttribute('stroke-dasharray', len.toFixed(2) + ' ' + (C - len).toFixed(2));
+        arc.setAttribute('stroke-dashoffset', offset.toFixed(2));
+      }
+
+      if (d.total === 0) {
+        [arcOver, arcWarn, arcOk].forEach(function(a) {
+          if (a) { a.setAttribute('stroke-dasharray', '0 ' + C.toFixed(2)); a.setAttribute('stroke-dashoffset', '0'); }
+        });
+        return;
+      }
+
+      var lOver = (d.overdue / d.total) * C;
+      var lWarn = (d.atRisk  / d.total) * C;
+      var lOk   = (d.within  / d.total) * C;
+
+      // Overdue from 12 o'clock; at-risk follows; within SLA fills the remainder
+      set(arcOver, lOver, 0);
+      set(arcWarn, lWarn, -lOver);
+      set(arcOk,   lOk,   -(lOver + lWarn));
+    }
+
+    function renderDonuts() {
+      ['high', 'med', 'low'].forEach(function(key) {
+        var d = DATA[key];
+
+        setArcs(key, d);
+
+        var countEl = document.getElementById('donut-count-' + key);
+        if (countEl) countEl.textContent = d.total > 0 ? d.total : '—';
+
+        var lblOk   = document.getElementById('donut-lbl-ok-'   + key);
+        var lblWarn = document.getElementById('donut-lbl-warn-' + key);
+        var lblOver = document.getElementById('donut-lbl-over-' + key);
+        if (lblOk)   lblOk.textContent   = d.within;
+        if (lblWarn) lblWarn.textContent  = d.atRisk;
+        if (lblOver) lblOver.textContent  = d.overdue;
+      });
+    }
+
+    // Run after refreshStatCards (80ms) so hardcoded Europe data wins
+    setTimeout(renderDonuts, 150);
+
   // Download report button
   (function() {
     var dlBtn = document.getElementById('lcDownloadBtn');
@@ -9779,14 +10553,106 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     });
   })();
 
-})();
+  })();
+</script>
 
+<script>
+(function() {
+  var NAV = {
+    'Europe': 'burp-dast-figma-issues-v11-europe.html',
+    'North America': 'burp-dast-figma-issues-v11-north-america.html',
+    'Asia': 'burp-dast-figma-issues-v11.html',
+    'Nova Solutions': 'burp-dast-figma-issues-v11-nova-solutions.html',
+    'Apex Digital': 'burp-dast-figma-issues-v11-apex-digital.html',
+    'CyberGuard Inc.': 'burp-dast-figma-issues-v11-cyberguard-inc.html',
+    'Zenith Corp': 'burp-dast-figma-issues-v11-zenith-corp.html',
+    'DataShield': 'burp-dast-figma-issues-v11-datashield.html',
+    'SecureNet': 'burp-dast-figma-issues-v11-securenet.html',
+    'Feil LLC': 'burp-dast-figma-issues-v11-nova-solutions.html',
+    "O'Conner LLC": 'burp-dast-figma-issues-v11-nova-solutions.html',
+    'Mitchell Group': 'burp-dast-figma-issues-v11-nova-solutions.html',
+    'Santos Digital': 'burp-dast-figma-issues-v11-nova-solutions.html',
+    'Lima Corp': 'burp-dast-figma-issues-v11-nova-solutions.html',
+    'Vargas Systems': 'burp-dast-figma-issues-v11-nova-solutions.html'
+  };
+
+  var rows = Array.from(document.querySelectorAll('.tree-list .tree-row'));
+  var collapsed = new Set();
+
+  function indent(row) { return parseInt(row.style.paddingLeft) || 0; }
+
+  function descendants(row) {
+    var i = rows.indexOf(row), d = indent(row), out = [];
+    for (var j = i + 1; j < rows.length; j++) {
+      if (indent(rows[j]) <= d) break;
+      out.push(rows[j]);
+    }
+    return out;
+  }
+
+  function directChildren(row) {
+    var desc = descendants(row);
+    if (!desc.length) return [];
+    var ci = indent(desc[0]);
+    return desc.filter(function(r) { return indent(r) === ci; });
+  }
+
+  function showSubtree(row) {
+    directChildren(row).forEach(function(c) {
+      c.style.display = '';
+      if (!collapsed.has(c)) showSubtree(c);
+    });
+  }
+
+  rows.forEach(function(row) {
+    var chevron = row.querySelector('.tree-chevron');
+    var lbl = row.querySelector('.tree-label');
+
+    // Row click → navigate (chevron stopPropagation prevents this firing on expand/collapse)
+    var url = lbl ? NAV[lbl.textContent.trim()] : null;
+    if (url) {
+      row.addEventListener('click', function() { window.location.href = url; });
+    }
+
+    // Chevron click → expand / collapse
+    if (chevron) {
+      var svg = chevron.querySelector('svg');
+      chevron.style.cursor = 'pointer';
+      if (svg) svg.style.transition = 'transform 0.2s ease';
+
+      // Initialise from inline SVG transform set in HTML
+      var isCollapsed = svg && svg.style.transform && svg.style.transform.indexOf('rotate') !== -1;
+      if (isCollapsed) {
+        collapsed.add(row);
+        descendants(row).forEach(function(d) { d.style.display = 'none'; });
+        if (svg) svg.style.transform = 'rotate(-90deg)';
+      } else if (svg) {
+        svg.style.transform = 'rotate(0deg)';
+      }
+
+      chevron.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (collapsed.has(row)) {
+          collapsed.delete(row);
+          showSubtree(row);
+          if (svg) svg.style.transform = 'rotate(0deg)';
+        } else {
+          collapsed.add(row);
+          descendants(row).forEach(function(d) { d.style.display = 'none'; });
+          if (svg) svg.style.transform = 'rotate(-90deg)';
+        }
+      });
+    }
+  });
+})();
+</script>
+
+<script>
 /* ── Sites nav dropdown ── */
 document.addEventListener('DOMContentLoaded', function() {
   var trigger = document.getElementById('sites-nav-trigger');
   var dd      = document.getElementById('sites-dd');
   if (!trigger || !dd) return;
-
   function positionDropdown() {
     var rect    = trigger.getBoundingClientRect();
     var ddWidth = dd.offsetWidth || 340;
@@ -9794,7 +10660,6 @@ document.addEventListener('DOMContentLoaded', function() {
     left = Math.max(8, Math.min(left, window.innerWidth - ddWidth - 8));
     dd.style.top  = rect.bottom + 'px';
     dd.style.left = left + 'px';
-    // Align caret to point at trigger centre
     var caretEl = dd.querySelector('.sites-dd-caret');
     if (caretEl) {
       var offset = (rect.left + rect.width / 2) - left - 17;
@@ -9802,34 +10667,18 @@ document.addEventListener('DOMContentLoaded', function() {
       caretEl.style.alignSelf  = 'flex-start';
     }
   }
-
-  function openDD() {
-    dd.classList.add('is-open');
-    trigger.classList.add('sites-active');
-    positionDropdown();
-  }
-
-  function closeDD() {
-    dd.classList.remove('is-open');
-    trigger.classList.remove('sites-active');
-  }
-
+  function openDD() { dd.classList.add('is-open'); trigger.classList.add('sites-active'); positionDropdown(); }
+  function closeDD() { dd.classList.remove('is-open'); trigger.classList.remove('sites-active'); }
   trigger.addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     dd.classList.contains('is-open') ? closeDD() : openDD();
   });
-
   document.addEventListener('click', function(e) {
     if (!dd.contains(e.target) && e.target !== trigger) closeDD();
   });
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeDD();
-  });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDD(); });
 });
 </script>
-
 <!-- Sites dropdown (fixed position, placed via JS) -->
       <div class="sites-dd" id="sites-dd">
         <div class="sites-dd-caret">
@@ -9843,7 +10692,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="sites-dd-divider"></div>
           <a href="#" class="sites-dd-add">
             <span class="sites-dd-add-icon">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3ZM1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM12 7C12.5523 7 13 7.44772 13 8V11H16C16.5523 11 17 11.4477 17 12C17 12.5523 16.5523 13 16 13H13V16C13 16.5523 12.5523 17 12 17C11.4477 17 11 16.5523 11 16V13H8C7.44772 13 7 12.5523 7 12C7 11.4477 7.44772 11 8 11H11V8C11 7.44772 11.4477 7 12 7Z" fill="currentColor"/></svg>
+              <svg viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3ZM1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM12 7C12.5523 7 13 7.44772 13 8V11H16C16.5523 11 17 11.4477 17 12C17 12.5523 16.5523 13 16 13H13V16C13 16.5523 12.5523 17 12 17C11.4477 17 11 16.5523 11 16V13H8C7.44772 13 7 12.5523 7 12C7 11.4477 7.44772 11 8 11H11V8C11 7.44772 11.4477 7 12 7Z" fill="currentColor"/></svg>
             </span>
             Add a new site
           </a>
@@ -9865,24 +10714,18 @@ document.addEventListener('DOMContentLoaded', function() {
     var syncing = false;
 
     function setup() {
-      // Align left edge of bar to the left edge of the "First seen" column header
       var firstSeenTh = document.querySelector('.th.col-first');
       var barLeft = firstSeenTh ? firstSeenTh.getBoundingClientRect().left : 0;
       bar.style.left = barLeft + 'px';
-
-      // Inner width drives the scrollable range — must match the table's scroll width
       inner.style.width = wrap.scrollWidth + 'px';
-
       var max = wrap.scrollWidth - wrap.clientWidth;
       var wrapBottom = wrap.getBoundingClientRect().bottom;
-      var shouldShow = max > 0 && wrapBottom > window.innerHeight;
-      bar.classList.toggle('visible', shouldShow);
+      bar.classList.toggle('visible', max > 0 && wrapBottom > window.innerHeight);
     }
 
     function tableMax() { return wrap.scrollWidth - wrap.clientWidth; }
     function barMax()   { return bar.scrollWidth  - bar.clientWidth;  }
 
-    // Sync: sticky bar → table
     bar.addEventListener('scroll', function() {
       if (syncing) return;
       syncing = true;
@@ -9891,7 +10734,6 @@ document.addEventListener('DOMContentLoaded', function() {
       syncing = false;
     });
 
-    // Sync: table → sticky bar
     wrap.addEventListener('scroll', function() {
       if (syncing) return;
       syncing = true;
