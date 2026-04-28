@@ -557,6 +557,25 @@
 
     /* ── Table folder expand/collapse ── */
     .tree-chevron svg { transition: transform 0.2s ease; display: block; }
+
+    /* ── Sites nav dropdown ── */
+    .sites-dd { position:fixed; z-index:950; display:none; flex-direction:column; align-items:center; filter:drop-shadow(0 0 10px rgba(0,0,35,0.10)); }
+    .sites-dd.is-open { display:flex; }
+    #sites-nav-trigger.sites-active > svg:last-child { transform:rotate(180deg); }
+    /* ── Scans nav dropdown ── */
+    .scans-dd { position:fixed; z-index:950; display:none; flex-direction:column; align-items:center; filter:drop-shadow(0 0 10px rgba(0,0,35,0.10)); }
+    .scans-dd.is-open { display:flex; }
+    .sites-dd-caret { width:34px; height:16px; flex-shrink:0; }
+    .sites-dd-caret svg { display:block; }
+    .sites-dd-card { background:#fff; border-radius:8px; padding:20px; display:flex; flex-direction:column; gap:10px; width:340px; }
+    .sites-dd-item { font-family:var(--font); font-size:14px; font-weight:400; line-height:1.4; color:#333332; cursor:pointer; text-decoration:none; display:block; white-space:nowrap; }
+    .sites-dd-item:hover { color:#FF6633; }
+    .sites-dd-divider { height:1px; background:#EBF0F2; width:100%; }
+    .sites-dd-add { display:flex; align-items:center; gap:5px; font-family:var(--font); font-size:14px; font-weight:400; line-height:1.4; color:#333332; cursor:pointer; text-decoration:none; }
+    .sites-dd-add:hover { color:#FF6633; }
+    .sites-dd-add-icon { width:16px; height:16px; flex-shrink:0; display:flex; line-height:0; color:#333332; }
+    .sites-dd-add-icon svg { width:100%; height:100%; display:block; }
+    #scans-nav-trigger.scans-active > svg:last-child { transform:rotate(180deg); }
   </style>
 </head>
 <body>
@@ -601,7 +620,7 @@
                   <span class="hdr-nav-label">Home</span>
                 </a>
                 <!-- Sites -->
-                <a href="#" style="display:flex;align-items:center;gap:5px;text-decoration:none;color:#000023;white-space:nowrap;">
+                <a href="#" id="sites-nav-trigger" style="display:flex;align-items:center;gap:5px;text-decoration:none;color:#000023;white-space:nowrap;">
                   <span style="display:flex;align-items:center;gap:15px;font-size:18px;font-family:var(--font);font-weight:400;">
                     <svg viewBox="0 0 24 24" fill="none" width="24" height="24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.0001 22.9001C18.02 22.9001 22.9001 18.02 22.9001 12.0001C22.9001 5.98019 18.02 1.1001 12.0001 1.1001C5.98019 1.1001 1.1001 5.98019 1.1001 12.0001C1.1001 18.02 5.98019 22.9001 12.0001 22.9001ZM9.95412 3.13102C6.19746 3.9941 3.32865 7.18258 2.94404 11.1001H7.14267C7.35879 8.23426 8.33304 5.48516 9.95412 3.13102ZM14.0461 3.13102C15.6672 5.48516 16.6414 8.23426 16.8575 11.1001H21.0562C20.6716 7.18258 17.8027 3.9941 14.0461 3.13102ZM15.0518 11.1001C14.8128 8.28555 13.7509 5.60341 12.0001 3.38873C10.2493 5.60341 9.1874 8.28555 8.94842 11.1001H15.0518ZM8.94842 12.9001H15.0518C14.8128 15.7146 13.7509 18.3968 12.0001 20.6115C10.2493 18.3968 9.1874 15.7146 8.94842 12.9001ZM7.14267 12.9001H2.94404C3.32865 16.8176 6.19746 20.0061 9.95413 20.8692C8.33305 18.515 7.35879 15.7659 7.14267 12.9001ZM14.0461 20.8692C15.6671 18.515 16.6414 15.7659 16.8575 12.9001H21.0562C20.6715 16.8176 17.8027 20.0061 14.0461 20.8692Z" fill="currentColor"/></svg>
                     <span class="hdr-nav-label">Sites</span>
@@ -609,7 +628,7 @@
                   <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z" fill="currentColor"/></svg>
                 </a>
                 <!-- Scans -->
-                <a href="#" style="display:flex;align-items:center;gap:5px;text-decoration:none;color:#000023;white-space:nowrap;">
+                <a href="#" id="scans-nav-trigger" style="display:flex;align-items:center;gap:5px;text-decoration:none;color:#000023;white-space:nowrap;">
                   <span style="display:flex;align-items:center;gap:12px;font-size:18px;font-family:var(--font);font-weight:400;">
                     <svg viewBox="0 0 24 24" fill="none" width="24" height="24"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.12136 11.58L16.8532 2.38753C18.8875 5.01051 20 8.24289 20 11.58C20 14.9172 18.8875 18.1495 16.8532 20.7725L5.12136 11.58ZM22 11.58C22 7.44084 20.4899 3.44385 17.7528 0.338772C17.4025 -0.0586839 16.8029 -0.113902 16.3859 0.212877L2.88323 10.7929C2.64132 10.9824 2.5 11.2727 2.5 11.58C2.5 11.8874 2.64132 12.1776 2.88323 12.3672L16.3859 22.9472C16.8029 23.2739 17.4025 23.2187 17.7528 22.8213C20.4899 19.7162 22 15.7192 22 11.58ZM15.5547 9.16798C15.3241 9.01424 15.04 8.96311 14.7702 9.02679C14.5005 9.09047 14.2692 9.26325 14.1317 9.5039L12.6011 12.1825L10.4472 11.1056C9.95321 10.8586 9.35254 11.0588 9.10555 11.5528C8.85856 12.0468 9.05878 12.6475 9.55276 12.8945L12.5528 14.3945C13.0275 14.6318 13.6049 14.457 13.8682 13.9962L15.3367 11.4264L17.4453 12.8321C17.9048 13.1384 18.5257 13.0143 18.832 12.5547C19.1384 12.0952 19.0142 11.4743 18.5547 11.168L15.5547 9.16798Z" fill="currentColor"/></svg>
                     <span class="hdr-nav-label">Scans</span>
@@ -1742,6 +1761,124 @@ document.addEventListener('DOMContentLoaded', function() {
     wrapper.appendChild(btn); cell.appendChild(wrapper); refreshTagsOverflow(wrapper);
   });
 
+});
+</script>
+<!-- Sites dropdown (fixed position, placed via JS) -->
+<div class="sites-dd" id="sites-dd">
+  <div class="sites-dd-caret">
+    <svg width="34" height="16" viewBox="0 0 34 16" fill="none"><path d="M0 16H34L17 0L0 16Z" fill="white"/></svg>
+  </div>
+  <div class="sites-dd-card">
+    <a href="burp-dast-table.html" class="sites-dd-item">All sites</a>
+    <a href="#" class="sites-dd-item">Sites being scanned</a>
+    <a href="#" class="sites-dd-item">Sites with issues</a>
+    <a href="#" class="sites-dd-item">Sites with scan failures</a>
+    <div class="sites-dd-divider"></div>
+    <a href="#" class="sites-dd-add">
+      <span class="sites-dd-add-icon">
+        <svg viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3ZM1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM12 7C12.5523 7 13 7.44772 13 8V11H16C16.5523 11 17 11.4477 17 12C17 12.5523 16.5523 13 16 13H13V16C13 16.5523 12.5523 17 12 17C11.4477 17 11 16.5523 11 16V13H8C7.44772 13 7 12.5523 7 12C7 11.4477 7.44772 11 8 11H11V8C11 7.44772 11.4477 7 12 7Z" fill="currentColor"/></svg>
+      </span>
+      Add a new site
+    </a>
+  </div>
+</div>
+
+<!-- Scans dropdown (fixed position, placed via JS) -->
+<div class="scans-dd" id="scans-dd">
+  <div class="sites-dd-caret">
+    <svg width="34" height="16" viewBox="0 0 34 16" fill="none"><path d="M0 16H34L17 0L0 16Z" fill="white"/></svg>
+  </div>
+  <div class="sites-dd-card">
+    <a href="burp-dast-scans.html" class="sites-dd-item">All scans</a>
+    <a href="#" class="sites-dd-item">Scans in progress</a>
+    <a href="#" class="sites-dd-item">Scheduled scans</a>
+    <a href="#" class="sites-dd-item">Completed scans</a>
+    <a href="#" class="sites-dd-item">Failed scans</a>
+    <div class="sites-dd-divider"></div>
+    <a href="#" class="sites-dd-add">
+      <span class="sites-dd-add-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM0 12C0 5.37258 5.37258 0 12 0C18.6274 0 24 5.37258 24 12C24 18.6274 18.6274 24 12 24C5.37258 24 0 18.6274 0 12ZM12 6C12.5523 6 13 6.44772 13 7V11.5858L15.7071 14.2929C16.0976 14.6834 16.0976 15.3166 15.7071 15.7071C15.3166 16.0976 14.6834 16.0976 14.2929 15.7071L11.2929 12.7071C11.1054 12.5196 11 12.2652 11 12V7C11 6.44772 11.4477 6 12 6Z" fill="currentColor"/></svg>
+      </span>
+      Scan freeze windows
+    </a>
+    <a href="#" class="sites-dd-add">
+      <span class="sites-dd-add-icon">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3ZM1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM12 7C12.5523 7 13 7.44772 13 8V11H16C16.5523 11 17 11.4477 17 12C17 12.5523 16.5523 13 16 13H13V16C13 16.5523 12.5523 17 12 17C11.4477 17 11 16.5523 11 16V13H8C7.44772 13 7 12.5523 7 12C7 11.4477 7.44772 11 8 11H11V8C11 7.44772 11.4477 7 12 7Z" fill="currentColor"/></svg>
+      </span>
+      Scan a new site
+    </a>
+    <a href="#" class="sites-dd-add">
+      <span class="sites-dd-add-icon">
+        <svg viewBox="0 0 19.5 23.1601" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.8857 0.212844C14.3028 -0.113935 14.9026 -0.0586358 15.2529 0.33882C17.9899 3.44388 19.5 7.44089 19.5 11.58C19.5 15.7192 17.9899 19.7162 15.2529 22.8212C14.9026 23.2187 14.3028 23.274 13.8857 22.9472L0.382812 12.3671C0.141065 12.1776 1.74244e-05 11.8872 0 11.58C1.34282e-08 11.2728 0.141084 10.9825 0.382812 10.7929L13.8857 0.212844ZM2.62109 11.58L14.3535 20.7724C16.3877 18.1495 17.5 14.9171 17.5 11.58C17.5 8.24301 16.3877 5.01058 14.3535 2.38765L2.62109 11.58ZM12.2705 9.02632C12.5402 8.96277 12.8242 9.01425 13.0547 9.16792L16.0547 11.1679C16.5142 11.4743 16.6384 12.0951 16.332 12.5546C16.0257 13.0142 15.4048 13.1383 14.9453 12.832L12.8369 11.4267L11.3682 13.996C11.1048 14.4569 10.5274 14.6318 10.0527 14.3945L7.05273 12.8945C6.55876 12.6475 6.35848 12.0467 6.60547 11.5527C6.85247 11.0587 7.4533 10.8584 7.94727 11.1054L10.1006 12.1826L11.6318 9.50386C11.7694 9.26323 12.0008 9.09 12.2705 9.02632Z" fill="currentColor"/></svg>
+      </span>
+      Scan existing sites
+    </a>
+  </div>
+</div>
+
+<script>
+/* ── Sites nav dropdown ── */
+document.addEventListener('DOMContentLoaded', function() {
+  var trigger = document.getElementById('sites-nav-trigger');
+  var dd      = document.getElementById('sites-dd');
+  if (!trigger || !dd) return;
+  function positionDropdown() {
+    var rect    = trigger.getBoundingClientRect();
+    var ddWidth = dd.offsetWidth || 340;
+    var left    = rect.left + rect.width / 2 - ddWidth / 2;
+    left = Math.max(8, Math.min(left, window.innerWidth - ddWidth - 8));
+    dd.style.top  = rect.bottom + 'px';
+    dd.style.left = left + 'px';
+    var caretEl = dd.querySelector('.sites-dd-caret');
+    if (caretEl) {
+      var offset = (rect.left + rect.width / 2) - left - 17;
+      caretEl.style.marginLeft = Math.max(10, Math.min(offset, ddWidth - 44)) + 'px';
+      caretEl.style.alignSelf  = 'flex-start';
+    }
+  }
+  function openDD()  { dd.classList.add('is-open');    trigger.classList.add('sites-active');    positionDropdown(); }
+  function closeDD() { dd.classList.remove('is-open'); trigger.classList.remove('sites-active'); }
+  trigger.addEventListener('click', function(e) {
+    e.preventDefault(); e.stopPropagation();
+    dd.classList.contains('is-open') ? closeDD() : openDD();
+  });
+  document.addEventListener('click', function(e) {
+    if (!dd.contains(e.target) && e.target !== trigger) closeDD();
+  });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDD(); });
+});
+</script>
+
+<script>
+/* ── Scans nav dropdown ── */
+document.addEventListener('DOMContentLoaded', function() {
+  var trigger = document.getElementById('scans-nav-trigger');
+  var dd      = document.getElementById('scans-dd');
+  if (!trigger || !dd) return;
+  function positionDropdown() {
+    var rect    = trigger.getBoundingClientRect();
+    var ddWidth = dd.offsetWidth || 340;
+    var left    = rect.left + rect.width / 2 - ddWidth / 2;
+    left = Math.max(8, Math.min(left, window.innerWidth - ddWidth - 8));
+    dd.style.top  = rect.bottom + 'px';
+    dd.style.left = left + 'px';
+    var caretEl = dd.querySelector('.sites-dd-caret');
+    if (caretEl) {
+      var offset = (rect.left + rect.width / 2) - left - 17;
+      caretEl.style.marginLeft = Math.max(10, Math.min(offset, ddWidth - 44)) + 'px';
+      caretEl.style.alignSelf  = 'flex-start';
+    }
+  }
+  function openDD()  { dd.classList.add('is-open');    trigger.classList.add('scans-active');    positionDropdown(); }
+  function closeDD() { dd.classList.remove('is-open'); trigger.classList.remove('scans-active'); }
+  trigger.addEventListener('click', function(e) {
+    e.preventDefault(); e.stopPropagation();
+    dd.classList.contains('is-open') ? closeDD() : openDD();
+  });
+  document.addEventListener('click', function(e) {
+    if (!dd.contains(e.target) && e.target !== trigger) closeDD();
+  });
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDD(); });
 });
 </script>
 </body>
