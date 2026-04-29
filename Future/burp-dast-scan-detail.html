@@ -2837,6 +2837,11 @@
 
 
 
+    /* ── Snapshot view: hide selection + bulk actions (scan results are read-only) ── */
+    .issues-grid-card .row-checkbox,
+    .issues-grid-card .th-checkbox,
+    .issues-grid-card .bulk-bar { display: none !important; }
+
     /* ── Bulk action bar ── */
     .bulk-bar {
       display: none;
@@ -4193,7 +4198,7 @@
         <!-- Download row -->
         <div class="download-row">
           <div style="display:flex;flex-direction:column;gap:5px;">
-            <span style="font-family:var(--font);font-size:12px;font-weight:400;color:#676667;line-height:1.4;">8 April 2026, 9:47 AM</span>
+            <span style="font-family:var(--font);font-size:12px;font-weight:400;color:var(--c-secondary);line-height:1.4;">8 April 2026, 9:47 AM</span>
             <div style="display:flex;align-items:center;gap:20px;">
               <h3 class="download-row-title">Issues found in this scan</h3>
               <a href="burp-dast-figma-issues-v11-gin-juice-shop.html" class="btn-outlined" style="padding:0 15px;text-decoration:none;">Live issues for this site</a>
