@@ -2179,7 +2179,6 @@
       left: 50%;
       transform: translateX(-50%);
       width: calc(100vw - 120px);
-      max-width: 1400px;
       z-index: 900;
       box-shadow: 0 8px 32px rgba(0,0,0,0.28);
     }
@@ -2654,12 +2653,6 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: 14px 20px; border-top: 1px solid #EBF0F2;
     }
-    .sp-ai-not-investigated {
-      display: none; padding: 20px;
-      font-family: var(--font); font-size: 14px; color: #676667;
-      text-align: center; line-height: 1.5;
-    }
-    .sp-ai-not-investigated p { margin: 0 0 12px; }
 
     /* Sparkle (✦) SVG used inline */
     .sparkle-svg { display: inline; vertical-align: middle; }
@@ -5966,15 +5959,21 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         }
 
       } else if (action === 'retest') {
+        const fromMap = new Map();
         rows.forEach(row => {
           const pill = row.querySelector('.status-drop');
-          if (pill) renderPill(pill, 'scanning');
+          if (pill) {
+            fromMap.set(row, pill.dataset.status);
+            renderPill(pill, 'scanning');
+          }
         });
         const OUTCOMES = ['fixed', 'present', 'regressed'];
         rows.forEach((row, i) => {
           setTimeout(() => {
             const pill = row.querySelector('.status-drop');
-            if (pill) renderPill(pill, OUTCOMES[Math.floor(Math.random() * OUTCOMES.length)]);
+            const newStatus = OUTCOMES[Math.floor(Math.random() * OUTCOMES.length)];
+            if (pill) renderPill(pill, newStatus);
+            addRetestEntryToRow(row, fromMap.get(row), newStatus);
           }, 2000 + i * 700);
         });
         setTimeout(deselectAll, 2000 + rows.length * 700 + 200);
@@ -7643,6 +7642,22 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     }
   }
 
+  function refreshTlFilterBar() {
+    const tlCards = document.getElementById('tlCards');
+    if (!tlCards) return;
+    const raw = new Set(Array.from(tlCards.children).map(c => c.dataset.tlType));
+    const types = new Set();
+    raw.forEach(t => types.add(t === 'status-change' ? 'status' : t));
+    document.querySelectorAll('.tl-filter-btn[data-filter]').forEach(btn => {
+      if (btn.dataset.filter === 'all') return;
+      const f = btn.dataset.filter;
+      const has = f === 'integrations' ? (types.has('gitlab') || types.has('jira')) : types.has(f);
+      btn.style.display = has ? '' : 'none';
+    });
+    const bar = document.querySelector('.tl-filters');
+    if (bar) bar.style.display = types.size <= 1 ? 'none' : '';
+  }
+
   function renderTimeline(rowIndex) {
     const events   = TIMELINE_DATA[rowIndex];
     const tlCards  = document.getElementById('tlCards');
@@ -7657,16 +7672,44 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       tlDotCol.appendChild(dot);
     });
     // Reset filters
-    document.querySelectorAll('.tl-filter-btn').forEach(b => b.classList.remove('active', 'disabled'));
+    document.querySelectorAll('.tl-filter-btn').forEach(b => b.classList.remove('active'));
     const allBtn = document.querySelector('.tl-filter-btn[data-filter="all"]');
     if (allBtn) allBtn.classList.add('active');
-    const types = new Set(events.map(ev => ev.type === 'status-change' ? 'status' : ev.type));
-    document.querySelectorAll('.tl-filter-btn[data-filter]').forEach(btn => {
-      if (btn.dataset.filter === 'all') return;
-      const f = btn.dataset.filter;
-      const active = f === 'integrations' ? (types.has('gitlab') || types.has('jira')) : types.has(f);
-      if (!active) btn.classList.add('disabled');
-    });
+    refreshTlFilterBar();
+  }
+
+  function addRetestEntryToRow(rowEl, fromStatus, toStatus) {
+    if (!rowEl) return;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    const ev = { type: 'retest', date: dateStr, author: 'Ric Corbally', from: fromStatus, to: toStatus };
+    const rows = Array.from(document.querySelectorAll('[data-row]'));
+    const rowIdx = rows.indexOf(rowEl);
+    if (rowIdx >= 0 && TIMELINE_DATA[rowIdx]) {
+      TIMELINE_DATA[rowIdx].unshift(ev);
+    }
+    if (activeRow === rowEl) {
+      const tlCards  = document.getElementById('tlCards');
+      const tlDotCol = document.getElementById('tlDotCol');
+      if (!tlCards || !tlDotCol) return;
+      const card = buildTlCard(ev);
+      const dot  = document.createElement('div');
+      dot.className = 'tl-dot';
+      tlCards.insertBefore(card, tlCards.firstChild);
+      tlDotCol.insertBefore(dot, tlDotCol.firstChild);
+      card.classList.add('tl-card-new');
+      setTimeout(() => {
+        card.classList.add('tl-card-new-fade');
+        setTimeout(() => card.classList.remove('tl-card-new', 'tl-card-new-fade'), 300);
+      }, 1000);
+      refreshTlFilterBar();
+      const activeFilter = document.querySelector('.tl-filter-btn.active')?.dataset.filter;
+      if (activeFilter && activeFilter !== 'all' && activeFilter !== 'retest') {
+        card.style.display = 'none';
+        dot.style.display  = 'none';
+      }
+      requestAnimationFrame(positionTimelineDots);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -7746,9 +7789,8 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       setTimeout(() => card.classList.remove('tl-card-new', 'tl-card-new-fade'), 300);
     }, 1000);
 
-    // Enable the comment filter chip if it was disabled
-    const commentChip = document.querySelector('.tl-filter-btn[data-filter="comment"]');
-    if (commentChip) commentChip.classList.remove('disabled');
+    // Re-evaluate filter bar after adding comment
+    refreshTlFilterBar();
 
     // If a non-"all" filter is active, make the new card respect it
     const activeFilter = document.querySelector('.tl-filter-btn.active')?.dataset.filter;
@@ -7862,7 +7904,6 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     const aiOutputRow  = document.getElementById('spAIOutputRow');
     const aiOutputVal  = document.getElementById('spAIOutputVal');
     const aiContent    = document.getElementById('spAIContent');
-    const aiNotInvest  = document.getElementById('spAINotInvestigated');
 
     const AI_BADGE_HTML = {
       confirmed:    '<span class="ai-badge">' + AI_SVG_CHECK + '<span class="ai-badge-text">Issue Confirmed</span></span>',
@@ -7875,7 +7916,6 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       if (aiOutputRow) aiOutputRow.style.display = 'flex';
       if (aiOutputVal) aiOutputVal.innerHTML = AI_BADGE_HTML[aiState] || '';
       if (aiContent)   aiContent.style.display   = 'flex';
-      if (aiNotInvest) aiNotInvest.style.display  = 'none';
       // Populate AI content
       if (aiData) {
         const sumEl    = document.getElementById('spAISummary');
@@ -7890,12 +7930,9 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         if (repEl) repEl.textContent = aiData.repro    || '';
       }
     } else {
-      // No AI output — hide badge, show not-investigated prompt
+      // No AI output — hide badge
       if (aiOutputRow) aiOutputRow.style.display = 'none';
       if (aiContent)   aiContent.style.display   = 'none';
-      if (aiNotInvest) aiNotInvest.style.display  = 'flex';
-      if (aiNotInvest) aiNotInvest.style.flexDirection = 'column';
-      if (aiNotInvest) aiNotInvest.style.alignItems = 'center';
     }
 
     if (activeRow) activeRow.classList.remove('row-panel-active');
@@ -7987,6 +8024,8 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     ];
 
     retestBtn.addEventListener('click', () => {
+      const fromStatus = spStatusPill.dataset.status;
+      const targetRow  = activeRow;
       retestBar.classList.remove('visible');
       retestBtn.classList.add('sp-btn-scanning');
       retestBtn.innerHTML = ICON_SCANNING + ' Scanning';
@@ -8000,6 +8039,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         document.getElementById('spRetestBarIcon').innerHTML = outcome.icon;
         document.getElementById('spRetestBarText').textContent = outcome.message;
         retestBar.classList.add('visible');
+        addRetestEntryToRow(targetRow, fromStatus, outcome.status);
       }, 3000);
     });
 
@@ -9142,16 +9182,6 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
           </div>
         </div>
 
-        <!-- Burp AI — not yet investigated (inline in Advisory tab) -->
-        <div class="sp-ai-not-investigated" id="spAINotInvestigated">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" style="margin:0 auto 12px;display:block;color:#C8CACC"><path d="M20.281 15.2093C15.9937 13.9771 15.0231 13.0065 13.7908 8.7191C13.7536 8.58935 13.6351 8.50012 13.5002 8.50012C13.3653 8.50012 13.2467 8.58935 13.2095 8.7191C11.977 13.0068 11.0064 13.9771 6.719 15.2093C6.58924 15.2465 6.50002 15.3651 6.50002 15.5C6.50002 15.6349 6.58924 15.7534 6.719 15.7906C11.0067 17.0232 11.977 17.9935 13.2095 22.2811C13.2467 22.4109 13.3653 22.5001 13.5002 22.5001C13.6351 22.5001 13.7536 22.4109 13.7908 22.2811C15.0231 17.9938 15.9934 17.0232 20.281 15.7906C20.4108 15.7534 20.5 15.6349 20.5 15.5C20.5 15.3651 20.4108 15.2468 20.281 15.2093Z" fill="currentColor"/><path d="M22.7968 4.23013C20.1075 3.45742 19.5431 2.89269 18.7698 0.203212C18.7352 0.0828006 18.6252 0 18.5 0C18.3748 0 18.2648 0.0828006 18.2303 0.203212C17.4573 2.89269 16.8925 3.45742 14.2032 4.23013C14.0828 4.26465 14 4.37468 14 4.49986C14 4.62504 14.0828 4.73507 14.2032 4.76959C16.8925 5.54259 17.4573 6.10731 18.2303 8.79679C18.2648 8.9172 18.3748 9 18.5 9C18.6252 9 18.7352 8.9172 18.7698 8.79679C19.5431 6.10731 20.1075 5.54259 22.7968 4.76959C22.9172 4.73507 23 4.62532 23 4.49986C23 4.3744 22.9172 4.26465 22.7968 4.23013Z" fill="currentColor"/><path d="M11 7.50009C11 7.30786 10.8729 7.1389 10.6879 7.08589C7.49971 6.16911 6.83077 5.50017 5.91442 2.31193C5.86141 2.12703 5.69245 1.99988 5.50022 1.99988C5.30798 1.99988 5.13902 2.12703 5.08601 2.31193C4.16923 5.50017 3.50029 6.16911 0.312057 7.08589C0.12715 7.1389 0 7.30743 0 7.50009C0 7.69276 0.12715 7.86129 0.312057 7.9143C3.49986 8.83021 4.16923 9.49958 5.08601 12.6878C5.13902 12.8727 5.30798 12.9999 5.50022 12.9999C5.69245 12.9999 5.86141 12.8727 5.91442 12.6878C6.83077 9.49958 7.50014 8.83021 10.6879 7.9143C10.8729 7.86086 11 7.69233 11 7.50009Z" fill="currentColor"/></svg>
-          <p>This issue has not been investigated by Burp AI.</p>
-          <p>Burp AI was not scoped to investigate this issue in the original scan. You can trigger a manual investigation below.</p>
-          <button class="sp-investigate-btn" style="margin:4px auto 0;display:flex;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:white"><path d="M20.281 15.2093C15.9937 13.9771 15.0231 13.0065 13.7908 8.7191C13.7536 8.58935 13.6351 8.50012 13.5002 8.50012C13.3653 8.50012 13.2467 8.58935 13.2095 8.7191C11.977 13.0068 11.0064 13.9771 6.719 15.2093C6.58924 15.2465 6.50002 15.3651 6.50002 15.5C6.50002 15.6349 6.58924 15.7534 6.719 15.7906C11.0067 17.0232 11.977 17.9935 13.2095 22.2811C13.2467 22.4109 13.3653 22.5001 13.5002 22.5001C13.6351 22.5001 13.7536 22.4109 13.7908 22.2811C15.0231 17.9938 15.9934 17.0232 20.281 15.7906C20.4108 15.7534 20.5 15.6349 20.5 15.5C20.5 15.3651 20.4108 15.2468 20.281 15.2093Z" fill="currentColor"/><path d="M22.7968 4.23013C20.1075 3.45742 19.5431 2.89269 18.7698 0.203212C18.7352 0.0828006 18.6252 0 18.5 0C18.3748 0 18.2648 0.0828006 18.2303 0.203212C17.4573 2.89269 16.8925 3.45742 14.2032 4.23013C14.0828 4.26465 14 4.37468 14 4.49986C14 4.62504 14.0828 4.73507 14.2032 4.76959C16.8925 5.54259 17.4573 6.10731 18.2303 8.79679C18.2648 8.9172 18.3748 9 18.5 9C18.6252 9 18.7352 8.9172 18.7698 8.79679C19.5431 6.10731 20.1075 5.54259 22.7968 4.76959C22.9172 4.73507 23 4.62532 23 4.49986C23 4.3744 22.9172 4.26465 22.7968 4.23013Z" fill="currentColor"/><path d="M11 7.50009C11 7.30786 10.8729 7.1389 10.6879 7.08589C7.49971 6.16911 6.83077 5.50017 5.91442 2.31193C5.86141 2.12703 5.69245 1.99988 5.50022 1.99988C5.30798 1.99988 5.13902 2.12703 5.08601 2.31193C4.16923 5.50017 3.50029 6.16911 0.312057 7.08589C0.12715 7.1389 0 7.30743 0 7.50009C0 7.69276 0.12715 7.86129 0.312057 7.9143C3.49986 8.83021 4.16923 9.49958 5.08601 12.6878C5.13902 12.8727 5.30798 12.9999 5.50022 12.9999C5.69245 12.9999 5.86141 12.8727 5.91442 12.6878C6.83077 9.49958 7.50014 8.83021 10.6879 7.9143C10.8729 7.86086 11 7.69233 11 7.50009Z" fill="currentColor"/></svg>
-            Investigate issue
-          </button>
-        </div>
 
         <div class="sp-accordions">
           <div class="sp-accordion open">
