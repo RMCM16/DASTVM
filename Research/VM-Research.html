@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer-evidence pack — Burp DAST Issues v10 + v11</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --c-primary: #000023;
+  --c-body: #333332;
+  --c-secondary: #676667;
+  --c-border: #CBD0D1;
+  --c-border-light: #EBF0F2;
+  --c-bg: #f0f8fb;
+  --c-white: #FFFFFF;
+  --c-orange: #ff6633;
+  --c-high: #F32A4C;
+  --c-medium: #FF6633;
+  --c-low: #0094FF;
+  --c-pro1: #5B4FFF;
+  --c-pro2: #4C4FB1;
+  --c-pro6: #F7F6FF;
+  --c-red2: #D6213F;
+  --c-green: #1F8A4C;
+  --font: 'Roboto', -apple-system, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { min-height: 100%; }
+
+body {
+  font-family: var(--font);
+  background: var(--c-bg);
+  color: var(--c-body);
+  line-height: 1.55;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  background: var(--c-white);
+  box-shadow: 0 0 30px rgba(0, 0, 35, 0.08);
+  padding: 60px 70px 80px;
+  min-height: 100vh;
+}
+
+/* ─── Header ─── */
+.doc-header {
+  border-bottom: 4px solid var(--c-primary);
+  padding-bottom: 28px;
+  margin-bottom: 36px;
+}
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--c-orange);
+  margin-bottom: 14px;
+}
+.eyebrow::before {
+  content: "";
+  width: 18px;
+  height: 2px;
+  background: var(--c-orange);
+}
+h1 {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--c-primary);
+  line-height: 1.2;
+  letter-spacing: -0.4px;
+  margin-bottom: 14px;
+}
+.subtitle {
+  font-size: 16px;
+  color: var(--c-secondary);
+  margin-bottom: 24px;
+  max-width: 680px;
+}
+.meta-grid {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 24px;
+  font-size: 13px;
+}
+.meta-grid dt {
+  color: var(--c-secondary);
+  font-weight: 500;
+}
+.meta-grid dd {
+  color: var(--c-body);
+}
+.meta-grid code {
+  font-family: 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 12px;
+  background: var(--c-pro6);
+  color: var(--c-pro2);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+/* ─── Slim meta caption + collapsible methodology details ─── */
+.meta-caption {
+  font-size: 13px;
+  color: var(--c-secondary);
+  margin-top: 18px;
+  padding: 12px 0 6px;
+  border-top: 1px solid var(--c-border-light);
+}
+.meta-caption strong { color: var(--c-primary); font-weight: 500; }
+
+.meta-details {
+  margin: 4px 0 0;
+}
+.meta-details summary {
+  cursor: pointer;
+  color: var(--c-pro2);
+  font-weight: 500;
+  padding: 6px 10px 6px 0;
+  list-style: none;
+  display: inline-block;
+  font-size: 12px;
+  user-select: none;
+}
+.meta-details summary::-webkit-details-marker { display: none; }
+.meta-details summary::before {
+  content: "▸";
+  color: var(--c-pro2);
+  display: inline-block;
+  margin-right: 6px;
+  font-size: 10px;
+  transition: transform 0.15s;
+}
+.meta-details[open] summary::before { content: "▾"; }
+.meta-details summary:hover { color: var(--c-pro1); }
+.meta-details-body {
+  margin-top: 10px;
+  padding: 16px 20px;
+  background: var(--c-bg);
+  border-radius: 6px;
+}
+.meta-details-body dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 10px 24px;
+  margin: 0;
+}
+.meta-details-body dt {
+  color: var(--c-secondary);
+  font-weight: 500;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.meta-details-body dd {
+  color: var(--c-body);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.meta-details-body code {
+  font-family: 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 11.5px;
+  background: var(--c-pro6);
+  color: var(--c-pro2);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* ─── Collapsible top-level sections (1, 4, 6) ─── */
+section[data-collapsible] {
+  margin-top: 36px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--c-border-light);
+}
+section[data-collapsible].is-collapsed {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+section[data-collapsible] h2 {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 36px;
+  margin-bottom: 18px;
+}
+section[data-collapsible].is-collapsed h2 {
+  margin-bottom: 0;
+}
+section[data-collapsible] h2::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  border-right: 2px solid var(--c-secondary);
+  border-bottom: 2px solid var(--c-secondary);
+  transform: translateY(-70%) rotate(45deg);
+  transform-origin: 50% 50%;
+  transition: transform 0.2s ease;
+}
+section[data-collapsible].is-collapsed h2::after {
+  transform: translateY(-30%) rotate(-45deg);
+}
+section[data-collapsible] h2:hover { color: var(--c-orange); }
+section[data-collapsible] h2:hover::after { border-color: var(--c-orange); }
+section[data-collapsible].is-collapsed > *:not(h2) {
+  display: none;
+}
+
+/* ─── Sections ─── */
+section {
+  margin-top: 48px;
+}
+h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--c-primary);
+  margin-bottom: 18px;
+  letter-spacing: -0.2px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+h2 .num {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-primary);
+  color: var(--c-white);
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--c-primary);
+  margin: 28px 0 10px;
+}
+
+p { margin-bottom: 12px; }
+p:last-child { margin-bottom: 0; }
+
+/* ─── Summary table ─── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 8px 0 6px;
+}
+th {
+  text-align: left;
+  background: var(--c-border-light);
+  color: var(--c-primary);
+  padding: 10px 12px;
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 1px solid var(--c-border);
+}
+td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--c-border-light);
+  vertical-align: top;
+}
+td:first-child { width: 38%; font-weight: 500; color: var(--c-primary); }
+td:nth-child(2) { width: 22%; }
+
+/* ─── Content tags (DS) ─── */
+.ctag {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+}
+.ctag-strong  { background: rgba(31, 138, 76, 0.12); color: var(--c-green); }
+.ctag-partial { background: rgba(255, 102, 51, 0.14); color: var(--c-orange); }
+.ctag-low     { background: rgba(214, 33, 63, 0.10); color: var(--c-red2); }
+.ctag-unaddr  { background: rgba(214, 33, 63, 0.10); color: var(--c-red2); }
+.ctag-inferred { background: rgba(91, 79, 255, 0.10); color: var(--c-pro1); }
+.ctag-tier1   { background: var(--c-primary); color: var(--c-white); }
+.ctag-tier3   { background: var(--c-secondary); color: var(--c-white); }
+.ctag-tier-other { background: var(--c-border); color: var(--c-primary); }
+.ctag-gong { background: rgba(91, 79, 255, 0.10); color: var(--c-pro1); border: 1px solid rgba(91, 79, 255, 0.25); }
+.ctag-sf { background: var(--c-border-light); color: var(--c-secondary); }
+.ctag-pm { background: rgba(255, 102, 51, 0.14); color: var(--c-orange); border: 1px solid rgba(255, 102, 51, 0.30); }
+.source-line { font-size: 11px; color: var(--c-secondary); margin-top: 8px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.acv { font-family: 'SFMono-Regular', Menlo, Consolas, monospace; font-size: 11px; background: var(--c-primary); color: var(--c-white); padding: 1px 6px; border-radius: 3px; font-weight: 500; }
+.acv-lost { background: var(--c-red2); }
+.evidence.evidence-pm { border-left-color: var(--c-orange); background: rgba(255, 102, 51, 0.04); }
+.callout {
+  background: var(--c-pro6);
+  border: 1px solid rgba(91, 79, 255, 0.20);
+  border-radius: 8px;
+  padding: 18px 22px;
+  margin: 24px 0 32px;
+}
+.callout-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-pro2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.callout p { font-size: 14px; color: var(--c-body); margin-bottom: 10px; }
+.callout p:last-child { margin-bottom: 0; }
+.mea-culpa {
+  background: rgba(255, 102, 51, 0.08);
+  border-left: 3px solid var(--c-orange);
+  padding: 14px 18px;
+  margin: 14px 0 18px;
+  border-radius: 0 4px 4px 0;
+  font-size: 14px;
+  color: var(--c-body);
+}
+.mea-culpa-label {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--c-orange);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
+}
+
+/* ─── Quote / evidence block ─── */
+.evidence {
+  margin: 14px 0 18px;
+  background: var(--c-bg);
+  border-radius: 6px;
+  padding: 18px 20px;
+  border-left: 3px solid var(--c-pro1);
+}
+.evidence + .evidence { margin-top: 10px; }
+.evidence blockquote {
+  font-size: 14px;
+  color: var(--c-body);
+  font-style: italic;
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+.evidence blockquote::before { content: "“"; color: var(--c-pro1); font-size: 24px; line-height: 0; vertical-align: -8px; margin-right: 2px; }
+.evidence blockquote::after { content: "”"; color: var(--c-pro1); font-size: 24px; line-height: 0; vertical-align: -8px; margin-left: 2px; }
+.attrib {
+  font-size: 12px;
+  color: var(--c-secondary);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.attrib .author { font-weight: 500; color: var(--c-primary); font-style: normal; }
+.attrib .case-num {
+  font-family: 'SFMono-Regular', Menlo, Consolas, monospace;
+  font-size: 11px;
+  background: var(--c-white);
+  border: 1px solid var(--c-border);
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--c-secondary);
+}
+
+/* ─── Lists ─── */
+ul, ol { margin: 0 0 12px 20px; }
+li { margin-bottom: 6px; font-size: 14px; }
+li:last-child { margin-bottom: 0; }
+
+/* ─── Numbered follow-ups ─── */
+.followups {
+  counter-reset: fu;
+  list-style: none;
+  margin-left: 0;
+}
+.followups li {
+  counter-increment: fu;
+  position: relative;
+  padding: 14px 16px 14px 52px;
+  background: var(--c-white);
+  border: 1px solid var(--c-border-light);
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+.followups li::before {
+  content: counter(fu);
+  position: absolute;
+  left: 16px;
+  top: 14px;
+  width: 24px;
+  height: 24px;
+  background: var(--c-orange);
+  color: var(--c-white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ─── Footer ─── */
+.doc-footer {
+  margin-top: 60px;
+  padding-top: 24px;
+  border-top: 1px solid var(--c-border);
+  font-size: 12px;
+  color: var(--c-secondary);
+}
+
+/* ─── Usability scenario blocks ─── */
+.persona {
+  background: var(--c-pro6);
+  border-left: 3px solid var(--c-pro1);
+  border-radius: 0 8px 8px 0;
+  padding: 18px 22px;
+  margin-bottom: 28px;
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+}
+.persona-avatar {
+  width: 46px; height: 46px;
+  background: var(--c-primary);
+  color: var(--c-white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.persona-name { font-weight: 500; color: var(--c-primary); font-size: 14px; margin-bottom: 4px; }
+.persona-bio { font-size: 13px; color: var(--c-body); line-height: 1.5; }
+
+.scenario {
+  margin: 22px 0;
+  border: 1px solid var(--c-border-light);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--c-white);
+}
+.scenario-header {
+  background: var(--c-primary);
+  color: var(--c-white);
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.scenario-num {
+  width: 26px; height: 26px;
+  background: var(--c-orange);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.scenario-title { font-weight: 500; font-size: 15px; }
+.scenario-task {
+  background: var(--c-bg);
+  padding: 12px 20px;
+  font-size: 13px;
+  color: var(--c-secondary);
+  border-bottom: 1px solid var(--c-border-light);
+  font-style: italic;
+}
+.scenario-body { padding: 18px 20px; }
+
+.verdict {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 10px 16px;
+  padding: 14px 0;
+  border-top: 1px dashed var(--c-border-light);
+  font-size: 14px;
+  align-items: start;
+}
+.verdict:first-of-type { border-top: none; padding-top: 4px; }
+.verdict-label {
+  font-size: 10.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 8px;
+  border-radius: 4px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  margin-top: 2px;
+  width: max-content;
+}
+.verdict-working { background: rgba(31, 138, 76, 0.12); color: var(--c-green); }
+.verdict-risk { background: rgba(255, 102, 51, 0.16); color: var(--c-orange); }
+.verdict-rethink { background: rgba(91, 79, 255, 0.10); color: var(--c-pro1); }
+.verdict p { margin-bottom: 8px; font-size: 14px; }
+.verdict p:last-child { margin-bottom: 0; }
+.verdict ul { margin: 4px 0 0 18px; }
+.verdict li { font-size: 13.5px; margin-bottom: 4px; }
+
+/* ─── Executive summary ─── */
+.exec-summary {
+  background: linear-gradient(135deg, #F7F6FF 0%, #fff 100%);
+  border: 2px solid var(--c-pro1);
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin: 28px 0 24px;
+}
+.exec-summary-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--c-pro1);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  background: var(--c-pro6);
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+.exec-summary-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--c-primary);
+  margin-bottom: 6px;
+}
+.exec-summary-sub {
+  font-size: 13px;
+  color: var(--c-secondary);
+  margin-bottom: 18px;
+}
+.exec-summary-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: execsum;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.exec-summary-list li {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  gap: 12px;
+  align-items: start;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--c-body);
+  margin: 0;
+  counter-increment: execsum;
+}
+.exec-summary-list li::before {
+  content: counter(execsum);
+  width: 22px;
+  height: 22px;
+  background: var(--c-pro1);
+  color: var(--c-white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.exec-summary-list strong { color: var(--c-primary); }
+.exec-summary-list a {
+  color: var(--c-pro2);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid var(--c-border);
+  white-space: nowrap;
+}
+.exec-summary-list a:hover { border-bottom-color: var(--c-pro2); }
+
+/* ─── Audience entry points ─── */
+.audience-section { margin: 0 0 36px; }
+.audience-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--c-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 12px;
+}
+.audience-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.audience-card {
+  background: var(--c-white);
+  border: 1px solid var(--c-border-light);
+  border-radius: 8px;
+  padding: 14px 16px;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.audience-card:hover {
+  border-color: var(--c-orange);
+  transform: translateY(-1px);
+}
+.audience-card-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--c-primary);
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.audience-card-name::before {
+  content: "→";
+  color: var(--c-orange);
+  font-weight: 400;
+  font-size: 16px;
+}
+.audience-card-desc {
+  font-size: 12px;
+  color: var(--c-secondary);
+  margin-bottom: 10px;
+  line-height: 1.45;
+}
+.audience-card-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.audience-card-links a {
+  display: inline-block;
+  padding: 3px 9px;
+  background: var(--c-bg);
+  color: var(--c-pro2);
+  border-radius: 4px;
+  font-size: 11.5px;
+  text-decoration: none;
+  transition: background 0.15s;
+  font-family: 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+.audience-card-links a:hover { background: var(--c-pro6); }
+@media (max-width: 600px) { .audience-grid { grid-template-columns: 1fr; } }
+
+/* ─── TOC rail ─── */
+.toc-rail {
+  position: fixed;
+  left: 24px;
+  top: 60px;
+  width: 220px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  background: var(--c-white);
+  border: 1px solid var(--c-border-light);
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 13px;
+  z-index: 20;
+  box-shadow: 0 2px 12px rgba(0, 0, 35, 0.05);
+}
+.toc-eyebrow {
+  font-size: 10.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--c-secondary);
+  margin-bottom: 10px;
+}
+.toc-link {
+  display: block;
+  padding: 6px 10px;
+  color: var(--c-body);
+  text-decoration: none;
+  font-size: 12.5px;
+  border-radius: 4px;
+  margin-bottom: 1px;
+  transition: background 0.15s;
+}
+.toc-link:hover { background: var(--c-bg); color: var(--c-primary); }
+.toc-link.is-active {
+  background: var(--c-pro6);
+  color: var(--c-pro2);
+  font-weight: 500;
+}
+.toc-link .toc-num {
+  display: inline-block;
+  width: 18px;
+  color: var(--c-secondary);
+  font-weight: 500;
+  font-size: 11px;
+  font-family: 'SFMono-Regular', Menlo, Consolas, monospace;
+}
+.toc-link.is-active .toc-num { color: var(--c-pro1); }
+.toc-divider {
+  border-top: 1px solid var(--c-border-light);
+  margin: 12px 0;
+}
+.toc-link-sm {
+  display: block;
+  padding: 4px 10px;
+  color: var(--c-orange);
+  font-size: 11.5px;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.toc-link-sm:hover { background: var(--c-pro6); }
+@media (max-width: 1240px) { .toc-rail { display: none; } }
+
+/* ─── Collapsible themes (progressive disclosure) ─── */
+.theme {
+  margin-top: 28px;
+  margin-bottom: 0;
+  border-radius: 6px;
+}
+.theme h3 {
+  cursor: pointer;
+  position: relative;
+  padding-right: 32px;
+  margin-top: 0;
+  user-select: none;
+}
+.theme h3::after {
+  content: "";
+  position: absolute;
+  right: 4px;
+  top: 9px;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--c-secondary);
+  border-bottom: 2px solid var(--c-secondary);
+  transform: rotate(45deg);
+  transform-origin: 70% 70%;
+  transition: transform 0.18s ease;
+}
+.theme.is-collapsed h3::after {
+  transform: rotate(-45deg);
+}
+.theme h3:hover { color: var(--c-orange); }
+.theme h3:hover::after { border-color: var(--c-orange); }
+.theme.is-collapsed .theme-body { display: none; }
+.theme-body { padding-top: 4px; }
+.theme:target h3 { color: var(--c-pro1); }
+
+.theme-controls {
+  display: flex;
+  gap: 8px;
+  margin: 16px 0 8px;
+}
+.theme-ctrl-btn {
+  background: var(--c-white);
+  border: 1px solid var(--c-border);
+  border-radius: 200px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--c-body);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: border-color 0.15s, color 0.15s;
+}
+.theme-ctrl-btn:hover {
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+}
+
+/* ─── Print ─── */
+@media print {
+  body { background: var(--c-white); font-size: 12px; }
+  .page { box-shadow: none; padding: 30px 40px; max-width: 100%; }
+  .evidence { break-inside: avoid; }
+  section { break-inside: avoid-page; }
+  h2 { break-after: avoid; }
+  h3 { break-after: avoid; }
+  .followups li { break-inside: avoid; }
+  table { break-inside: avoid; }
+  a { color: inherit; text-decoration: none; }
+  .toc-rail, .theme-controls { display: none !important; }
+  .theme.is-collapsed .theme-body { display: block !important; }
+  .theme h3::after { display: none; }
+  .exec-summary { break-inside: avoid; }
+  .audience-card { break-inside: avoid; }
+  section[data-collapsible].is-collapsed > * { display: revert !important; }
+  section[data-collapsible] h2::after { display: none; }
+  .meta-details:not([open]) .meta-details-body { display: block !important; }
+  .meta-details summary::before { display: none; }
+}
+
+@media (max-width: 720px) {
+  .page { padding: 32px 24px; }
+  h1 { font-size: 24px; }
+  table { font-size: 12px; }
+  td:first-child, td:nth-child(2) { width: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── Sticky TOC rail ─── -->
+<nav class="toc-rail" aria-label="Pack navigation">
+  <p class="toc-eyebrow">Evidence pack</p>
+  <a class="toc-link" href="#exec-summary"><span class="toc-num">★</span>Executive summary</a>
+  <div class="toc-divider"></div>
+  <a class="toc-link" href="#sec-1" data-section="sec-1"><span class="toc-num">1</span>Summary table</a>
+  <a class="toc-link" href="#sec-2" data-section="sec-2"><span class="toc-num">2</span>Evidence by theme</a>
+  <a class="toc-link" href="#sec-3" data-section="sec-3"><span class="toc-num">3</span>Usability walkthrough</a>
+  <a class="toc-link" href="#sec-4" data-section="sec-4"><span class="toc-num">4</span>Blind spots</a>
+  <a class="toc-link" href="#sec-5" data-section="sec-5"><span class="toc-num">5</span>Follow-ups</a>
+  <a class="toc-link" href="#sec-6" data-section="sec-6"><span class="toc-num">6</span>Methodology</a>
+  <div class="toc-divider"></div>
+  <p class="toc-eyebrow">Top picks</p>
+  <a class="toc-link-sm" href="#theme-2-10">2.10 v11 architecture</a>
+  <a class="toc-link-sm" href="#theme-2-13">2.13 FP scope (modal)</a>
+  <a class="toc-link-sm" href="#theme-2-16">2.16 Re-test demand</a>
+  <a class="toc-link-sm" href="#theme-2-23">2.23 Stable identity</a>
+  <a class="toc-link-sm" href="#theme-2-30">2.30 Commercial stakes</a>
+</nav>
+
+<div class="page">
+
+<header class="doc-header">
+  <div class="eyebrow">Customer-evidence pack · pilot</div>
+  <h1>Burp Suite DAST — Issues v10 &amp; v11</h1>
+  <p class="subtitle">A read of customer support evidence against the proposed Issues redesign — paired with a usability walkthrough as a Tier 1 AppSec engineer would experience it. Strong fits, gaps, and questions to take to the team — not a verdict.</p>
+
+  <p class="meta-caption">2026-04-30 · <strong>11 prototype files</strong> reviewed (v10 + 10 v11 variants) · <strong>3 evidence sources</strong> triangulated (Salesforce, Gong, PM Confluence brief)</p>
+
+  <details class="meta-details">
+    <summary>Methodology details — files, features, sources, sample</summary>
+    <div class="meta-details-body">
+      <dl>
+        <dt>Designs reviewed</dt>
+        <dd><code>v10.html</code> (estate-wide multi-site issues view) · <code>v11.html</code> (Asia regional view) · <code>v11-europe.html</code>, <code>v11-north-america.html</code> (other regional aggregates) · <code>v11-zenith-corp.html</code>, <code>v11-securenet.html</code>, <code>v11-nova-solutions.html</code>, <code>v11-datashield.html</code>, <code>v11-cyberguard-inc.html</code>, <code>v11-apex-digital.html</code>, <code>v11-gin-juice-shop.html</code> (per-site views).</dd>
+        <dt>v11 architecture</dt>
+        <dd>Hierarchical scoped issues view at any level of the customer's org tree. 3 regional aggregates + 7 per-site pages share a 340px left site-tree navigator (172 sites, 4-level nesting plus a "Pentest group" classification). Cross-page navigation is wired across the 11 HTML files. Folder pages have folder header + delete/new-site actions + Dashboard/Scans/Scheduled scans/Issues/Details tabs. Site pages have back button, delete-site / new-scan actions, a pre-scan check card, sub-tabs, and an embedded <code>.issues-grid-card</code> module.</dd>
+        <dt>Features covered</dt>
+        <dd>Issue table (13 columns, sticky severity/confidence/issue/site, column resize, Path column on site pages) · Filter chips (9 filters) · Stat cards (3 SLA donuts + Fix-rate line chart with time-window + severity-series toggles + drill-down modal) · Bulk-action bar with scope-resolution modals + free-text notes · 900px slide-in side panel with Manage / Advisory / Timeline tabs · Re-test workflow with status-transition bar · Burp AI confidence column · v11 site-tree navigator · pre-scan check card.</dd>
+        <dt>Source bias</dt>
+        <dd><strong>SF skews to broken things</strong> (complaints, FRs, troubleshooting) — "what's painful today". <strong>Gong skews to ambient sentiment</strong> — "what's working that we'd lose". <strong>PM doc skews to future-state demand</strong> — features customers ask for in sales/discovery calls that don't yet exist. Each source has a blind spot the others cover.</dd>
+        <dt>Sample</dt>
+        <dd>SF: ~150 cases via 9 SOSL searches, 26 drilled to full description. Gong: AI-summary of customer-attitude themes (synthesis, not raw transcripts). PM doc: 5 validated assertions, ~17 customer quotes with ACV figures including 2 named lost deals (Interpublic $97k, Peach Payments $12k).</dd>
+      </dl>
+    </div>
+  </details>
+</header>
+
+<!-- ─── Executive summary ─── -->
+<div class="exec-summary" id="exec-summary">
+  <span class="exec-summary-eyebrow">Executive summary · 60-second read</span>
+  <p class="exec-summary-title">If you read nothing else</p>
+  <p class="exec-summary-sub">Five highest-leverage findings, drawn from Salesforce + Gong + the PM Confluence brief, validated against all 11 prototype files (v10 + v11 regional aggregates + v11 per-site variants).</p>
+  <ol class="exec-summary-list">
+    <li><div><strong>Re-test is a renewal-driver, not over-investment.</strong> The PM brief surfaces 4 named customers worth ~$700k+ in attached deal value (Interpublic $200–300k renewal opp, Schwarz IT $250k, Visa $90k, Telus Health $183k) explicitly asking for the targeted-retest workflow v10 builds. SF tickets surfaced zero — earlier versions of this pack were wrong about this; the methodology lesson sits in <a href="#theme-2-16">2.16</a>.</div></li>
+    <li><div><strong>v11 is the RBAC implementation, not a single-site view.</strong> All 11 prototype files together implement a hierarchical scoped issues view (estate / region / site) via a 340px site-tree navigator — directly answering Gong's role-based dashboard scoping theme + the PM brief's system-of-record framing. Recommend unifying v10 + v11 as one zoomable surface. <a href="#theme-2-10">2.10</a> · <a href="#theme-2-19">2.19</a> · <a href="#theme-2-28">2.28</a></div></li>
+    <li><div><strong>Two lost deals + ~$1.5M in named-customer ARR sit on this redesign.</strong> PM brief attributes Interpublic ($97k) and Peach Payments ($12k) as lost; Visa ($363k), Mastercard ($58k), Schwarz IT ($250k), Amgen ($190k), Priceline ($200k opp), and others raise this gap in sales / discovery / renewals. Simon Kucher pricing research validates vulnerability management as a price-uplift driver. <a href="#theme-2-30">2.30</a></div></li>
+    <li><div><strong>Bifrost data-model alignment is the load-bearing dependency.</strong> v10/v11 row identity, Timeline events, retest history all assume issues persist across scans with stable IDs — the PM brief flags this as a foundation requirement. Highest-priority follow-up; everything else in the pack rides on top of it. <a href="#theme-2-23">2.23</a></div></li>
+    <li><div><strong>Status / FP scope is largely resolved at the bulk-action modal.</strong> Earlier versions of this pack flagged this as the highest-leverage UX gap. Reading the modals corrected that — three scope radios + notes + future-default note already exist. Remaining gap is dynamic-URL pattern marking (Babiel + AS Watson). <a href="#theme-2-13">2.13</a></div></li>
+  </ol>
+</div>
+
+<!-- ─── Audience entry points ─── -->
+<div class="audience-section">
+  <p class="audience-title">Start here, by audience</p>
+  <div class="audience-grid">
+    <div class="audience-card">
+      <div class="audience-card-name">If you're the PM</div>
+      <p class="audience-card-desc">Validating the brief's assertions against the design, plus what the design adds beyond the brief.</p>
+      <div class="audience-card-links">
+        <a href="#theme-2-10">2.10 v11 architecture</a>
+        <a href="#theme-2-16">2.16 retest demand</a>
+        <a href="#theme-2-23">2.23 stable identity</a>
+        <a href="#theme-2-30">2.30 commercial stakes</a>
+        <a href="#sec-5">§5 follow-ups</a>
+      </div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-card-name">If you're a designer</div>
+      <p class="audience-card-desc">Where the design works, where users will hit friction, what to rethink before the next iteration.</p>
+      <div class="audience-card-links">
+        <a href="#theme-2-13">2.13 FP scope modals</a>
+        <a href="#theme-2-19">2.19 RBAC = site-tree</a>
+        <a href="#theme-2-28">2.28 site-tree concerns</a>
+        <a href="#sec-3">§3 walkthrough</a>
+      </div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-card-name">If you're an engineer (Bifrost / data)</div>
+      <p class="audience-card-desc">The data-model dependencies the design assumes, and the back-end surface that won't be visible in the UI.</p>
+      <div class="audience-card-links">
+        <a href="#theme-2-23">2.23 stable identity</a>
+        <a href="#theme-2-12">2.12 resolved-status flow</a>
+        <a href="#theme-2-21">2.21 DAST↔Pro handoff</a>
+        <a href="#theme-2-27">2.27 CI/CD triage states</a>
+        <a href="#theme-2-15">2.15 comments → reports</a>
+      </div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-card-name">If you're leadership</div>
+      <p class="audience-card-desc">What's commercially at stake, why this matters, and the top three follow-ups everything else depends on.</p>
+      <div class="audience-card-links">
+        <a href="#theme-2-30">2.30 commercial stakes</a>
+        <a href="#theme-2-16">2.16 renewal driver</a>
+        <a href="#sec-4">§4 what evidence misses</a>
+        <a href="#sec-5">§5 top-3 follow-ups</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ─── Section 1: Summary table ─── -->
+<section id="sec-1" data-collapsible="true">
+  <h2><span class="num">1</span>How the evidence breaks down</h2>
+  <table>
+    <thead>
+      <tr><th>Theme in v10 / v11</th><th>Signal</th><th>Direct hits</th><th>Source</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>First-seen / Last-seen / Age columns</td><td><span class="ctag ctag-strong">Strong fit</span></td><td>00208771 (Tier 1) · 00361934 (Tier 2)</td><td>SF + Gong</td></tr>
+      <tr><td>Status column / "triaged" state</td><td><span class="ctag ctag-strong">Strong fit</span></td><td>00207151 (Tier 3) · 00268700 (Tier 2)</td><td>SF + Gong</td></tr>
+      <tr><td>SLA donuts + Fix-rate chart</td><td><span class="ctag ctag-strong">Strong fit</span></td><td>00284870 (Tier 1)</td><td>SF</td></tr>
+      <tr><td>Burp AI confidence column / verification</td><td><span class="ctag ctag-strong">Strong fit</span></td><td>00380639 · 00378740 · 00307715 · 00357567</td><td>SF + Gong</td></tr>
+      <tr><td>Filter system, incl. confidence-level filter</td><td><span class="ctag ctag-strong">Strong fit, with a gap</span></td><td>00382654 · 00278001 · 00307044 · 00322295 (Tier 1) · gap: 00262775</td><td>SF + Gong</td></tr>
+      <tr><td>Site-tags column</td><td><span class="ctag ctag-partial">Partial fit</span></td><td>00284870 (Tier 1)</td><td>SF</td></tr>
+      <tr><td>Linked-tickets column + side-panel Manage tab</td><td><span class="ctag ctag-partial">Partial fit</span></td><td>00174085 · 00261631</td><td>SF + Gong</td></tr>
+      <tr><td>Side-panel Advisory tab</td><td><span class="ctag ctag-partial">Partial fit</span></td><td>00373764 (Tier 2) · Gong: customers value request/response detail + WSAcad refs</td><td>SF + Gong</td></tr>
+      <tr><td>Side-panel Timeline + comments (chronological audit trail)</td><td><span class="ctag ctag-partial">Partial fit</span></td><td>00268700 (Tier 2) · 00335249 (Tier 1) · Gong: pen-tester notes, full history</td><td>SF + Gong</td></tr>
+      <tr><td>Re-test workflow + status-transition bar</td><td><span class="ctag ctag-strong">Strong fit (renewal-driver)</span></td><td><strong>PM Assertion 5:</strong> Interpublic ($200–300k renewal), Schwarz IT ($250k renewal), Visa ($90k), Telus Health ($183k) · Gong: tracking new/resolved/regressed valued</td><td>PM doc + Gong</td></tr>
+      <tr><td>Bulk-action bar</td><td><span class="ctag ctag-strong">Confirmed by Gong</span></td><td>00380639, 00382654 (implicit) · Gong: "apply at scale for recurring issues or specific applications"</td><td>SF + Gong</td></tr>
+      <tr><td>Status / FP scope (per-site vs global) · resolved by modal radios</td><td><span class="ctag ctag-strong">Strong fit (URL-pattern gap)</span></td><td>00307715 (Tier 1) — resolved by modal · 00347353 / 00382654 — URL-pattern gap remains</td><td>SF + Gong</td></tr>
+      <tr><td>Hierarchical scope navigation (v11 architecture, revised)</td><td><span class="ctag ctag-strong">Strong fit (implements 2.19)</span></td><td>v11 = estate / region / site scoped views via site-tree navigator · 11 prototype files surveyed</td><td>Gong + PM doc + design</td></tr>
+      <tr><td>v11 site-tree navigator (340px left panel)</td><td><span class="ctag ctag-strong">Strong fit, with viewport question</span></td><td>Tree + side panel = 110% of laptop viewport · needs collapsed state</td><td>Design</td></tr>
+      <tr><td>Pre-scan check card on site pages</td><td><span class="ctag ctag-inferred">Adjacent feature</span></td><td>00307579, 00375961 (scan failures) · separate review pass warranted</td><td>SF + design</td></tr>
+      <tr><td>Cross-platform issue management (3rd-party import)</td><td><span class="ctag ctag-unaddr">Unaddressed</span></td><td>00314129 (Tier 3) · Gong: pen-tester notes in history</td><td>SF + Gong</td></tr>
+      <tr><td>Email-notification controls (out of prototype scope)</td><td><span class="ctag ctag-unaddr">Unaddressed</span></td><td>00170005 (Tier 3)</td><td>SF</td></tr>
+      <tr><td>Jira write-back: auto-close, dynamic fields, per-site rules</td><td><span class="ctag ctag-unaddr">Unaddressed</span></td><td>00287383 (Tier 3) · 00184903 (Tier 4)</td><td>SF + Gong (Gong: integration valued, alongside in-DAST mgmt)</td></tr>
+      <tr><td>ServiceNow / non-Jira integration</td><td><span class="ctag ctag-unaddr">Unaddressed</span></td><td>00203179 (Tier 1)</td><td>SF</td></tr>
+      <tr><td>Vulnerable-sites leaderboard / management dashboard</td><td><span class="ctag ctag-strong">Strong sentiment</span></td><td>Gong: "leaderboard of most vulnerable sites" · valued today, prototype reframes it as SLA donuts</td><td>Gong</td></tr>
+      <tr><td>Role-based dashboard scoping (leadership / manager / dev views)</td><td><span class="ctag ctag-unaddr">Unaddressed</span></td><td>Gong: customers value RBAC-driven views by app/region</td><td>Gong</td></tr>
+      <tr><td>Web Security Academy references in Advisory</td><td><span class="ctag ctag-strong">Strong sentiment</span></td><td>Gong: customers value WSAcad links for learning + upskilling</td><td>Gong</td></tr>
+      <tr><td>Burp DAST ↔ Burp Pro handoff workflow</td><td><span class="ctag ctag-unaddr">Unaddressed</span></td><td>Gong: high-severity DAST findings reproduced in Pro for deeper analysis</td><td>Gong</td></tr>
+      <tr><td>CI/CD pipeline result consumption</td><td><span class="ctag ctag-unaddr">Out of scope</span></td><td>Gong: developers want results in the pipeline, not the UI</td><td>Gong</td></tr>
+      <tr><td>Stable vulnerability identity across scans</td><td><span class="ctag ctag-strong">Strong fit (Bifrost dependency)</span></td><td><strong>PM Assertion 1:</strong> Visa ($363k), Mastercard ($58k), RealPage ($40k), Amgen ($190k)</td><td>PM doc</td></tr>
+      <tr><td>Verified / True Positive triage state</td><td><span class="ctag ctag-strong">Strong fit, may be missing</span></td><td><strong>PM Assertion 4:</strong> Accenture ($144k TCV), Priceline ($200k opp)</td><td>PM doc</td></tr>
+      <tr><td>Audit / "proving what was checked"</td><td><span class="ctag ctag-unaddr">Unaddressed in v10</span></td><td><strong>PM Assertion 3:</strong> M&amp;S ($136k), RXSense ($15k) · auditor confidence</td><td>PM doc</td></tr>
+      <tr><td>Cross-deployment FP federation</td><td><span class="ctag ctag-unaddr">Out of v10 surface</span></td><td>PM doc: regional teams re-investigating same issues</td><td>PM doc</td></tr>
+      <tr><td>CI/CD pipeline must respect triage states</td><td><span class="ctag ctag-unaddr">Out of v10 surface</span></td><td>PM doc: builds fail on triaged FPs · ripples from 2.24 status taxonomy</td><td>PM doc</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size: 12px; color: var(--c-secondary); margin-top: 14px;">ARR Tier 1 = our largest accounts. Tier 5 = smallest.</p>
+</section>
+
+<!-- ─── Section 2: Evidence ─── -->
+<section id="sec-2">
+  <h2><span class="num">2</span>Evidence by theme</h2>
+
+  <div class="theme-controls">
+    <button class="theme-ctrl-btn" id="expandAllBtn">Expand all</button>
+    <button class="theme-ctrl-btn" id="collapseAllBtn">Collapse all</button>
+  </div>
+
+  <h3>2.1 First-seen date — confirmed pain, design solves it · <span style="font-size:12px; color:var(--c-orange); font-weight:500;">PM Assertion 2 (validated)</span></h3>
+  <div class="evidence">
+    <blockquote>…they express to us their need to know the first found date for each vulnerability, this will help the team to prioritize the older issues to be compliant with our remediation policies.</blockquote>
+    <div class="attrib"><span class="author">Diego Flores</span> · Thomson Reuters · <span class="ctag ctag-tier1">ARR Tier 1</span> · <span class="case-num">Case 00208771</span> · Mar 2025</div>
+  </div>
+  <div class="evidence evidence-pm">
+    <blockquote>So for example, how do we track a vulnerability when it's first found? Can we track that single vulnerability till it's remediated? What's the dwell time?… reports that leadership want to see to show that vulnerabilities have been remediated, that's really important.</blockquote>
+    <div class="attrib"><span class="author">Interpublic</span> · <span class="acv acv-lost">LOST DEAL · $97k ACV</span> · PM doc, Assertion 2</div>
+  </div>
+  <p>v10's <strong>First seen</strong> column directly answers this. The same Interpublic account that <em>endorsed</em> the SLA dashboard in 2.2 was a lost deal at $97k ACV when first-found tracking was missing. Worth confirming the value is consistent across re-scans (the same pain that drives 00174085 below).</p>
+  <div class="source-line"><span class="ctag ctag-sf">SF</span><span class="ctag ctag-pm">PM doc</span> Two Tier-1 customers, one of them a lost deal directly attributable to this gap.</div>
+
+  <h3>2.2 SLA tracking — exact-match feature request, from a Tier 1 account</h3>
+  <div class="evidence">
+    <blockquote>Ideally, we want owner and technical contact details so we know who to contact if an SLA is breached… and an easy way to track issues from start to remediation, the age of the issue and an MTTR. Leadership love these metrics.</blockquote>
+    <div class="attrib"><span class="author">Chris Wall</span> · CISO, Interpublic · <span class="ctag ctag-tier1">ARR Tier 1</span> · <span class="case-num">Case 00284870</span> · Jul 2025</div>
+  </div>
+  <p>The strongest single endorsement of v10's SLA donuts + Fix-rate line chart. The same case <em>praises</em> the tagging feature, then asks for owner / technical-contact metadata that v10 partially exposes via Tags + Assignee columns. The MTTR ask is unaddressed in the prototype — only fix-rate is shown.</p>
+
+  <h3>2.3 "Done" / triaged state — direct match for the Status column</h3>
+  <div class="evidence">
+    <blockquote>…I currently flag issues that I already documented as "False Positive", so I can hide it from the All Issues window… as this means information loss about the previous severity, I wanted to ask, if you could add a "done" or "documented" flag, which also can be filtered out in the issue list?</blockquote>
+    <div class="attrib"><span class="author">Dennis Henke</span> · Compass Security · <span class="ctag ctag-tier-other">ARR Tier 3</span> · <span class="case-num">Case 00207151</span> · Mar 2025</div>
+  </div>
+  <div class="evidence">
+    <blockquote>…how I can add comments without altering the state of an issue after triaging. Additionally, how can I mark issues as triaged to prevent confusion and redundant efforts in the future for the same issue?</blockquote>
+    <div class="attrib"><span class="author">Ankit Attri</span> · Cvent · <span class="ctag ctag-tier-other">ARR Tier 2</span> · <span class="case-num">Case 00268700</span> · Jun 2025</div>
+  </div>
+  <p>v10's Status column + side-panel Manage tab + Timeline tab map well. <strong>Verify</strong> that the prototype's status taxonomy includes a "Documented" / "Triaged" state distinct from "False positive" — Compass Security's pain is precisely about <em>losing</em> the FP information when re-categorising.</p>
+
+  <h3>2.4 False-positive volume — the demand signal behind the Burp AI column</h3>
+  <div class="evidence">
+    <blockquote>It appears that time-based checking… has been added to the Code Injection check. This jumped us from 0 to 20 false positive High severity Code Injection findings over night.</blockquote>
+    <div class="attrib"><span class="author">Bob Pardee</span> · Ohio State University · <span class="ctag ctag-tier-other">ARR Tier 3</span> · <span class="case-num">Case 00380639</span> · Dec 2025</div>
+  </div>
+  <div class="evidence">
+    <blockquote>…stop Burp DAST from generating TLS certificate issue against our internal applications…</blockquote>
+    <div class="attrib"><span class="author">Nikhil Sreekumar</span> · <span class="ctag ctag-tier1">ARR Tier 1</span> · <span class="case-num">Case 00378740</span> · Dec 2025</div>
+  </div>
+  <div class="evidence">
+    <blockquote>…a question for a scanresult that is a false positive but we cant mark it for the future because the issue is happening for various URLs and not everytime.</blockquote>
+    <div class="attrib"><span class="author">Sven Bröker</span> · Babiel · <span class="ctag ctag-tier-other">ARR Tier 3</span> · <span class="case-num">Case 00382654</span> · Dec 2025</div>
+  </div>
+  <p>The Burp AI confidence column ("Issue Confirmed", "Inconclusive", "Error") is the right <em>answer</em> to this volume of FP pain. <strong>Risk:</strong> the column communicates AI's confidence in the finding — it does not give the user a way to <em>mark a finding as FP</em> in bulk or per-URL. Babiel's case (per-URL FP marking, varies across URIs) is a workflow the prototype does not solve. The bulk-action bar's "Edit status" verb is implicitly the path here, but the design should make per-URL FP marking explicit.</p>
+
+  <h3>2.5 Filtering — strong endorsement, one gap</h3>
+  <div class="evidence">
+    <blockquote>Is it possible to filter security alerts to only have those that are high and classified as certain?</blockquote>
+    <div class="attrib"><span class="author">Jean-Philippe Luiggi</span> · Université Laval · <span class="ctag ctag-tier-other">ARR Tier 2</span> · <span class="case-num">Case 00278001</span> · Jul 2025</div>
+  </div>
+  <p>This is <em>exactly</em> the Severity + Confidence chip combination v10 ships — one query, two filters.</p>
+  <p style="margin-top: 14px;"><strong>Gap surfaced:</strong></p>
+  <div class="evidence">
+    <blockquote>…there doesn't appear to be an option to filter based on application type (Web or API). It would be highly beneficial to have such a filtering option…</blockquote>
+    <div class="attrib"><span class="author">Revanth Pendyala</span> · ICE · <span class="ctag ctag-tier1">ARR Tier 1</span> · <span class="case-num">Case 00262775</span> · Jun 2025</div>
+  </div>
+  <p>v10's filter set (Severity, Confidence, Status, Site, Issue, Age, Assignee, Tags, AI output) does not have a Web/API axis. Tier 1 ask. Worth a conversation with the team: is "application type" a tag the customer applies themselves, or a first-class filter?</p>
+
+  <h3>2.6 Tags — the feature is loved, the management story isn't shipped</h3>
+  <div class="evidence">
+    <blockquote>I am really liking the tagging feature… I would like more options to manage the tags in roles, eg, I only want admins to be able to delete tags whereas, anyone else can create / modify them… Future future request, it would be nice to have the tagging option in scan settings too, and the ability for an admin to create preset tags…</blockquote>
+    <div class="attrib"><span class="author">Chris Wall</span> · Interpublic · <span class="ctag ctag-tier1">ARR Tier 1</span> · <span class="case-num">Case 00284870</span> · Jul 2025</div>
+  </div>
+  <p>v10 displays tags in a column. Tag <em>governance</em> (RBAC, preset tags, scan-settings tags) is settings-page work, out of scope for v10/v11 — but worth flagging as an adjacent thread to the same Tier 1 customer who endorsed the SLA dashboard.</p>
+
+  <h3>2.7 Linked tickets — the column is right, persistence and bidirectionality aren't</h3>
+  <div class="evidence">
+    <blockquote>In the above screenshot we see that in the linked tickets column we are able to see a button to go to our Jira Platform… However, when we look at subsequent scans, we notice that those links are gone… We expect the links to persist throughout the different scans if the same vulnerability is being picked up again.</blockquote>
+    <div class="attrib"><span class="author">Adam Syukran</span> · DKSH · <span class="ctag ctag-tier-other">ARR Tier 4</span> · <span class="case-num">Case 00174085</span> · Dec 2024</div>
+  </div>
+  <div class="evidence">
+    <blockquote>We are also made to understand that currently Burp Enterprise does not have a feature that can auto-resolve Jira Issues if vulnerabilities are fixed.</blockquote>
+    <div class="attrib"><span class="author">Adam Syukran</span> · DKSH · <span class="ctag ctag-tier-other">ARR Tier 4</span> · <span class="case-num">Case 00184903</span> · Jan 2025</div>
+  </div>
+  <p>v10's Linked-tickets column shows the link. The customer pain isn't the <em>display</em>, it's the <em>data lifecycle</em> — link persistence across scans, write-back on remediation. The prototype can't fix that on its own (back-end work), but the side panel's Manage tab is the natural surface to communicate ticket state if/when persistence ships.</p>
+
+  <h3>2.8 Jira integration — the loudest unaddressed theme</h3>
+  <p>This is the largest single cluster of cases (≥25 in 24 months) and includes both Tier 1 troubleshooting and Tier 3+ FRs.</p>
+  <div class="evidence">
+    <blockquote>For the "Raise tickets manually" rules, please consider enabling configuration of specific JIRA fields at the time of raising an issue… Many of our integration setups are nearly identical except for the target JIRA project. As it stands, we must create a separate integration action (and associated UI button) for each project, which quickly becomes cluttered…</blockquote>
+    <div class="attrib"><span class="author">Scott Daniels</span> · Manager Platform Security, Ping Identity · <span class="ctag ctag-tier-other">ARR Tier 3</span> · <span class="case-num">Case 00287383</span> · Jul 2025</div>
+  </div>
+  <div class="evidence">
+    <blockquote>Across both JIRA integration types, it would be extremely useful to dynamically map values from the Burp finding into JIRA fields. For example, setting the JIRA field "Severity" to match the severity level from the finding.</blockquote>
+    <div class="attrib"><span class="author">Scott Daniels</span> · Ping Identity · <span class="ctag ctag-tier-other">ARR Tier 3</span> · <span class="case-num">Case 00287383</span> (same case)</div>
+  </div>
+  <div class="evidence">
+    <blockquote>Are there any definitive plans to add a Burp Enterprise &lt;-&gt; ServiceNow sync in the Integration Panel of your product?</blockquote>
+    <div class="attrib"><span class="author">Eric French</span> · Sr. Security Engineer II, Smartsheet · <span class="ctag ctag-tier1">ARR Tier 1</span> · <span class="case-num">Case 00203179</span> · Feb 2025</div>
+  </div>
+  <p>This is settings/configuration territory, not the issues list itself — so it doesn't change v10. <strong>But:</strong> if the Issues page is the surface customers most associate with ticket pain, the side-panel Manage tab's "Raise ticket" action is the moment of truth. Worth verifying that the panel exposes the same field-mapping flexibility customers are asking for (or sets the right expectation about where to configure it).</p>
+
+  <h3>2.9 Cross-platform issue management — a future-shaping ask</h3>
+  <div class="evidence">
+    <blockquote>…we also have annual pen tests… What I was wondering was, is there a way I could ask the external testers for scan results in a certain format that I could import into Burp, meaning I can then have one platform to manage.</blockquote>
+    <div class="attrib"><span class="author">John</span> · System C Healthcare · <span class="ctag ctag-tier-other">ARR Tier 3</span> · <span class="case-num">Case 00314129</span> · Sep 2025</div>
+  </div>
+  <p>This is a <em>category-expansion</em> ask — Burp DAST as a vulnerability-management hub, not a scanner-output viewer. v11's single-site view is consistent with this direction (per-site vuln dashboard) but doesn't enable third-party import. Worth flagging as a strategic option the design opens up rather than something it commits to.</p>
+
+  <h3>2.10 v11 — hierarchical scope, not single-site (architecture revised)</h3>
+
+  <div class="mea-culpa">
+    <span class="mea-culpa-label">Major correction</span>
+    <p style="margin: 0;">Earlier versions of this pack described v11 as "the single-site issues view" with weak evidence. <strong>That was a fundamental architectural misread.</strong> v11 is a <em>hierarchical scoped issues view at any level of the org tree</em> — estate root (handled by v10), regional aggregates (Asia / Europe / North America), and per-site pages (Zenith Corp, SecureNet, Nova Solutions, DataShield, CyberGuard Inc, Apex Digital, Gin & Juice Shop). Eleven HTML files simulate cross-page navigation. The case for v11 is therefore much stronger than I'd characterised — it directly implements the most strongly-evidenced enterprise-scoping demand in this pack.</p>
+  </div>
+
+  <p><strong>What v11 actually is:</strong></p>
+  <ul>
+    <li><strong>Left site-tree panel</strong> on every v11 page (340px wide, with filter + search). Shows all 172 sites organised in a 4-level tree: estate → region → sub-folder → site. A separate "Pentest group" classification sits alongside the geographic regions, hinting at orthogonal grouping (team / engagement-based, not just hierarchical).</li>
+    <li><strong>Three regional aggregate pages</strong> — Asia (the default v11.html landing), Europe, North America. Each shows a folder header with edit-name + delete-folder + new-site actions, then folder tabs (Dashboard / Scans / Scheduled scans / Issues / Details), then the same SLA donuts + filter bar + 13-column issue table as v10. Cross-region tags (e.g. green "Europe" badge at #2E8802) appear on issues so you can see which sites in the current view belong to which regions.</li>
+    <li><strong>Seven per-site pages</strong> — same shell, but with a back button + site-name title + delete-site + new-scan actions, a pre-scan check card with run-prescan button, site sub-tabs, and an embedded <code>.issues-grid-card</code>. The table adds a Path column (since site is implicit at this scope).</li>
+    <li><strong>Cross-page navigation simulated in JavaScript</strong>: clicking a region in the tree navigates to the corresponding HTML file. <code>'Europe' → v11-europe.html</code>, <code>'Asia' → v11.html</code>, etc.</li>
+  </ul>
+
+  <p><strong>How this maps to the evidence:</strong></p>
+  <ul>
+    <li><strong>Strong fit with Gong's "role-based dashboard scoping"</strong> (Section 2.19 below) — region-level views are precisely what leadership / regional managers would use; per-site views are precisely what the developer / app-owner audience would use. <em>v11 is the implementation of the workflow Gong identified.</em></li>
+    <li><strong>Strong fit with PM doc's "system of record" framing</strong> — hierarchical scope matches how enterprises actually organise (Visa / Mastercard / Amgen scale) and is compatible with the policy-by-criticality ask Amgen raised in PM Assertion 1.</li>
+    <li><strong>Pentest group as a separate top-level grouping</strong> connects directly to the System C Healthcare ask in Section 2.9 (importing third-party pen-test results into Burp DAST as a managed-elsewhere category). The architecture is open-ended enough to support it.</li>
+    <li><strong>Cross-region tags on issues</strong> are an interesting design choice — they admit that a "site" can belong to multiple groupings, which addresses some of the cross-deployment FP federation concern in Section 2.26 (validated FPs would carry their region tag with them).</li>
+  </ul>
+
+  <p>The earlier-version concern that "no customer asked for a per-site issues page" was technically true but missed the bigger story: customers asked for <em>scoped views by their org structure</em>, and v11 delivers a scope-by-position pattern that flexes to any tree level. Per-site is just the leaf case.</p>
+
+  <h3>2.11 Confidence-level filter — exact-match Tier 1 endorsement</h3>
+  <div class="evidence">
+    <blockquote>Is there a way to filter on confidence levels? For example say I only want to view and or download issues with a tentative risk level.</blockquote>
+    <div class="attrib"><span class="author">Carson</span> · <span class="ctag ctag-tier1">ARR Tier 1</span> · <span class="case-num">Case 00322295</span> · Sep 2025</div>
+  </div>
+  <p>v10's Confidence chip + AI-output chip directly answer this. Same customer (Carson) appears in 2.13 below with the matching <em>scope</em> question — the same workflow, two unanswered halves.</p>
+
+  <h3>2.12 Issue age — second-tier endorsement, with a back-end caveat · <span style="font-size:12px; color:var(--c-orange); font-weight:500;">PM Assertion 2 (validated)</span></h3>
+  <div class="evidence">
+    <blockquote>The 'Scan deltas' column does not update to 'Resolved'… Can we get an 'Age of the Issue' field, calculated from 'Scan deltas' and 'Last Seen'? This would be incredibly helpful for understanding how long an issue has persisted until it is finally 'Resolved'.</blockquote>
+    <div class="attrib"><span class="author">Praveen</span> · Rakuten · <span class="ctag ctag-tier-other">ARR Tier 2</span> · <span class="case-num">Case 00361934</span> · <span class="acv">$40k ACV</span> · Nov 2025</div>
+  </div>
+  <p>v10's <strong>Age</strong> column is precisely this ask. <strong>Triangulation note:</strong> this is the same customer (Rakuten / Praveen) that the PM doc cites verbatim in Assertion 2 — the SF case and PM doc quote are identical. The customer flagged this both in a support ticket and in a discovery call. Where multiple sources line up on the same customer, the signal is strongest.</p>
+  <p>The case also flags a back-end bug — fixed issues never transition to "Resolved", which would corrupt any age-since-resolution calculation. This connects directly to PM Assertion 1 (no stable identity across scans) and Assertion 3 (can't tell if fixed). The prototype assumes a clean status lifecycle the product apparently doesn't have yet. Worth verifying with engineering that the data model behind the Age column is now reliable.</p>
+
+  <h3>2.13 Status / FP scope — substantially resolved in the bulk-action modals</h3>
+
+  <div class="mea-culpa">
+    <span class="mea-culpa-label">Methodology correction</span>
+    <p style="margin: 0;">Earlier versions of this pack flagged scope-resolution as the highest-leverage UX gap in the design. <strong>That was wrong.</strong> v10's <em>Edit issue status</em> and <em>Change severity</em> bulk-action modals already include a scope radio group with three explicit options. I missed this because I sampled the table and side panel but didn't read the modals. Reviewing all of v10 (not just the parts I had a question about) corrected the picture. The remaining gap is narrower than I'd claimed.</p>
+  </div>
+
+  <div class="evidence">
+    <blockquote>What happens with an "issue" in DAST if I mark it as a false positive or as an accepted risk?… Does marking it in one site/place make the change for all sites?… How do I apply false positives and edit issue severity globally and or per site?</blockquote>
+    <div class="attrib"><span class="author">Carson</span> · <span class="ctag ctag-tier1">ARR Tier 1</span> · <span class="case-num">Case 00307715</span> · Aug 2025</div>
+  </div>
+
+  <p><strong>What v10 actually does.</strong> When the user triggers Edit-status or Change-severity (bulk or per-row), a confirmation modal opens with three scope radios:</p>
+  <ul>
+    <li>"This issue and all existing issues of the same type for this site" (default)</li>
+    <li>"This issue and all existing issues of the same type and URL for this site"</li>
+    <li>"These issues across all sites and future occurrences"</li>
+  </ul>
+  <p>Plus a notes textarea. Plus an info note: "<em>Issues found in future scans will be marked as the status according to the global setting</em>". This directly answers Carson's "globally and or per site" question — the modal makes scope a first-class part of the action.</p>
+
+  <p><strong>Where the gap remains:</strong> dynamic-URL patterns. The "same type and URL for this site" option marks a single URL as FP, not a URL <em>pattern</em>. AS Watson and Babiel describe URLs containing UUIDs (<code>/users/anonymous/&lt;uuid&gt;</code>) where every scan sees a fresh URL — none of the three radio options handles this cleanly. The current options are: too narrow (just one URL), too broad (all URLs of this type for the site), or universal. A fourth option — "URL pattern matching <em>X</em>" — would close the loop:</p>
+
+  <div class="evidence">
+    <blockquote>For our applications we have marked some issues as false positive. However, the endpoints of those issues are dynamic and contain a unique identifier e.g., /users/anonymous/&lt;uuid&gt;, meaning that Burp DAST sees it as a unique URL. This results in the reappearance of the issue that was previously marked as false positives in the next scan.</blockquote>
+    <div class="attrib"><span class="author">Rutger Hamulyak</span> · AS Watson · <span class="ctag ctag-tier-other">ARR Tier 5</span> · <span class="case-num">Case 00347353</span> · Oct 2025</div>
+  </div>
+
+  <p><strong>Net:</strong> the broad scope-clarity question (Tier 1 Carson 00307715) is resolved by the modal. The narrower dynamic-URL pattern problem (Babiel 00382654, AS Watson 00347353) remains as a genuine but more contained gap.</p>
+
+  <h3>2.14 Side-panel Advisory tab — the request/response evidence is incomplete</h3>
+  <div class="evidence">
+    <blockquote>We have a need to see the full request/response pair associated with issues, and we have that in Burp Professional, but we can't find anything analogous in our Burp DAST. Everything associated with an issue in Burp DAST seems to have a "-- SNIP --" with segments missing from the original… we used the ActiveScan++ extension to identify a number of "Rails file disclosure" vulnerabilities, but the majority are false positives because somewhere in the response is a string "127.0.0.1"… In Burp Professional we're able to confirm that by clicking… and seeing the full contents in the Request and Response tabs, so we can easily find the false positive string.</blockquote>
+    <div class="attrib"><span class="author">John Gordon</span> · Senior Cybersecurity Risk Analyst, University of Texas at Austin · <span class="ctag ctag-tier-other">ARR Tier 2</span> · <span class="case-num">Case 00373764</span> · Dec 2025</div>
+  </div>
+  <p>This is a <em>functional</em> gap rather than a UX one — but the side-panel Advisory tab is the surface where customers expect to confirm or refute findings. If full request/response isn't available, the panel's value drops sharply for any user trying to verify their own FPs (which is exactly the workflow most other cases in this pack describe). This is the data behind the AI confidence verdict; if a user disagrees with the AI, this is what they need to look at.</p>
+
+  <h3>2.15 Side-panel Timeline + comments — Tier 1 ask: notes must reach reports</h3>
+  <div class="evidence">
+    <blockquote>…the notes added during issue triage — specifically when marking vulnerabilities as "Accepted Risk", "False Positive", or when editing issue severity — are not included in the generated report. These notes are critical for providing context and justification during internal reviews and audits. Including them in the exported report would greatly improve traceability and communication across teams.</blockquote>
+    <div class="attrib"><span class="author">Jennifer De Luna-Velasquez</span> · Senior Application Security Engineer, Manulife · <span class="ctag ctag-tier1">ARR Tier 1</span> · <span class="case-num">Case 00335249</span> · Oct 2025</div>
+  </div>
+  <p>v10's Timeline tab supports free-text comments + retest events + status-change events ✅. The customer pain here isn't the comment <em>UI</em> — it's that comments evaporate at the report boundary. Worth confirming with engineering that any comments authored in the v10 Timeline make it into the exported report. Otherwise we are accepting customer effort into an information dead-end.</p>
+
+  <h3>2.16 Re-test workflow — strongly validated by PM doc; my SF-only read missed the demand · <span style="font-size:12px; color:var(--c-orange); font-weight:500;">PM Assertion 5 (validated)</span></h3>
+
+  <div class="mea-culpa">
+    <span class="mea-culpa-label">Methodology correction</span>
+    <p style="margin: 0;">Earlier versions of this pack flagged retest as "no direct demand" because zero SF support tickets surfaced for it. That read was <strong>wrong.</strong> SF tickets capture pain about <em>features that exist and are broken</em>; they don't capture demand for features that don't exist yet. The PM doc, drawn from sales / discovery / renewal calls, surfaces the demand SF can't see — and it's substantial.</p>
+  </div>
+
+  <div class="evidence evidence-pm">
+    <blockquote>We give our developer access so that they can triage and fix issues, however the ability to re-test an issue is missing, this would be a big win for us.</blockquote>
+    <div class="attrib"><span class="author">Interpublic</span> · <span class="acv">$200–300k renewal opportunity</span> · PM doc, Assertion 5</div>
+  </div>
+  <div class="evidence evidence-pm">
+    <blockquote>It's really important for those teams to be able to quickly rescan and verify whether the issue is resolved. Otherwise, they might have to wait a full day just to see if it's fixed, and even then, they can't be 100% sure.</blockquote>
+    <div class="attrib"><span class="author">Schwarz IT</span> · <span class="acv">$250k ACV renewal opportunity</span> · PM doc, Assertion 5</div>
+  </div>
+  <div class="evidence evidence-pm">
+    <blockquote>If a vulnerability is fixed, I shouldn't have to rerun the whole scan to verify it. I should be able to simply re-scan the specific request-response to confirm whether the vulnerability is still present.</blockquote>
+    <div class="attrib"><span class="author">Visa</span> · <span class="acv">$90k ARR</span> · PM doc, Assertion 5</div>
+  </div>
+  <div class="evidence evidence-pm">
+    <blockquote>Would like to hit re-test, as they need to start proving the metrics of the trending issues.</blockquote>
+    <div class="attrib"><span class="author">Telus Health</span> · <span class="acv">$183k ACV (year 3 ramp-up)</span> · PM doc, Assertion 5</div>
+  </div>
+
+  <p>Four named customers, ~$700k+ in attached deal value (renewals + new ARR), all asking for the exact pattern v10 builds. Including a renewal opportunity at Interpublic (the same customer that endorsed the SLA dashboard in 2.2 and was lost in 2.1). <strong>Re-test isn't an over-investment — it's a renewal-driver.</strong></p>
+
+  <p>The PM doc also frames the user need cleanly:</p>
+  <p style="font-style: italic; padding-left: 16px; border-left: 2px solid var(--c-border); color: var(--c-secondary); font-size: 13px;">"I am a Security Engineer, trying to re-test specific vulnerabilities to confirm whether fixes worked. But I can only rerun full scans, not re-test selected issues. Which delays deployment, reduces confidence in remediation, and forces inefficient workarounds."</p>
+
+  <p>What this changes for the design work:</p>
+  <ul>
+    <li><strong>The state-transition bar (cyan / orange / grey) is the right level of feedback.</strong> Schwarz IT and Visa specifically describe the failure mode as "even then, they can't be 100% sure" — the bar's whole purpose is to remove that uncertainty.</li>
+    <li><strong>Targeted retest at the request-response level is the demand</strong> (Visa). The bulk-retest verb in v10 covers the multi-issue case but the side-panel retest is the single-issue path — both are needed.</li>
+    <li><strong>Speed matters.</strong> Schwarz IT's "wait a full day" sets the comparison; v10 should plausibly target retest as a minutes-not-hours workflow. Worth checking with engineering whether the back-end supports that.</li>
+    <li><strong>Telus Health connects retest to metrics</strong> ("proving the metrics of the trending issues"). The retest events the prototype writes to the timeline are the data behind any "fixed-rate over time" chart — i.e. the SLA Fix Rate chart in Section 2.2 is downstream of retest data quality.</li>
+  </ul>
+
+  <p>The methodology lesson stands as a Section 6 entry — see "What I learned about source mix."</p>
+
+  <h3>2.17 Stat cards as filters — implicit interaction not surfaced by evidence</h3>
+  <p>v10's three SLA donut cards have interactive arc segments (within / at-risk / overdue), and the SLA Fix Rate line chart has hover tooltips and a drill-down modal. There's no explicit customer ask for "let me click an arc to filter the table" — but Carson's combined cases (00322295 confidence filter + 00307715 scope question) imply that customers think in cross-cuts: "show me all the High-severity issues that are overdue on SLA". The cards <em>could</em> be the entry point for that. Worth a separate pass on whether stat-card → filter is implemented or aspirational.</p>
+
+  <h3>2.18 Vulnerable-sites leaderboard — what the Gong calls say customers love today</h3>
+  <p>Gong's call corpus surfaces a recurring positive theme: customers value <strong>"the overarching view provided by the DAST dashboard, which displays current issues, issue counts over time, recent scans, and a leaderboard of the most vulnerable sites."</strong> This is described as a primary reason customers <em>chose</em> DAST over other tools.</p>
+  <div class="source-line"><span class="ctag ctag-gong">Gong</span> Customer-attitudes synthesis · no individual case in SF flagged this (it's working today, so no support ticket)</div>
+  <p>v10 reframes that dashboard around <strong>SLA health</strong> (donuts + Fix Rate). That's a smart pivot toward what leadership measures, but it removes the "leaderboard of most vulnerable sites" as a primary surface. <strong>Risk:</strong> if customers love the leaderboard for everyday workflow ("which sites need attention this week"), and we replace it with SLA donuts ("are we in compliance?"), we may be optimising for the leadership audience at the cost of the IC audience that actually uses the page daily. Worth a deliberate decision: is the leaderboard preserved elsewhere (e.g. on the Sites page), or is its removal a conscious trade?</p>
+
+  <h3>2.19 Role-based dashboard scoping — implemented as the v11 site-tree</h3>
+  <p>From Gong: <strong>"different users (e.g., leadership, security managers, developers) [should be able to] see only the information relevant to their specific applications or regions based on their access levels."</strong> Customers articulate this as a <em>valued</em> capability, not a complaint — which is interesting on its own.</p>
+  <div class="source-line"><span class="ctag ctag-gong">Gong</span> Customer-attitudes synthesis · adjacent SF support: 00357003 (UI Update Request, Tier 2)</div>
+  <p>v11's site-tree + folder-page + site-page architecture <strong>implements this directly.</strong> The leadership audience opens v10 for the estate view; the regional manager opens the relevant v11 region page; the developer opens the relevant v11 per-site page. The same UI primitives (filter bar, SLA donuts, table, side panel) work at every scope.</p>
+  <p>What still needs verifying — and is the live RBAC question — is whether the <em>access</em> layer matches the <em>view</em> layer. v11 is currently just a filtered view (anyone who can see the estate can see any region or site). For genuine RBAC, opening v11-zenith-corp for a developer who only has access to Zenith Corp should restrict their possible actions to that site — i.e. their tree-panel should show only Zenith Corp, "Edit status across all sites" should be disabled, etc. That's a permissions / IAM question more than a UI one, but the UI surface either supports it or it doesn't. Worth a conversation with whoever owns IAM.</p>
+
+  <h3>2.20 Web Security Academy references — small theme, easy win</h3>
+  <p>Gong: <strong>"detailed background information, remediation advice, and references to the Web Security Academy for further learning and upskilling."</strong> Customers cite WSAcad links as differentiating value in the advisory.</p>
+  <div class="source-line"><span class="ctag ctag-gong">Gong</span> Customer-attitudes synthesis · no SF case</div>
+  <p>v10's Advisory tab includes description + remediation accordions. <strong>Verify</strong> that WSAcad references are surfaced (and clearly attributed). If they're not, this is a low-cost addition that lands well — Gong frames it as one of the things customers <em>chose DAST for</em>.</p>
+
+  <h3>2.21 Burp DAST ↔ Burp Pro handoff — a workflow seam neither prototype addresses</h3>
+  <p>Gong: <strong>"higher severity vulnerabilities often passed to pen testing teams using Burp Suite Professional for deeper analysis and manual testing. The common scanning engine between the two tools is recognized as an advantage, allowing for recreation of DAST findings in Professional."</strong></p>
+  <div class="source-line"><span class="ctag ctag-gong">Gong</span> Customer-attitudes synthesis · adjacent SF: 00373764 (Tier 2, full request/response request — same workflow)</div>
+  <p>Customers already do this handoff manually. v10 has no "Send to Burp Pro" / "Export Pro project file" action in the side panel or the bulk-action bar. This is a <strong>workflow seam between two products you already sell</strong> — and the case for closing it gets sharper when paired with the UT Austin request/response case (2.14). The same data UT Austin needs to verify FPs in DAST is the data a pen-tester would import into Pro for deeper testing.</p>
+
+  <h3>2.22 CI/CD pipeline consumption — out of scope, but worth knowing</h3>
+  <p>Gong: <strong>"the ability to consume results directly within CI/CD pipelines is valued, allowing developers to manage issues more efficiently without needing to access the DAST user interface."</strong></p>
+  <div class="source-line"><span class="ctag ctag-gong">Gong</span> Customer-attitudes synthesis</div>
+  <p>This is API / automation territory and explicitly orthogonal to v10/v11 — the customers describing this workflow are <em>not</em> the Issues page audience. It's worth keeping in view, though: v10 needs to play nicely with workflows where issues are managed elsewhere (Jira, pipeline annotations) and the UI is the read-only / triage / oversight surface. If a developer never opens v10, the people who do (security managers) need their workflow to assume that.</p>
+
+  <h3>2.23 Stable vulnerability identity across scans · <span style="font-size:12px; color:var(--c-orange); font-weight:500;">PM Assertion 1 (validated)</span></h3>
+  <p>The PM doc's Assertion 1 is foundational and gets the strongest dollar-weighted evidence:</p>
+  <div class="evidence evidence-pm">
+    <blockquote>We are trying to identify how best to programmatically identify if a finding has been remediated between two unique scans (through API). Our aim is to build a retest workflow where we could auto-close findings within our internal VM tracking system.</blockquote>
+    <div class="attrib"><span class="author">Visa</span> · <span class="acv">$363k ACV</span> · PM doc, Assertion 1</div>
+  </div>
+  <div class="evidence evidence-pm">
+    <blockquote>It's critical for us to have historical data to analyse trends and track how vulnerabilities evolve over time. Right now, it feels like things are being swept under the rug.</blockquote>
+    <div class="attrib"><span class="author">RealPage</span> · <span class="acv">$40k ACV</span> · PM doc, Assertion 1</div>
+  </div>
+  <div class="evidence evidence-pm">
+    <blockquote>We need to be able to see the age of a vulnerability and set policies for different criticalities… we're having to suck out all the data from the site, build external dashboards and then put a policy layer over the top of that.</blockquote>
+    <div class="attrib"><span class="author">Amgen</span> · <span class="acv">$190k ACV</span> · PM doc, Assertion 1</div>
+  </div>
+  <p>v10's <strong>Timeline tab</strong> + <strong>persistent issue identity in the row model</strong> are the user-facing answer. The PM doc explicitly flags this as a Bifrost/Bridge dependency: "<em>Please align with the Bifrost team on how issue history is stored to ensure it is future-proof for DAST ↔ Pro integration and data sharing.</em>" That's a <strong>back-end / data-model decision the v10 UI is downstream of.</strong> Worth confirming with engineering that the row identity, timeline events, and retest history the prototype assumes will actually be stable across scans, or v10 is designing on top of an unstable foundation.</p>
+
+  <h3>2.24 Verified / True Positive triage state — confirmed present in v10 · <span style="font-size:12px; color:var(--c-orange); font-weight:500;">PM Assertion 4 (validated)</span></h3>
+
+  <div class="mea-culpa">
+    <span class="mea-culpa-label">Methodology correction</span>
+    <p style="margin: 0;">Earlier versions of this pack said "verify with the team that 'Verified' is in v10's status enum." Reading the bulk-status modal directly confirms it: <strong>v10's status select includes "Verified risk"</strong> alongside Fixed (unconfirmed) / Accepted risk / False positive. The PM-doc ask is met. What remains is the question of whether the <em>full lifecycle taxonomy</em> the customer evidence implies is supported.</p>
+  </div>
+
+  <div class="evidence evidence-pm">
+    <blockquote>I currently work doing triage of vulnerabilities that keep appearing scan after scan. It would be useful if users could mark issues as 'True Positive' as this would help us track what's left to triage. Right now I can't easily tell which issues I've already reviewed.</blockquote>
+    <div class="attrib"><span class="author">Accenture</span> · <span class="acv">$144k TCV</span> · PM doc, Assertion 4</div>
+  </div>
+  <div class="evidence evidence-pm">
+    <blockquote>This may seem very trivial, but what happens is I go back at the end of the month and I just want to set a filter to verified and that gives me instantly that these are all the verified findings that we found. So a verified status would be nice to have.</blockquote>
+    <div class="attrib"><span class="author">Priceline</span> · <span class="acv">$200k ACV opportunity</span> · PM doc, Assertion 4</div>
+  </div>
+  <p><strong>v10's status enum (confirmed by reading <code>sc-status-select</code>):</strong> Fixed (unconfirmed) · Accepted risk · False positive · <strong>Verified risk</strong>. This <em>partly</em> matches the customer-validated taxonomy I'd previously laid out. Comparing the two:</p>
+  <ul>
+    <li>✓ <strong>Verified risk</strong> — present (Accenture / Priceline ask, $344k attached value).</li>
+    <li>✓ <strong>False Positive</strong>, <strong>Accepted Risk</strong> — present (today's defaults).</li>
+    <li>✓ <strong>Fixed (unconfirmed)</strong> — present, distinct from confirmed-fixed-via-retest.</li>
+    <li>✗ <strong>New / Untriaged</strong> — not in the dropdown explicitly. May be the implicit default state of issues that haven't been edited; verify this is queryable as a filter (Priceline's "set a filter to verified" ask presumes a filter on status, which implies the inverse — "Untriaged" — should also be filterable).</li>
+    <li>✗ <strong>Triaged / Documented</strong> — Compass Security's distinct-from-FP "documented" state isn't present. Could fold into the Notes field on each status change, but that loses the filter-as-list affordance.</li>
+    <li>? <strong>Resolved (confirmed via retest)</strong> — distinct from "Fixed (unconfirmed)" by name, but does the retest workflow auto-promote one to the other? Worth confirming.</li>
+  </ul>
+  <p>What I'd verify with the team: that the filter chips can filter on status (so Priceline's "set filter to verified" works), and that the retest workflow promotes "Fixed (unconfirmed)" → "Resolved" on a successful retest.</p>
+
+  <h3>2.25 Proving what was checked — audit / compliance gap · <span style="font-size:12px; color:var(--c-orange); font-weight:500;">PM Assertion 3 (validated)</span></h3>
+  <div class="evidence evidence-pm">
+    <blockquote>I want a list of all the rules we checked our websites against. For compliance, we need to export scan configs and results, even if nothing was found.</blockquote>
+    <div class="attrib"><span class="author">M&amp;S</span> · <span class="acv">$136k ACV</span> · PM doc, Assertion 3</div>
+  </div>
+  <div class="evidence evidence-pm">
+    <blockquote>When an issue disappears the auditors can't see that the issue is marked as fixed. It doesn't give me confidence in the tool when an issue just disappears.</blockquote>
+    <div class="attrib"><span class="author">RXSense</span> · <span class="acv">$15k ACV</span> · PM doc, Assertion 3</div>
+  </div>
+  <p>The Issues page itself isn't the surface for "what was checked" — that lives in scan config / reporting. <strong>But:</strong> the RXSense quote names the exact failure mode my Section 2.12 flagged (issues vanishing without an explicit Resolved transition). For audit credibility, the Timeline tab in v10 needs to record a <em>"checked but not found"</em> event explicitly — the absence of an issue should produce a positive "verified clear in scan #N" entry, not silent disappearance. This is a small data-model addition with disproportionate audit-credibility return.</p>
+
+  <h3>2.26 Cross-deployment FP federation — out of v10 surface, but worth flagging</h3>
+  <p>The PM doc surfaces a federation problem that adjacent themes in this pack hint at but never quite name:</p>
+  <div class="evidence evidence-pm">
+    <blockquote>I am a security engineer in a large organization with multiple Burp Suite DAST deployments. I'm trying to share centrally validated findings (such as known false positives) with regional teams. But there's no way to export and distribute this information across deployments with hostname or product mapping. Which forces regional teams to repeatedly re-investigate the same issues, wastes limited security capacity, and leads to inconsistent decisions across the organization.</blockquote>
+    <div class="attrib"><span class="ctag ctag-pm">PM doc</span> · Bulk issue management JTBD</div>
+  </div>
+  <p>This explicitly isn't v10's surface — it's a multi-tenant / multi-deployment sharing problem. Worth knowing because it shapes how the FP-scoping work in 2.13 should be structured: the data model for "this finding is FP" needs to be portable enough that it can be exported and re-imported. Build the local case carefully and the federated case becomes possible later; build it casually and you ship a workflow that has to be re-engineered.</p>
+
+  <h3>2.27 CI/CD pipeline must respect triage states · <span style="font-size:12px; color:var(--c-orange); font-weight:500;">PM JTBD</span></h3>
+  <p>The PM doc surfaces a JTBD that connects directly to the status-taxonomy work in 2.25:</p>
+  <div class="evidence evidence-pm">
+    <blockquote>I'm trying to integrate security scanning into our CI pipeline in a way that reflects our true risk posture by allowing builds to fail only on unresolved, actionable issues. But the scanning tool does not recognise issue triage states (such as false positives or accepted risks) from the platform's UI, and treats all findings as new. Which means our builds fail even when no genuine security risk remains, leading to unnecessary manual work, unreliable automation, and reduced developer trust in the CI security gates.</blockquote>
+    <div class="attrib"><span class="ctag ctag-pm">PM doc</span> · Unintentionally failing pipelines JTBD</div>
+  </div>
+  <p>v10 doesn't directly address this (CI/CD is API surface, not UI), but the design choices about triage state taxonomy in 2.25 ripple outward: <strong>any state introduced in v10 must also be queryable from the API the CI gate consumes</strong>. If "Verified / True Positive" is added in v10 but the CI gate doesn't recognise it, we make the pipeline problem worse, not better. Worth coordinating with the API / pipeline-integration owners on which states should and shouldn't fail a build.</p>
+
+  <h3>2.28 v11 site-tree navigator — the new primary navigation surface</h3>
+  <p>The 340px left-side <code>.site-panel</code> is the most substantial new UI element across the whole prototype set, and I missed it in earlier reads. It's worth its own theme because it's the answer to several distinct customer needs:</p>
+  <ul>
+    <li><strong>Filter + Search</strong> across 172 sites — solves Tier 2 case 00357003 (UI Update Request — search field for large user / site lists) at a different surface.</li>
+    <li><strong>Four-level nesting</strong> (estate / region / sub-folder / site) — matches the org-tree structure of large enterprise customers (Visa scale).</li>
+    <li><strong>Selected-state visual</strong> on the active tree row — gives navigational sense-of-place when paginating across pages.</li>
+    <li><strong>"Pentest group" classification</strong> sitting alongside geographic regions — acknowledges that grouping sites by team / engagement is as valid as grouping by region. Aligns with the System C Healthcare ask in 2.9 (third-party pen-test results as a managed category).</li>
+    <li><strong>Persistent across all v11 pages</strong> — the tree stays open as you navigate, giving the user constant orientation. v10 doesn't have this; opening v10 means you've left the tree behind.</li>
+  </ul>
+  <p>Open questions for the design team:</p>
+  <ul>
+    <li><strong>Persistence and collapse.</strong> 340px out of a 1440px laptop = 24% of the viewport. Combined with a 900px side panel (also opened from these pages), the tree + panel + small sliver of table is ~110% of the viewport. The tree probably needs a collapsed state (icon-only? hidden behind a hamburger?) — does v11 support this? Worth verifying.</li>
+    <li><strong>Counts on tree rows.</strong> The folder rows show counts (Asia: 12). Are these issue counts, site counts, or scan counts? Different at different levels — disambiguating is worth thinking through.</li>
+    <li><strong>Drag-to-reorganise</strong>, multi-select for bulk operations on the tree itself — both expected for an enterprise admin workflow but neither obvious in the prototype.</li>
+  </ul>
+
+  <h3>2.29 Pre-scan check card on site pages</h3>
+  <p>Each per-site v11 page (Zenith Corp etc.) has a <strong>pre-scan check card</strong> at the top of the page above the issues table. It includes: collapsed/expanded chevron, "Pre-scan check" title, fields like "Last pre-scan" with a value + status indicator, plus a <strong>"Run pre-scan"</strong> tertiary button.</p>
+  <p>This is functionality I hadn't previously catalogued. It maps to a related demand area (scan-management ergonomics) that's adjacent to but distinct from the issues-management theme of this pack:</p>
+  <ul>
+    <li><strong>Onboarding / readiness check</strong> — pre-scan validates that authentication, recorded logins, scope, and crawl coverage are wired up before the real scan runs. Several SF cases (00307579 Multiple Recorded Logins, 00375961 Scan Failures) live in this space.</li>
+    <li><strong>Trust-building before a long-running scan</strong> — Schwarz IT's "wait a full day to see if it's fixed" pain (PM Assertion 5) is a downstream symptom of scans that run blind without pre-flight verification.</li>
+  </ul>
+  <p>Worth flagging because (a) this card sits prominently above the issues table on every site page, so it's visual real estate competing with the issues content; (b) if pre-scan goes wrong, no amount of v10/v11 issue management compensates. A separate review pass on pre-scan would be valuable, but it's outside the scope of this Issues-focused pack.</p>
+
+  <h3>2.30 Strategic context — what's at stake commercially</h3>
+  <p>Combined evidence from Gong + the PM doc reframes the stakes considerably:</p>
+
+  <div class="evidence">
+    <blockquote>Some customers specifically seek DAST for its comprehensive record-keeping and clear dashboard capabilities, which are not as prominent in the individual-user-focused Burp Suite Professional.</blockquote>
+    <div class="attrib"><span class="ctag ctag-gong">Gong synthesis</span> · Customer-attitudes report</div>
+  </div>
+
+  <div class="evidence evidence-pm">
+    <blockquote>If we don't address this, we risk being seen as unfit for enterprise security programs, not because of scan quality, but because we can't support their core operating model of accountability, auditability, and continuous improvement… Simon Kucher's pricing and packaging research validated vulnerability management as a core value driver, strengthening our value narrative and supporting higher price points.</blockquote>
+    <div class="attrib"><span class="ctag ctag-pm">PM doc</span> · Strategic intent + Why this matters</div>
+  </div>
+
+  <p><strong>What's on the table commercially, from the PM doc's named-customer evidence:</strong></p>
+  <ul>
+    <li><strong>Two attributable lost deals:</strong> Interpublic <span class="acv acv-lost">$97k ACV</span>, Peach Payments <span class="acv acv-lost">$12k ACV</span>.</li>
+    <li><strong>Renewals at risk on this gap:</strong> Schwarz IT <span class="acv">$250k</span>, Interpublic <span class="acv">$200–300k</span>, Telus Health <span class="acv">$183k</span>.</li>
+    <li><strong>Other named customers raising this in discovery:</strong> Visa <span class="acv">$363k</span>, Mastercard <span class="acv">$58k</span>, Amgen <span class="acv">$190k</span>, Priceline <span class="acv">$200k opp</span>, M&amp;S <span class="acv">$136k</span>, Accenture <span class="acv">$144k TCV</span>, RealPage <span class="acv">$40k</span>, Rakuten <span class="acv">$40k</span>, RXSense <span class="acv">$15k</span>.</li>
+    <li><strong>Pricing uplift attached:</strong> Simon Kucher research identifies vulnerability management as a value driver supporting higher price points. The redesign isn't only retention — it underpins growth.</li>
+    <li><strong>Foundation for product-line integration:</strong> the PM doc explicitly flags this as the foundation for DAST ↔ Burp Pro integration ("Bifrost / The Bridge"). Decisions made in v10/v11 about issue identity, history, and triage states have downstream consequences for that integration.</li>
+  </ul>
+
+  <p><strong>What this changes for the design work:</strong> the Issues page is not a feature — it's the surface where DAST's enterprise differentiator is visible. Decisions that strengthen <em>auditability, accountability, and continuous improvement</em> (the PM doc's words) are commercially load-bearing. Decisions that look like reasonable UX trade-offs (e.g. losing the vulnerable-sites leaderboard in 2.18, ambiguous FP-scope in 2.13, hidden SLA chart in 2.2 / Scenario 4) erode the reason enterprises buy DAST in the first place. Choose accordingly.</p>
+</section>
+
+<!-- ─── Section 3: Usability walkthrough ─── -->
+<section id="sec-3">
+  <h2><span class="num">3</span>Usability walkthrough — thinking like the user</h2>
+  <p>Customer evidence answers <em>do real users care about this?</em> A usability walkthrough answers <em>will real users succeed at this?</em> Below is an honest first-person walk through v10 (with v11 as the per-site fallback view), in the persona of the customer the cases skew toward. Findings are split into three verdicts per scenario.</p>
+
+  <div class="persona">
+    <div class="persona-avatar">DF</div>
+    <div>
+      <div class="persona-name">Diego — AppSec Engineer, Tier 1 enterprise</div>
+      <div class="persona-bio">Composite persona drawn from this pack's case authors (Thomson Reuters, Interpublic, Manulife, Ping Identity, ICE). Manages 30+ sites, ~300 open issues at any time. Jira wired up. Reports MTTR + SLA-breach counts to leadership weekly. Lives in this UI 30-60 minutes a day. Laptop is a 14" 1440px-wide MacBook Pro.</div>
+    </div>
+  </div>
+
+  <!-- Scenario 1 -->
+  <div class="scenario">
+    <div class="scenario-header">
+      <span class="scenario-num">1</span>
+      <span class="scenario-title">Monday morning triage</span>
+    </div>
+    <div class="scenario-task">"Anything new and important happen over the weekend?"</div>
+    <div class="scenario-body">
+      <div class="verdict">
+        <span class="verdict-label verdict-working">Working</span>
+        <div>
+          <p>Severity-coloured icons are the first thing the eye locks onto — that's right. Sticky severity, confidence, issue, site columns mean Diego can scan the four most decision-relevant axes without horizontal scroll.</p>
+          <p>The Burp AI "Issue Confirmed" / "Inconclusive" / "Error" badge in the Confidence column is genuinely new value: it tells Diego whether to invest his attention. The hover popover explains the verdict cleanly.</p>
+          <p>Filter chips — Severity = High, Confidence = Certain — match the exact mental query Université Laval asked for in case 00278001. Good.</p>
+        </div>
+      </div>
+      <div class="verdict">
+        <span class="verdict-label verdict-risk">Risk</span>
+        <div>
+          <p>The four sticky columns add up to ~504px. On Diego's 14" laptop (effective viewport ~1280px after browser chrome) that leaves ~750px for the other 9 columns — including the Burp AI output column at 200px. Diego will horizontal-scroll to see AI output, which is arguably the column he most wants to see. The most novel value is behind a scroll.</p>
+          <p>13 columns is a lot. Several cells (Severity, Confidence, Issue, Site, First seen, Last seen, Age, Status, AI output) all open the side panel on click. That leaves a narrow set of "click-without-opening-panel" cells (Assignee, Tags, Linked tickets, Actions, checkbox). Risk: mis-clicks open the panel when Diego meant to nudge an inline value.</p>
+          <p>Pagination at 10 rows/page is tight for triage. With ~300 open issues that's 30 page-clicks. And bulk-select-all only selects the visible page — see Scenario 2.</p>
+        </div>
+      </div>
+      <div class="verdict">
+        <span class="verdict-label verdict-rethink">Rethink</span>
+        <div>
+          <p>Consider <strong>promoting Burp AI output</strong> into the sticky region (or fusing it back into Confidence as v9 did). It's the column that does the most cognitive work and the column most likely to be off-screen.</p>
+          <p>Consider a "compact / comfortable" density toggle. 13 columns × 80px row height fills the screen fast. A 56px compact mode would put 50% more rows per scroll.</p>
+          <p>Default page size 25 (or 50). 10 is a documents-app default, not a triage-app default.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scenario 2 -->
+  <div class="scenario">
+    <div class="scenario-header">
+      <span class="scenario-num">2</span>
+      <span class="scenario-title">Bulk false-positive dismissal after a noisy scan-check update</span>
+    </div>
+    <div class="scenario-task">"Last night's update produced 20 new High Code Injection findings — they're all false positives. Get rid of them." (Bob Pardee, Ohio State, case 00380639)</div>
+    <div class="scenario-body">
+      <div class="verdict">
+        <span class="verdict-label verdict-working">Working</span>
+        <div>
+          <p>Diego filters: Severity = High, Issue = "Code Injection". Selects the page-level checkbox. The bulk-action bar slides up from the bottom — "Edit status", "Edit severity", "Assign", "Raise ticket", "Re-test", "Deselect all". The verbs match the mental model.</p>
+          <p>The bar is fixed-bottom-centre, navy, 12px rounded — visually unmistakable. Hard to miss it appeared.</p>
+        </div>
+      </div>
+      <div class="verdict">
+        <span class="verdict-label verdict-working">Working (further reading correction)</span>
+        <div>
+          <p><strong>Scope is handled in the confirmation modal.</strong> Earlier versions of this pack flagged scope ambiguity as a top concern. Reading the actual modal: clicking Edit-status (or Change-severity) opens a confirmation with three scope radios — "this issue and same-type for this site" / "this issue and same-type-and-URL for this site" / "across all sites and future occurrences" — plus a notes textarea and a clear info note about how future-scan defaults work. This <em>directly</em> addresses Carson's case 00307715. Good design choice; I missed it.</p>
+        </div>
+      </div>
+      <div class="verdict">
+        <span class="verdict-label verdict-risk">Risk</span>
+        <div>
+          <p><strong>Select-all-page vs. select-all-filtered.</strong> The page checkbox selects 10 rows. Diego has 20 false positives. He clicks "Edit status → False positive" and dismisses 10. Then realises 10 more remain on page 2 — same query, same fix needed. Without an explicit "select all 20 matching this filter" affordance, he repeats the action page-by-page. Common Excel/CRM/issue-tracker frustration; v10 inherits it.</p>
+          <p><strong>Per-URL FP marking on dynamic paths.</strong> The modal's "same type and URL for this site" option marks <em>one URL</em> as FP. AS Watson and Babiel describe URLs containing UUIDs (<code>/users/anonymous/&lt;uuid&gt;</code>) where every scan sees a fresh URL. None of the three radio options handles URL-pattern FP cleanly: too narrow (one URL) or too broad (all URLs of this type). The modal solved the broad scope question but left the dynamic-URL question open.</p>
+          <p><strong>Modal default could surprise.</strong> The default radio is "this issue and all existing issues of the same type for this site" — meaning if Diego clicks "Edit status" thinking it applies just to the row, he actually changes everything of that type on that site. The default is a <em>broader</em> scope than the user might assume. Worth a usability test on whether new users notice.</p>
+        </div>
+      </div>
+      <div class="verdict">
+        <span class="verdict-label verdict-rethink">Rethink</span>
+        <div>
+          <p>Add a <strong>"Select all 20 matches"</strong> link in the bulk-action bar when more matches exist than fit on the visible page. (Standard pattern from Gmail / Linear.)</p>
+          <p>Add a fourth scope option for <strong>URL pattern</strong>: "all URLs matching <code>/users/anonymous/*</code> for this site". The modal already has the visual structure to take it.</p>
+          <p>Reconsider the modal default. "Just this issue" might be the safer default; "same type for this site" is a power-user shortcut, not a starting point.</p>
+          <p>The bulk-action bar's "Edit status" verb is doing a lot of work — it covers Triaged / FP / Accepted Risk / Verified-Risk / Fixed-unconfirmed. Worth surfacing the most common dismissal verbs (Mark FP, Mark Verified) as direct buttons rather than nesting inside Edit status.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scenario 3 -->
+  <div class="scenario">
+    <div class="scenario-header">
+      <span class="scenario-num">3</span>
+      <span class="scenario-title">Deep-dive on a confirmed XSS — investigate, comment, schedule retest</span>
+    </div>
+    <div class="scenario-task">"Stored XSS on /comments. Read the advisory, leave a note for the dev team, request a retest after the fix lands."</div>
+    <div class="scenario-body">
+      <div class="verdict">
+        <span class="verdict-label verdict-working">Working</span>
+        <div>
+          <p>Click the row → 900px panel slides in from the right with three tabs: Manage, Advisory, Timeline. The IA decomposition is sensible — what to do, what's wrong, what's happened.</p>
+          <p>Timeline tab is the surprise standout. Multi-event types (status change, assignment, retest, comment, ticket-raised) chronologically stacked, filterable by event type, with a comment textarea fixed at the bottom. The Burp orange "Add comment" button activates only when text is entered. This is mature interaction design.</p>
+          <p>Re-test bar in the panel — colour-coded (cyan = fixed, orange = regressed, grey = still present) — converts a back-end event into clear UI feedback. Strong.</p>
+        </div>
+      </div>
+      <div class="verdict">
+        <span class="verdict-label verdict-risk">Risk</span>
+        <div>
+          <p><strong>Panel width vs. viewport.</strong> 900px on Diego's 1440px laptop = 62% of viewport; the table is reduced to ~540px and effectively unusable as peripheral context. He can't see other related issues while reading this one. Compare: GitHub's PR side-panel is ~720px and explicitly designed to leave the file tree usable.</p>
+          <p><strong>Advisory tab evidence is incomplete.</strong> University of Texas (case 00373764, Tier 2) needed the full request/response to confirm an FP — DAST today snips both. If Diego disagrees with the AI's "Issue Confirmed", the data he needs to challenge that verdict isn't here.</p>
+          <p><strong>Comment authorship.</strong> Diego adds a comment: "Escalated to dev team — blocking next release." It appears in the Timeline. But Manulife (case 00335249, Tier 1) flags that comments don't reach exported reports. Diego will spend effort writing context that won't survive the export boundary.</p>
+          <p><strong>Re-test mental model is unproven.</strong> The interaction is built, but the persona case for it is unproven — see Section 2.16. Diego may not understand what triggers the retest (a manual scan? A scheduled re-scan? An on-demand "verify now"?). The button verb alone doesn't communicate that.</p>
+        </div>
+      </div>
+      <div class="verdict">
+        <span class="verdict-label verdict-rethink">Rethink</span>
+        <div>
+          <p>Offer a <strong>narrow-mode side panel</strong> (e.g. 480px) with a "expand" toggle — the 900px width is right for advisory reading, wrong for triage scanning.</p>
+          <p>Mark comments visually as <strong>"will appear in exported reports"</strong> at the input level, or — better — actually wire them through. Otherwise the timeline becomes audit-only and customers will use Jira tickets / spreadsheets as the system of record instead.</p>
+          <p>The retest button needs an information-affordance: a one-line explainer of <em>what happens</em> when you click it (queues a focused re-scan of just this URL? blocks until next scheduled scan?). Today's verb-as-a-button pattern hides the model.</p>
+          <p>Consider exposing <strong>full request/response</strong> in an Advisory sub-section, even behind a "Show full evidence" disclosure — the snipped version is fine for 80% of triage but blocks the "I disagree with AI" workflow.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scenario 4 -->
+  <div class="scenario">
+    <div class="scenario-header">
+      <span class="scenario-num">4</span>
+      <span class="scenario-title">Friday afternoon SLA breach prep — leadership reporting workflow</span>
+    </div>
+    <div class="scenario-task">"What's about to breach SLA next week, who owns it, what's the MTTR trend?" (Interpublic, case 00284870)</div>
+    <div class="scenario-body">
+      <div class="verdict">
+        <span class="verdict-label verdict-working">Working</span>
+        <div>
+          <p>The three SLA donut cards (High / Medium / Low) give an at-a-glance answer to "how are we doing on each severity?" — within / at-risk / overdue counts side-by-side with the visual arc. This is exactly the leadership snapshot Chris Wall (Interpublic, Tier 1) asked for.</p>
+          <p>The SLA Fix Rate line chart with severity series toggles (High / Medium / Low) and a drill-down modal with KPI mini-stats is a credible answer to the MTTR trend question.</p>
+          <p>The Age column on the table itself lets Diego sort to find the oldest unresolved items — directly solving Thomson Reuters' (case 00208771) prioritisation ask.</p>
+        </div>
+      </div>
+      <div class="verdict">
+        <span class="verdict-label verdict-risk">Risk</span>
+        <div>
+          <p><strong>SLA Fix Rate chart hidden under 1600px viewport.</strong> Diego's MacBook is 1440px. The chart with the strongest leadership narrative is invisible to him by default. He has to dock with an external monitor to see it. This is a major design-for-the-wrong-screen-size problem; a senior PM or leadership user is even more likely to be on a laptop, not a 4K monitor.</p>
+          <p><strong>No SLA owner / contact surface.</strong> Chris Wall's exact ask was "owner and technical contact details so we know who to contact if an SLA is breached". v10 surfaces Assignee (one user) but not an escalation contact. Tags-as-workaround is what Interpublic is doing today; the prototype doesn't formalise it.</p>
+          <p><strong>MTTR is not in the dashboard.</strong> The Fix Rate chart shows fix rate over time, not mean time to remediate. These are different metrics; Interpublic asked for the latter explicitly.</p>
+          <p><strong>Stat-card → table-filter coupling unclear.</strong> If Diego clicks the "overdue" arc on the High SLA donut, does the table filter to High & overdue? Implementation isn't visible in the prototype write-up.</p>
+        </div>
+      </div>
+      <div class="verdict">
+        <span class="verdict-label verdict-rethink">Rethink</span>
+        <div>
+          <p><strong>Move the SLA Fix Rate chart inside the responsive range.</strong> If it has to disappear at narrower widths, replace it with a compact KPI ribbon (current fix rate %, trend arrow, MTTR number) — leadership data should not require an external monitor.</p>
+          <p>Add an <strong>MTTR figure</strong> next to the SLA donuts — explicit Tier 1 ask, currently absent.</p>
+          <p>Make stat cards <strong>clickable cross-cuts</strong> — clicking a donut arc applies the matching filter to the table. This is the implicit interaction the cards already imply.</p>
+          <p>For the SLA-owner workflow, consider a "team / contact" attribute distinct from Assignee — Assignee is one person, SLA contact may be a team alias.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scenario 5: v11 -->
+  <div class="scenario">
+    <div class="scenario-header">
+      <span class="scenario-num">5</span>
+      <span class="scenario-title">v11 — Diego navigates the org tree for a regional review then drills into a problem site</span>
+    </div>
+    <div class="scenario-task">"Show me Asia's open issues — anything red? OK, then show me Zenith Corp specifically; the product team's joining the call."</div>
+    <div class="scenario-body">
+      <div class="verdict">
+        <span class="verdict-label verdict-working">Working</span>
+        <div>
+          <p>The 340px left site-tree panel gives Diego permanent navigational context. He can see the whole 172-site estate, expand "Asia" to see Feil LLC / O'Conner LLC / Mitchell Group, and the selected-state highlight tells him where he is at all times. Tree filter + search means he doesn't have to scroll through 172 rows to find a site.</p>
+          <p>Same UI primitives at every level — filter bar, SLA donuts, table, side panel, bulk actions — so Diego doesn't relearn anything when he zooms. The folder header (region pages) and site title row (per-site pages) communicate the current scope without forcing him to re-read the URL.</p>
+          <p>Cross-region tags on issues (e.g. green "Europe" badge) handle the case where a site belongs to multiple groupings — useful when "Pentest group" and a region both apply.</p>
+          <p>Site sub-actions (Delete site / New scan / Run pre-scan) sit at the site-page level — exactly where Diego would expect them — not buried in a settings page.</p>
+        </div>
+      </div>
+      <div class="verdict">
+        <span class="verdict-label verdict-risk">Risk</span>
+        <div>
+          <p><strong>Tree (340px) + side panel (900px) leaves ~200px of table on a 1440px laptop.</strong> Open both at once and the issues list is essentially gone. The tree probably needs an iconified or hidden state when the side panel is open.</p>
+          <p><strong>v10 → v11 navigation gap.</strong> v10 doesn't have the site-tree. If Diego is in v10 and wants to drop into Zenith Corp, what does he click? The Site cell? The Site filter chip? It's not visually obvious. v10 and v11 currently feel like two different surfaces rather than two zoom levels of one.</p>
+          <p><strong>Tree counts ambiguity.</strong> Tree rows show counts (Asia: 12). Are those issue counts, site counts, or scan counts? Without a unit-of-measure label, Diego may misread them. At a glance "Asia: 12" reads as "12 issues" but the data underneath suggests it's "12 sites."</p>
+          <p><strong>Stat-card sample sizes at low N.</strong> A site with 4 high-severity issues will produce a tiny donut. The cards need a graceful low-N treatment — a count strip ("3 within / 1 at-risk / 0 overdue") rather than a 150px donut.</p>
+          <p><strong>RBAC isn't wired.</strong> Right now the tree shows the whole estate to anyone who can open the page. Real enterprise deployments need access-controlled trees — Diego's developer should only see Zenith Corp.</p>
+        </div>
+      </div>
+      <div class="verdict">
+        <span class="verdict-label verdict-rethink">Rethink</span>
+        <div>
+          <p><strong>Make v10 and v11 a single zoomable surface.</strong> The natural model: v10 is "no scope selected, show me everything"; clicking a folder/site in the tree (which should also be available on v10) zooms in. That re-frames v10 + v11 as one product, not two.</p>
+          <p><strong>Collapse the tree when the side panel is open.</strong> Auto-collapse on side-panel open + restore on close. Cheap to implement, big payoff in usable table width.</p>
+          <p><strong>Label tree counts.</strong> Either consistent (always issue counts) or labelled inline ("Asia · 3 sub-folders · 12 sites"). Don't leave the unit ambiguous.</p>
+          <p><strong>Validate the four-level nesting depth.</strong> Estate → region → sub-folder → site is one schema, but real customers have hierarchies that don't fit it (business unit, environment dev/staging/prod, criticality tier). Worth a check that the tree gracefully degrades when customers have only two levels, or extends when they have five.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Cross-scenario observations</h3>
+  <ul>
+    <li><strong>Status / FP scope is largely resolved at the bulk-action modal</strong> (see updated Section 2.13). The remaining gap is dynamic-URL pattern marking. Earlier versions of this pack overstated this concern; reading the modal corrected it.</li>
+    <li><strong>Verified status is in v10</strong> ("Verified risk" in the status select — see Section 2.24). Earlier "verify with the team" worry was unnecessary.</li>
+    <li><strong>The 900px side panel is too wide for laptop users.</strong> Affects Scenarios 3 and 5. With v11's 340px tree adding to the takeover, this is even more pressing than first appeared.</li>
+    <li><strong>Burp AI confidence — the most novel value — is partially hidden</strong> (Scenario 1, behind horizontal scroll) and partially incomplete (Scenario 3, advisory tab missing full evidence). The product's strongest differentiator deserves the design's strongest support.</li>
+    <li><strong>Comments don't reach reports.</strong> A back-end issue, but it makes the Timeline tab a write-only audit log unless fixed (Scenario 3).</li>
+    <li><strong>SLA Fix Rate chart hidden &lt;1600px is a real defect</strong> for the persona this pack describes (Scenario 4).</li>
+    <li><strong>v10 and v11 should feel like one product at two zoom levels, not two products.</strong> The site-tree should be available in v10 too (Scenario 5).</li>
+  </ul>
+</section>
+
+<!-- ─── Section 4: What the evidence does not tell you ─── -->
+<section id="sec-4" data-collapsible="true">
+  <h2><span class="num">4</span>What the evidence does <em>not</em> tell you</h2>
+  <p style="font-size: 13px; color: var(--c-secondary); margin-bottom: 14px;">Adding Gong addressed two of the original blind spots and left three. Strikethroughs below mark items now (partially) covered.</p>
+  <ul>
+    <li><strong>Volume vs. importance.</strong> Jira integration generates the most cases because it's the most fragile integration; that doesn't necessarily make it the highest-leverage thing to redesign. SF over-indexes on broken things; <em>Gong now provides a counter-balance</em> by surfacing what customers volunteer they value, but still under-weights latent unmet needs.</li>
+    <li><span style="color: var(--c-secondary); text-decoration: line-through;"><strong>Silent majority.</strong></span> <strong>Partially resolved by Gong</strong> — customers happy with today's product surface their satisfaction in calls, not in support tickets. Sections 2.18 (leaderboard) and 2.20 (WSAcad refs) are signals we'd have missed using SF alone.</li>
+    <li><span style="color: var(--c-secondary); text-decoration: line-through;"><strong>Acquisition vs. retention.</strong></span> <strong>Resolved by PM doc</strong> — the PM brief explicitly attributes <strong>two lost deals</strong> (Interpublic $97k, Peach Payments $12k) and ~$700k of renewal opportunity to the gap this work addresses. Gong supplements with the "why customers chose DAST" framing (Section 2.30). The PM doc is the source that finally answers "is this an acquisition / churn issue?" with named-customer dollar attribution.</li>
+    <li><strong>Recency bias.</strong> SF biased to last 24 months; the Gong synthesis is undated in the report I received, so the time-window is opaque. Worth checking with whoever generated the Gong report.</li>
+    <li><strong>Sample.</strong> 26 SF cases drilled out of ~150 surfaced. Gong is a synthesis, so the underlying call sample size is unknown. Description-level signal in the SF long tail and the raw Gong transcripts both remain uncrawled.</li>
+    <li><strong>Indirection in the Gong source.</strong> Gong's report is an AI synthesis of customer attitudes, not raw transcripts. Sentiment (e.g. "customers value X") is more reliable than specifics (e.g. exact phrasing or which customer said what). For decisions that hinge on a single customer's view, prefer SF cases or raw call recordings.</li>
+  </ul>
+</section>
+
+<!-- ─── Section 5: Follow-ups ─── -->
+<section id="sec-5">
+  <h2><span class="num">5</span>Suggested follow-ups</h2>
+  <ol class="followups">
+    <li><strong>Confirm Bifrost / data-model alignment for stable issue identity.</strong> The PM doc explicitly flags this as a foundation requirement. v10/v11's row identity, Timeline events, and retest history all assume issues persist across scans with stable IDs. If the data model isn't ready, the prototype is designing on top of an unstable foundation. <em>Highest priority — load-bearing for everything else in the pack.</em></li>
+    <li><strong>Unify v10 + v11 as one zoomable surface.</strong> Make the site-tree available in v10 too; opening v10 with no scope selected should be the natural "estate root" position; clicking a tree node zooms in. Removes the v10/v11 navigation gap (Scenario 5). PM Assertion 1 + Gong RBAC scoping align with this framing.</li>
+    <li><strong>Add URL-pattern scope option to the FP modal.</strong> The modal already resolves the broad scope question; what's missing is a fourth radio for URL-pattern marking ("all URLs matching <code>/users/anonymous/*</code> for this site"). Closes the Babiel + AS Watson dynamic-URL gap.</li>
+    <li><strong>Reconsider the bulk-modal default.</strong> Today it defaults to "this issue and all same-type for this site" — a broader scope than naive users may expect. Worth a usability test; "just this issue" may be a safer default.</li>
+    <li><strong>Coordinate triage states with the CI/CD pipeline gate.</strong> PM JTBD: "builds fail even when no genuine security risk remains". Verified-risk and Fixed-unconfirmed are both in v10's enum; the API the CI gate consumes needs to recognise them. Otherwise we make the pipeline problem worse, not better.</li>
+    <li><strong>Side panel + tree both open = no table.</strong> v11 makes the side-panel-width concern more pressing — tree (340px) + panel (900px) leaves ~200px of table on a 1440px laptop. Offer auto-collapse of the tree when the side panel is open, plus a 480px narrow-mode panel.</li>
+    <li><strong>Decide what happens to the vulnerable-sites leaderboard.</strong> Gong identifies it as something customers chose DAST for. v10 reframes the dashboard around SLA. Either preserve it elsewhere or take a deliberate decision to retire it. Don't lose it by accident.</li>
+    <li><strong>Audit / "proving what was checked".</strong> M&amp;S and RXSense ($136k + $15k) describe issues vanishing without explicit Resolved transitions. Side-panel Timeline should record positive "verified clear" events, not silent disappearance. Small data-model addition with disproportionate audit-credibility return.</li>
+    <li><strong>Move SLA Fix Rate inside the laptop viewport.</strong> Either responsive-collapse to a KPI ribbon, or accept that the chart is desktop-only and add an explicit "view on a wider screen" affordance. Add MTTR explicitly (Interpublic Tier 1 ask).</li>
+    <li><strong>Tree-counts unit-of-measure label.</strong> "Asia: 12" reads as 12 issues but the data underneath suggests sites. Either standardise to issue-counts everywhere or label inline ("Asia · 3 sub-folders · 12 sites").</li>
+    <li><strong>Validate tree depth flexibility.</strong> Estate → region → sub-folder → site is one schema; real customers have hierarchies that don't fit it (BU, env, criticality). Worth confirming the tree degrades to two levels and extends to five.</li>
+    <li><strong>"Select all N matching filter"</strong> in the bulk-action bar. Standard pattern, missing from v10. Required for usability Scenario 2 to scale past one page.</li>
+    <li><strong>Verify WSAcad references in Advisory tab.</strong> Gong identifies these as customer-valued. Low-cost addition if missing.</li>
+    <li><strong>"Send to Burp Pro" workflow seam.</strong> Gong + PM doc both surface the DAST → Pro handoff. v10 currently has no action for this. PM doc explicitly cites this as Bifrost-related.</li>
+    <li><strong>Wire v11's RBAC.</strong> v11 currently scopes the <em>view</em> but not the <em>access</em>. Real enterprise deployments need access-controlled trees — the developer for Zenith Corp shouldn't see the rest of the estate.</li>
+    <li><strong>Comments → reports.</strong> Confirm with engineering whether timeline comments flow into exported reports (Manulife 00335249, Tier 1). If not, address before customers invest effort in commenting.</li>
+    <li><strong>Promote Burp AI output</strong> into the sticky region or fuse with Confidence (v9). The novel value is currently behind a horizontal scroll.</li>
+    <li><strong>Web/API filter.</strong> Decide whether to add as a first-class filter chip or push to tags-as-workaround. Customer ask is Tier 1.</li>
+    <li><strong>Linked-tickets persistence + auto-close.</strong> DKSH cases (00174085, 00184903). Side panel is the surface. Worth a conversation with engineering before committing the panel design.</li>
+  </ol>
+</section>
+
+<!-- ─── Section 6: Workflow notes ─── -->
+<section id="sec-6" data-collapsible="true">
+  <h2><span class="num">6</span>Workflow notes (for future runs of this pilot)</h2>
+  <ul>
+    <li><strong>Salesforce schema is rich.</strong> <code style="font-family:'SFMono-Regular',Menlo,monospace;font-size:12px;background:var(--c-pro6);color:var(--c-pro2);padding:1px 6px;border-radius:3px;">Case.Enterprise_Components__c</code> (DAST Components multipicklist) is the highest-leverage filter — values like <em>Issue Management</em>, <em>Integrations - Issue Tracking</em>, <em>Site Management</em>, <em>Reporting</em> map almost 1:1 to v10/v11 themes. Field is sparsely populated (only ~19 cases tagged "Issue Management" in 3 years), so keyword SOSL search across Subject/Description was needed to cover the long tail.</li>
+    <li><strong>Idea / IdeaComment is a dead channel</strong> in this org (0 records returned). Don't waste a query on it.</li>
+    <li><strong>Tier-weighting matters.</strong> Tier 1 / Tier 3 case asks should get priority over the Tier 4 / Tier 5 long tail. The <code style="font-family:'SFMono-Regular',Menlo,monospace;font-size:12px;background:var(--c-pro6);color:var(--c-pro2);padding:1px 6px;border-radius:3px;">ARR_Tier__c</code> field makes this trivial.</li>
+    <li><strong>Description text is where the evidence lives</strong> — Subject lines are too sparse. Always pull Description on the most relevant cases.</li>
+    <li><strong>Multipicklist gotcha:</strong> can't <code style="font-family:'SFMono-Regular',Menlo,monospace;font-size:12px;background:var(--c-pro6);color:var(--c-pro2);padding:1px 6px;border-radius:3px;">GROUP BY Enterprise_Components__c</code>, only filter via <code style="font-family:'SFMono-Regular',Menlo,monospace;font-size:12px;background:var(--c-pro6);color:var(--c-pro2);padding:1px 6px;border-radius:3px;">INCLUDES (...)</code>.</li>
+    <li><strong>Cost guidance:</strong> ~9 SOSL queries + 2 batch SOQL for descriptions covered the surface adequately for a 17-theme design + 5-scenario walkthrough. A deeper pass would also crawl <code style="font-family:'SFMono-Regular',Menlo,monospace;font-size:12px;background:var(--c-pro6);color:var(--c-pro2);padding:1px 6px;border-radius:3px;">CaseComment.CommentBody</code> for follow-up dialogue, and join cases to <code style="font-family:'SFMono-Regular',Menlo,monospace;font-size:12px;background:var(--c-pro6);color:var(--c-pro2);padding:1px 6px;border-radius:3px;">Account</code> for industry-vertical patterns.</li>
+    <li><strong>Watch for repeat customers.</strong> Carson opened both 00307715 (status scope) and 00322295 (confidence filter) — same workflow, two unanswered halves. Joining cases by Contact / Account surfaces these threads and tells you which customers have <em>multiple</em> unaddressed asks. Tier 1 + repeat = highest priority.</li>
+    <li><strong>Pair the evidence pass with a usability walkthrough every time.</strong> Customer cases tell you what users say; the walkthrough tells you what users will hit when they actually use the design. The two views together caught issues that neither would catch alone — e.g. the SLA Fix Rate chart's viewport-size problem is a usability finding that no customer case could have surfaced, because no customer has used the prototype yet.</li>
+    <li><strong>SF + Gong is the right two-source minimum.</strong> SF tells you what's broken; Gong tells you what's loved. Designs that look fine through one lens often look different through the other — e.g. the vulnerable-sites leaderboard is invisible in SF (no one opens a ticket about a feature that works) but central in Gong (customers volunteer that they chose DAST for it). Run both for any design that touches a customer's daily workflow.</li>
+    <li><strong>Gong's AI synthesis is a starting point, not an end-point.</strong> The summary is useful for direction-setting but flattens detail. For decisions that hinge on specifics — exact phrasing, which customer said what, time period — go back to the raw transcripts or pull the relevant calls directly. The synthesis lacks dates, customer attribution, and cohort sizes.</li>
+    <li><strong>Watch for what only one source surfaces.</strong> The most strategically important finding in this pack — Section 2.30, "what's at stake commercially" — needs Gong + PM doc together (neither alone tells you both why customers chose DAST and what dollar value is on the table). The most consequential design correction in the pack — Section 2.16, retest demand — appears only in PM doc (zero SF tickets).</li>
+    <li><strong>"No SF tickets" doesn't mean "no demand."</strong> Customers don't open support tickets about features that don't exist yet — they ask about them in sales / discovery / renewal conversations, which land in PM discovery briefs and Gong. My initial Section 2.16 finding ("retest has no direct demand") was a methodology error that the PM doc corrected: 4 named customers, ~$700k of attached deal value. Whenever a feature in the prototype shows zero SF tickets, treat that as a flag to look in PM/Gong before concluding "no demand." It often means "demand exists but in a different conversation."</li>
+    <li><strong>Read the actual prototype, all of it.</strong> Two of the most prominent gaps in earlier versions of this pack — "scope ambiguity" and "verify Verified status exists" — were corrected by reading the bulk-action modals (which I'd previously skipped) and the v11 architecture (which I'd misread as "single-site"). Source-mining is necessary; <em>complete prototype reading is also necessary</em>. Don't audit a design from its summary or its index — read it end-to-end. Same lesson as the source mix: each surface tells you something the others miss.</li>
+  </ul>
+</section>
+
+<footer class="doc-footer">
+  Compiled 2026-04-30. Pilot run on the Burp DAST Issues v10 + v11 prototypes (11 HTML files) by Ric Corbally. Customer evidence triangulated across three sources: PortSwigger Salesforce (via MCP), a Gong AI-synthesis of customer attitudes, and the PM Confluence brief <em>Vulnerability lifecycle and reporting transparency</em> (productplanning/511967293). Usability walkthrough authored as a heuristic evaluation in the persona of a composite Tier 1 AppSec engineer.
+</footer>
+
+</div>
+
+<script>
+(function() {
+  // ─── Wrap each "2.X" h3 + its following siblings in a collapsible .theme div ───
+  const allH3 = Array.from(document.querySelectorAll('section h3'));
+  const themeH3s = allH3.filter(h3 => /^\s*\d+\.\d+/.test(h3.textContent));
+
+  themeH3s.forEach((h3, idx) => {
+    const m = h3.textContent.trim().match(/^(\d+\.\d+)/);
+    if (!m) return;
+    const themeId = 'theme-' + m[1].replace('.', '-');
+    const nextH3 = themeH3s[idx + 1] || null;
+
+    // Create wrapper
+    const wrap = document.createElement('div');
+    wrap.className = 'theme is-collapsed';
+    wrap.id = themeId;
+
+    // Insert wrapper right before h3
+    h3.parentNode.insertBefore(wrap, h3);
+
+    // Move h3 + following siblings into wrapper, until next theme h3 or end of parent
+    let cursor = h3;
+    while (cursor && cursor !== nextH3) {
+      const next = cursor.nextSibling;
+      wrap.appendChild(cursor);
+      cursor = next;
+    }
+
+    // Wrap everything after h3 inside .theme-body for collapse target
+    const bodyWrap = document.createElement('div');
+    bodyWrap.className = 'theme-body';
+    let bodyCursor = h3.nextSibling;
+    while (bodyCursor) {
+      const next = bodyCursor.nextSibling;
+      bodyWrap.appendChild(bodyCursor);
+      bodyCursor = next;
+    }
+    wrap.appendChild(bodyWrap);
+
+    // Click handler on h3 toggles
+    h3.addEventListener('click', (e) => {
+      // ignore clicks on links inside h3
+      if (e.target.tagName === 'A') return;
+      wrap.classList.toggle('is-collapsed');
+    });
+  });
+
+  // ─── Expand-all / Collapse-all ───
+  const expandBtn = document.getElementById('expandAllBtn');
+  const collapseBtn = document.getElementById('collapseAllBtn');
+  const allThemes = () => document.querySelectorAll('.theme');
+  if (expandBtn) expandBtn.addEventListener('click', () => allThemes().forEach(t => t.classList.remove('is-collapsed')));
+  if (collapseBtn) collapseBtn.addEventListener('click', () => allThemes().forEach(t => t.classList.add('is-collapsed')));
+
+  // ─── Collapsible top-level sections (1, 4, 6) ───
+  document.querySelectorAll('section[data-collapsible]').forEach(s => {
+    s.classList.add('is-collapsed');
+    const h2 = s.querySelector('h2');
+    if (h2) {
+      h2.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A') return;
+        s.classList.toggle('is-collapsed');
+      });
+    }
+  });
+
+  // ─── Hash navigation: expand target (and parent section if collapsible) + scroll ───
+  function expandFor(target) {
+    if (!target) return;
+    if (target.classList && target.classList.contains('theme')) target.classList.remove('is-collapsed');
+    if (target.matches && target.matches('section[data-collapsible]')) target.classList.remove('is-collapsed');
+    const parentSec = target.closest && target.closest('section[data-collapsible]');
+    if (parentSec) parentSec.classList.remove('is-collapsed');
+  }
+  function jumpToHash() {
+    const hash = location.hash;
+    if (!hash) return;
+    const target = document.querySelector(hash);
+    if (!target) return;
+    expandFor(target);
+    setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30);
+  }
+  window.addEventListener('hashchange', jumpToHash);
+  setTimeout(jumpToHash, 50);
+
+  // Intercept in-page anchor clicks
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const hash = a.getAttribute('href');
+      if (!hash || hash === '#') return;
+      const target = document.querySelector(hash);
+      if (!target) return;
+      e.preventDefault();
+      history.pushState(null, '', hash);
+      expandFor(target);
+      setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 30);
+    });
+  });
+
+  // ─── TOC scroll-spy ───
+  const tocLinks = Array.from(document.querySelectorAll('.toc-link[data-section]'));
+  const sections = tocLinks.map(l => document.getElementById(l.dataset.section)).filter(Boolean);
+  if (sections.length && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.id;
+        tocLinks.forEach(l => l.classList.toggle('is-active', l.dataset.section === id));
+      });
+    }, { rootMargin: '-25% 0px -65% 0px', threshold: 0 });
+    sections.forEach(s => observer.observe(s));
+  }
+})();
+</script>
+
+</body>
+</html>
