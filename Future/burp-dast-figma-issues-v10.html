@@ -880,6 +880,12 @@
     }
     .fp-item:hover .fp-lbl { color: #000023; }
     .fp-item--disabled { opacity: 0.35; pointer-events: none; }
+    .scan-tab-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 1px 8px; border-radius: 100px; font-size: 12px; font-weight: 400;
+      background: #EBF0F2; color: #333332; font-family: var(--font);
+    }
+    .fp-count { margin-left: auto; }
 
     /* ── Site tree filter ── */
     .fp-site-tree { width: 340px; max-height: none; overflow: hidden; padding: 0; border-color: #333332; }
@@ -1432,6 +1438,7 @@
     .s-fp        { color: #333332; }
     .s-regressed { color: #D6213F; }
     .s-scanning  { color: #8C8D8E; }
+    .s-needs-retest { color: #8C8D8E; }
     .s-fixed     { color: #0094FF; }
     .s-accepted  { color: #333332; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -1471,6 +1478,30 @@
     .status-menu-item .item-check { flex-shrink: 0; color: #8C8D8E; }
     .status-menu-item:not(.is-disabled) .item-check { color: #333332; }
     .status-menu-divider { height: 1px; background: #EBF0F2; margin: 6px 0; }
+    .status-menu-section-label {
+      font-family: var(--font);
+      font-size: 11px; font-weight: 600;
+      color: #8C8D8E; text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 6px 6px 4px;
+    }
+    .status-menu-section-label:first-child { padding-top: 2px; }
+    .status-menu-item.is-current { font-weight: 500; }
+    .status-menu-scanner-pill {
+      display: inline-flex; align-items: center;
+      background: #fff; border: 1px solid #CBD0D1; border-radius: 4px;
+      padding: 2px 8px; font-size: 11px; font-weight: 700;
+      color: #333332; line-height: 1.2; letter-spacing: 0.11px; margin-left: 8px;
+    }
+
+    /* Status modal — inline revert explainer (shown when "Use scanner status" is picked) */
+    .sc-revert-info {
+      background: #F0F8FB; border-left: 3px solid #0094FF;
+      padding: 12px 16px; border-radius: 4px;
+      font-family: var(--font); font-size: 14px; line-height: 1.5;
+      color: #333332; margin-top: 16px;
+    }
+    .sc-revert-info strong { font-weight: 500; color: #000023; }
+
 
     /* Status change modal */
     .sc-overlay {
@@ -1553,32 +1584,6 @@
       width: 18px; height: 18px;
       display: flex; align-items: center; justify-content: center;
     }
-    .sc-divider { border: none; border-top: 1px solid #CBD0D1; margin: 0; }
-    .sc-radios { display: flex; flex-direction: column; gap: 20px; }
-    .sc-radio-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      font-family: var(--font);
-      font-weight: 400;
-      font-size: 14px;
-      line-height: 1.4;
-      letter-spacing: 0.07px;
-      color: #333332;
-      user-select: none;
-    }
-    .sc-radio-label input[type="radio"] { display: none; }
-    .sc-radio-btn {
-      width: 19px; height: 19px;
-      border-radius: 50%;
-      border: 2px solid #CBD0D1;
-      flex-shrink: 0;
-      background: #fff;
-      display: flex; align-items: center; justify-content: center;
-      transition: border-color 0.1s;
-    }
-    .sc-radio-label input[type="radio"]:checked ~ .sc-radio-btn { border: 6px solid #0094FF; }
     .sc-textarea {
       width: 100%;
       flex: 1;
@@ -2451,7 +2456,6 @@
     .tl-quote { font-size: 14px; font-style: italic; font-weight: 400; color: #676667; line-height: 1.4; letter-spacing: 0.07px; padding-top: 10px; }
     .tl-desc  { font-size: 14px; font-weight: 400; color: #676667; line-height: 1.4; letter-spacing: 0.07px; width: 100%; }
     .tl-pill { display: inline-flex; align-items: center; gap: 10px; padding: 5px 15px; border: 1px solid var(--c-border); border-radius: 4px; background: #fff; font-family: var(--font); font-size: 12px; font-weight: 700; line-height: 1.2; letter-spacing: 0.12px; white-space: nowrap; flex-shrink: 0; }
-    .tl-tag { border: 1px solid #CBD0D1; border-radius: 4px; padding: 3px 6px; font-family: var(--font); font-size: 12px; font-weight: 700; line-height: 1.2; letter-spacing: 0.12px; white-space: nowrap; min-height: 22px; display: inline-flex; align-items: center; justify-content: center; }
     .tl-divider { height: 1px; background: #CBD0D1; width: 100%; margin-top: 30px; }
     .tl-comments { margin-top: 30px; display: flex; flex-direction: column; gap: 10px; }
     .tl-comments-title { font-family: var(--font); font-size: 16px; font-weight: 500; color: #000023; line-height: 1.4; letter-spacing: 0.16px; }
@@ -2467,6 +2471,39 @@
     .tl-field-row { display: flex; gap: 10px; align-items: center; font-family: var(--font); font-size: 14px; line-height: 1.4; letter-spacing: 0.07px; }
     .tl-field-label { min-width: 100px; flex-shrink: 0; color: #676667; font-weight: 400; white-space: nowrap; }
     .tl-field-value { color: #333332; font-weight: 400; flex: 1; min-width: 0; }
+
+    /* Grouped scanner observations — collapse consecutive same-status scans */
+    .tl-card-scanner-group { background: #F0F8FB; border: none; }
+    .tl-group-meta {
+      display: flex; gap: 24px; flex-wrap: wrap;
+      font-family: var(--font); font-size: 13px; font-weight: 400;
+      color: #676667; line-height: 1.4; letter-spacing: 0.07px;
+    }
+    .tl-group-meta strong { color: #333332; font-weight: 500; }
+    .tl-group-toggle {
+      align-self: flex-start;
+      background: none; border: none; padding: 0; margin-top: 4px;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font); font-size: 14px; font-weight: 500;
+      color: #FF6633; cursor: pointer; line-height: 1.4;
+    }
+    .tl-group-toggle:hover { color: #cc4f29; }
+    .tl-group-toggle-chev { transition: transform 0.15s; flex-shrink: 0; }
+    .tl-card-scanner-group.is-expanded .tl-group-toggle-chev { transform: rotate(180deg); }
+    .tl-group-list {
+      display: none; margin-top: 5px;
+      flex-direction: column; gap: 6px;
+    }
+    .tl-card-scanner-group.is-expanded .tl-group-list { display: flex; }
+    .tl-group-row {
+      display: flex; align-items: center; gap: 16px;
+      font-family: var(--font); font-size: 13px; line-height: 1.4;
+    }
+    .tl-group-row-date { color: #676667; min-width: 124px; flex-shrink: 0; }
+    .tl-group-row-scan {
+      color: #FF6633; font-weight: 500; text-decoration: none;
+    }
+    .tl-group-row-scan:hover { text-decoration: underline; }
 
     /* ── Age popover ── */
     .age-popover {
@@ -2606,31 +2643,92 @@
 
     /* Side panel Burp AI results panel */
     .sp-ai-panel {
-      border-radius: 8px; overflow: hidden;
+      border-radius: 8px;
     }
     .sp-ai-panel-header {
       background: #5B4FFF; padding: 12px 20px;
       display: flex; align-items: center; justify-content: space-between;
       cursor: pointer; user-select: none;
+      border-radius: 8px 8px 0 0;
     }
     .sp-ai-panel-title {
       font-family: var(--font); font-size: 14px; font-weight: 700;
       color: #fff; display: flex; align-items: center; gap: 8px;
     }
     .sp-ai-panel-chevron { color: rgba(255,255,255,0.8); flex-shrink: 0; display: flex; align-items: center; }
-    .sp-ai-panel-body { background: #fff; border: 1px solid #5B4FFF; border-top: none; border-radius: 0 0 8px 8px; padding: 0; }
+    .sp-ai-panel-chevron svg { transition: transform 0.15s ease; transform: rotate(180deg); }
+    .sp-ai-panel.collapsed .sp-ai-panel-chevron svg { transform: rotate(0deg); }
+    .sp-ai-acc-chevron svg { transition: transform 0.15s ease; }
+    .sp-ai-accordion.open .sp-ai-acc-chevron svg { transform: rotate(180deg); }
+    .sp-ai-panel-body { background: #fff; border: 1px solid #5B4FFF; border-top: none; border-radius: 0 0 8px 8px; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
     .sp-ai-panel.collapsed .sp-ai-panel-body { display: none; }
     .sp-ai-panel.collapsed .sp-ai-panel-header { border-radius: 8px; }
-    .sp-ai-accordion { border-bottom: 1px solid #EBF0F2; }
-    .sp-ai-accordion:last-child { border-bottom: none; }
+    .sp-ai-accordion {
+      background: #fff;
+      border: 1px solid #CBD0D1;
+      border-radius: 8px;
+    }
     .sp-ai-acc-header {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 12px 16px 12px 20px; cursor: pointer; user-select: none;
+      padding: 10px 10px 10px 20px; cursor: pointer; user-select: none;
     }
+    .sp-ai-accordion.open .sp-ai-acc-header { border-bottom: 1px solid #CBD0D1; }
     .sp-ai-acc-header:hover { background: #F7F9FD; }
     .sp-ai-acc-title { font-family: var(--font); font-size: 14px; font-weight: 500; color: #333332; line-height: 1.4; }
     .sp-ai-acc-chevron { width: 20px; height: 20px; flex-shrink: 0; display: flex; align-items: center; color: #676667; }
-    .sp-ai-acc-body { padding: 0 20px 16px; display: none; font-family: var(--font); font-size: 14px; font-weight: 400; color: #333332; line-height: 1.5; }
+    .sp-ai-acc-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .sp-ai-copy-btn {
+      background: none; border: none; padding: 0;
+      width: 28px; height: 28px; border-radius: 4px;
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; color: #676667;
+      transition: color 0.15s, background 0.15s;
+    }
+    .sp-ai-copy-btn:hover { color: #000023; background: #F0F8FB; }
+    .sp-ai-copy-btn { position: relative; }
+    .sp-ai-copy-btn[data-tooltip]:hover::after,
+    .sp-ai-copy-btn[data-tooltip]:focus-visible::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      color: #333332;
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 400;
+      padding: 4px 8px;
+      border: 1px solid #CBD0D1;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(0, 0, 35, 0.1);
+      white-space: nowrap;
+      z-index: 100;
+      pointer-events: none;
+    }
+    .sp-ai-copy-btn.is-copied { color: #5B4FFF; background: transparent; }
+    .sp-ai-copy-btn .sp-ai-copy-icon-copied { display: none; }
+    .sp-ai-copy-btn.is-copied .sp-ai-copy-icon-default { display: none; }
+    .sp-ai-copy-btn.is-copied .sp-ai-copy-icon-copied { display: block; }
+    .sp-ai-updated {
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.85);
+      letter-spacing: 0.12px;
+      white-space: nowrap;
+      margin-right: 4px;
+    }
+    .sp-ai-panel-header .sp-ai-copy-btn { color: rgba(255,255,255,0.85); }
+    .sp-ai-panel-header .sp-ai-copy-btn:hover { color: #fff; background: rgba(255,255,255,0.12); }
+    .sp-ai-panel-header .sp-ai-copy-btn.is-copied { color: #D6D3FF; background: transparent; }
+    /* Panel-level "Copy all" tooltip — flip below so it doesn't get clipped by content above the panel */
+    .sp-ai-panel-header .sp-ai-copy-btn[data-tooltip]:hover::after,
+    .sp-ai-panel-header .sp-ai-copy-btn[data-tooltip]:focus-visible::after {
+      bottom: auto;
+      top: calc(100% + 6px);
+    }
+    .sp-ai-acc-body { padding: 20px; display: none; font-family: var(--font); font-size: 14px; font-weight: 400; color: #333332; line-height: 1.5; white-space: pre-wrap; }
     .sp-ai-accordion.open .sp-ai-acc-body { display: block; }
     .sp-ai-acc-summary { font-family: var(--font); font-size: 14px; color: #333332; line-height: 1.5; }
     .sp-ai-learn-more {
@@ -2651,7 +2749,7 @@
     .sp-investigate-btn:hover { background: #4a3fe0; }
     .sp-ai-action-row {
       display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 20px; border-top: 1px solid #EBF0F2;
+      padding: 0;
     }
 
     /* Sparkle (✦) SVG used inline */
@@ -3440,8 +3538,8 @@
           </div>
           <!-- Site -->
           <div class="td col-site site-cell">
-            <span class="site-name">Feil LLC</span>
-            <span class="site-path" title="https://feilllc.com/catalog/products">https://feilllc.com/catalog/products</span>
+            <span class="site-name">Gin and Juice</span>
+            <span class="site-path" title="https://ginandjuice.shop/catalog/products">https://ginandjuice.shop/catalog/products</span>
           </div>
           <!-- First seen -->
           <div class="td col-first">21 Feb 26</div>
@@ -3490,7 +3588,7 @@
           <div class="td col-last">15 Mar 26</div>
           <div class="td col-age"><span class="age-badge age-ok">0 days</span></div>
           <div class="td col-status">
-            <div class="status-drop" data-status="present"></div>
+            <div class="status-drop" data-status="needs-retest"></div>
           </div>
           <div class="td col-assignee"></div>
           <div class="td col-tags">
@@ -4919,13 +5017,6 @@
           <span class="sc-select-chevron"><svg width="11" height="6" viewBox="0 0 10.5 6" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.21967 0.21967C0.512563 -0.0732233 0.987437 -0.0732233 1.28033 0.21967L5.25 4.18934L9.21967 0.21967C9.51256 -0.0732233 9.98744 -0.0732233 10.2803 0.21967C10.5732 0.512563 10.5732 0.987437 10.2803 1.28033L5.78033 5.78033C5.48744 6.07322 5.01256 6.07322 4.71967 5.78033L0.21967 1.28033C-0.0732233 0.987437 -0.0732233 0.512563 0.21967 0.21967Z" fill="#333332"/></svg></span>
         </div>
       </div>
-      <hr class="sc-divider">
-      <div class="sc-radios">
-        <label class="sc-radio-label"><input type="radio" name="sv-scope" value="type-site" checked><span class="sc-radio-btn"></span>This issue and all existing issues of the same type for this site</label>
-        <label class="sc-radio-label"><input type="radio" name="sv-scope" value="type-url-site"><span class="sc-radio-btn"></span>This issue and all existing issues of the same type and URL for this site</label>
-        <label class="sc-radio-label"><input type="radio" name="sv-scope" value="all-sites"><span class="sc-radio-btn"></span>These issues across all sites and future occurrences</label>
-      </div>
-      <hr class="sc-divider">
       <div class="sc-field">
         <span class="sc-label">Notes:</span>
         <textarea id="sv-notes" class="sc-textarea" placeholder=""></textarea>
@@ -4952,40 +5043,29 @@
         <span class="sc-label">Issue status:</span>
         <div class="sc-select-wrap">
           <select id="sc-status-select" class="sc-select">
-            <option value="fixed">Fixed (unconfirmed)</option>
-            <option value="accepted">Accepted risk</option>
-            <option value="false-positive">False positive</option>
-            <option value="verified">Verified risk</option>
+            <optgroup label="Override status">
+              <option value="fixed">Fixed (unconfirmed)</option>
+              <option value="accepted">Accepted risk</option>
+              <option value="false-positive">False positive</option>
+              <option value="verified">Verified risk</option>
+            </optgroup>
+            <optgroup label="Remove override">
+              <option value="__revert">Use scanner status</option>
+            </optgroup>
           </select>
           <span class="sc-select-chevron">
             <svg width="11" height="6" viewBox="0 0 10.5 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.21967 0.21967C0.512563 -0.0732233 0.987437 -0.0732233 1.28033 0.21967L5.25 4.18934L9.21967 0.21967C9.51256 -0.0732233 9.98744 -0.0732233 10.2803 0.21967C10.5732 0.512563 10.5732 0.987437 10.2803 1.28033L5.78033 5.78033C5.48744 6.07322 5.01256 6.07322 4.71967 5.78033L0.21967 1.28033C-0.0732233 0.987437 -0.0732233 0.512563 0.21967 0.21967Z" fill="#333332"/></svg>
           </span>
         </div>
       </div>
-      <hr class="sc-divider">
-      <div class="sc-radios">
-        <label class="sc-radio-label">
-          <input type="radio" name="sc-scope" value="type-site" checked>
-          <span class="sc-radio-btn"></span>
-          This issue and all existing issues of the same type for this site
-        </label>
-        <label class="sc-radio-label">
-          <input type="radio" name="sc-scope" value="type-url-site">
-          <span class="sc-radio-btn"></span>
-          This issue and all existing issues of the same type and URL for this site
-        </label>
-        <label class="sc-radio-label">
-          <input type="radio" name="sc-scope" value="all-sites">
-          <span class="sc-radio-btn"></span>
-          These issues across all sites and future occurrences
-        </label>
+      <div class="sc-revert-info" id="sc-revert-info" style="display:none">
+        <strong>Removes the user-set override.</strong> Status reverts to whatever the most recent scan reports for each issue (Present, Fixed, etc.).
       </div>
-      <hr class="sc-divider">
       <div class="sc-field">
         <span class="sc-label">Notes:</span>
         <textarea id="sc-notes" class="sc-textarea" placeholder=""></textarea>
       </div>
-      <div class="sc-info">
+      <div class="sc-info" id="sc-info-override">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 7.27273C8.40166 7.27273 8.72727 7.59834 8.72727 8V10.9091C8.72727 11.3108 8.40166 11.6364 8 11.6364C7.59834 11.6364 7.27273 11.3108 7.27273 10.9091V8C7.27273 7.59834 7.59834 7.27273 8 7.27273Z" fill="#676667"/><path d="M8 4.36364C7.59834 4.36364 7.27273 4.68925 7.27273 5.09091C7.27273 5.49257 7.59834 5.81818 8 5.81818H8.00727C8.40894 5.81818 8.73455 5.49257 8.73455 5.09091C8.73455 4.68925 8.40894 4.36364 8.00727 4.36364H8Z" fill="#676667"/><path fill-rule="evenodd" clip-rule="evenodd" d="M0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8ZM8 1.45455C4.38505 1.45455 1.45455 4.38505 1.45455 8C1.45455 11.615 4.38505 14.5455 8 14.5455C11.615 14.5455 14.5455 11.615 14.5455 8C14.5455 4.38505 11.615 1.45455 8 1.45455Z" fill="#676667"/></svg>
         <span>Issues found in future scans will be marked as the status according to the <span style="text-decoration:underline;cursor:pointer;color:#676667">global setting</span></span>
       </div>
@@ -5037,7 +5117,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       },
       {
         id: 'status', label: 'Status', title: 'Filter by status',
-        options: () => ['New', 'Present', 'Regressed', 'Scanning',
+        options: () => ['New', 'Present', 'Regressed', 'Scanning', 'Needs re-test',
                         'Fixed (confirmed)', 'Fixed (unconfirmed)',
                         'Accepted risk', 'False positive', 'Verified risk'],
         match(row, sel) {
@@ -5045,7 +5125,8 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
           if (!pill) return false;
           const STATUS_LABEL_MAP = {
             'new': 'New', 'present': 'Present', 'regressed': 'Regressed',
-            'scanning': 'Scanning', 'fixed': 'Fixed (unconfirmed)',
+            'scanning': 'Scanning', 'needs-retest': 'Needs re-test',
+            'fixed': 'Fixed (unconfirmed)',
             'fixed-confirmed': 'Fixed (confirmed)', 'accepted': 'Accepted risk',
             'false-positive': 'False positive', 'verified': 'Verified risk',
           };
@@ -5087,13 +5168,6 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
             if (n) s.add(n.textContent.trim());
           });
           return [...s].sort();
-        },
-        countFn(o) {
-          const count = rows.filter(r => {
-            const n = r.querySelector('.issue-name');
-            return n && n.textContent.trim() === o;
-          }).length;
-          return `${o} (${count})`;
         },
         match(row, sel) {
           const n = row.querySelector('.issue-name');
@@ -5298,11 +5372,11 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         </div>` : '';
 
       const itemsHtml = opts.map(o => {
-        const hasMatch = rows.some(row => def.match(row, new Set([o])));
-        const lbl = def.countFn ? def.countFn(o) : o;
-        return `<label class="fp-item${hasMatch ? '' : ' fp-item--disabled'}">
-          <input type="checkbox" class="fp-cb" value="${o}"${hasMatch ? '' : ' disabled'}>
-          <span class="fp-lbl">${lbl}</span>
+        const count = rows.filter(row => def.match(row, new Set([o]))).length;
+        return `<label class="fp-item${count > 0 ? '' : ' fp-item--disabled'}">
+          <input type="checkbox" class="fp-cb" value="${o}"${count > 0 ? '' : ' disabled'}>
+          <span class="fp-lbl">${o}</span>
+          <span class="scan-tab-badge fp-count">${count}</span>
         </label>`;
       }).join('');
 
@@ -5327,13 +5401,15 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         const opening = !pop.classList.contains('is-open');
         closeAll();
         if (opening) {
-          // Re-evaluate disabled state against current row data
+          // Re-evaluate count + disabled state against current row data
           pop.querySelectorAll('.fp-item').forEach(item => {
             const cb = item.querySelector('.fp-cb');
             if (!cb) return;
-            const hasMatch = rows.some(row => def.match(row, new Set([cb.value])));
-            item.classList.toggle('fp-item--disabled', !hasMatch);
-            cb.disabled = !hasMatch;
+            const n = rows.filter(row => def.match(row, new Set([cb.value]))).length;
+            item.classList.toggle('fp-item--disabled', n === 0);
+            cb.disabled = n === 0;
+            const badge = item.querySelector('.fp-count');
+            if (badge) badge.textContent = n;
           });
           pop.classList.add('is-open');
           chip.classList.add('is-open');
@@ -5679,7 +5755,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   }
 
   /* ── Status dropdown ── */
-  const SCANNER_SET = new Set(['new', 'present', 'regressed', 'scanning']);
+  const SCANNER_SET = new Set(['new', 'present', 'regressed', 'scanning', 'needs-retest']);
 
   const USER_OPTIONS = [
     { id: 'fixed',          label: 'Fixed (unconfirmed)' },
@@ -5698,10 +5774,12 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     'accepted':       { label: 'Accepted risk',       cls: 's-accepted',  icon: null,      caret: true  },
     'false-positive': { label: 'False positive',      cls: 's-fp',        icon: null,      caret: true  },
     'verified':       { label: 'Verified risk',       cls: 's-vrisk',     icon: null,      caret: true  },
+    'needs-retest':   { label: 'Needs re-test',       cls: 's-needs-retest', icon: 'refresh', caret: true  },
   };
 
   const SVG_INFO_16 = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M8 7.27273C8.40166 7.27273 8.72727 7.59834 8.72727 8V10.9091C8.72727 11.3108 8.40166 11.6364 8 11.6364C7.59834 11.6364 7.27273 11.3108 7.27273 10.9091V8C7.27273 7.59834 7.59834 7.27273 8 7.27273Z" fill="#333332"/><path d="M8 4.36364C7.59834 4.36364 7.27273 4.68925 7.27273 5.09091C7.27273 5.49257 7.59834 5.81818 8 5.81818H8.00727C8.40894 5.81818 8.73455 5.49257 8.73455 5.09091C8.73455 4.68925 8.40894 4.36364 8.00727 4.36364H8Z" fill="#333332"/><path fill-rule="evenodd" clip-rule="evenodd" d="M0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8ZM8 1.45455C4.38505 1.45455 1.45455 4.38505 1.45455 8C1.45455 11.615 4.38505 14.5455 8 14.5455C11.615 14.5455 14.5455 11.615 14.5455 8C14.5455 4.38505 11.615 1.45455 8 1.45455Z" fill="#333332"/></svg>`;
   const SVG_SPINNER  = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;animation:spin 1.2s linear infinite"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 1.33333C4.3181 1.33333 1.33333 4.3181 1.33333 8C1.33333 8.36819 1.03486 8.66667 0.666667 8.66667C0.298477 8.66667 0 8.36819 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 12.4183 12.4183 16 8 16C7.63181 16 7.33333 15.7015 7.33333 15.3333C7.33333 14.9651 7.63181 14.6667 8 14.6667C11.6819 14.6667 14.6667 11.6819 14.6667 8C14.6667 4.3181 11.6819 1.33333 8 1.33333Z" fill="#0094FF"/></svg>`;
+  const SVG_REFRESH  = `<svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M17 10A7 7 0 1 1 10 3h4.5M14.5 1v4h-4" stroke="#8C8D8E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const SVG_CARET    = `<svg width="10" height="6" viewBox="0 0 9.33333 5.33333" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.195262 0.195262C0.455612 -0.0650874 0.877722 -0.0650874 1.13807 0.195262L4.66667 3.72386L8.19526 0.195262C8.45561 -0.0650874 8.87772 -0.0650874 9.13807 0.195262C9.39842 0.455612 9.39842 0.877722 9.13807 1.13807L5.13807 5.13807C4.87772 5.39842 4.45561 5.39842 4.19526 5.13807L0.195262 1.13807C-0.0650874 0.877722 -0.0650874 0.455612 0.195262 0.195262Z" fill="#333332"/></svg>`;
   const SVG_CHECK    = `<svg class="item-check" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg>`;
   const SVG_CHECK_CIRCLE = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><svg x="0.667" y="0.667" width="14.667" height="14.667" viewBox="0 0 14.667 14.667"><path d="M7.33301 0C11.383 0 14.6668 3.28307 14.667 7.33301C14.667 11.3831 11.3831 14.667 7.33301 14.667C3.28307 14.6668 0 11.383 0 7.33301C0.000175871 3.28318 3.28318 0.000175875 7.33301 0Z" fill="#0094FF"/></svg><svg x="4.667" y="5.33" width="6.697" height="5.667" viewBox="0 0 6.69697 5.66666"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.42988 0.188427C6.75259 0.467691 6.7878 0.955685 6.50854 1.27839L2.94211 5.39959C2.80415 5.55902 2.60703 5.65515 2.39645 5.6657C2.18588 5.67624 1.98014 5.60028 1.82693 5.45544L0.241856 3.95682C-0.0682508 3.66363 -0.081963 3.17456 0.211229 2.86445C0.504421 2.55434 0.993491 2.54063 1.3036 2.83382L2.30191 3.77768L5.33992 0.267084C5.61918 -0.0556217 6.10718 -0.0908377 6.42988 0.188427Z" fill="white"/></svg></svg>`;
@@ -5713,12 +5791,19 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     let iconSvg = '';
     if (cfg.icon === 'info16')       iconSvg = SVG_INFO_16;
     if (cfg.icon === 'spinner')      iconSvg = SVG_SPINNER;
+    if (cfg.icon === 'refresh')      iconSvg = SVG_REFRESH;
     if (cfg.icon === 'check-circle') iconSvg = SVG_CHECK_CIRCLE;
     el.innerHTML = `<span class="pill-content">${iconSvg}${cfg.label}</span>${cfg.caret ? SVG_CARET : ''}`;
   }
 
   // Render all pills and size to widest
   document.querySelectorAll('.status-drop').forEach(pill => renderPill(pill, pill.dataset.status));
+  // For pills that start as a user-set override, seed an underlying scanner status for the demo.
+  document.querySelectorAll('.status-drop').forEach(pill => {
+    if (!SCANNER_SET.has(pill.dataset.status) && !pill.dataset.scannerStatus) {
+      pill.dataset.scannerStatus = 'present';
+    }
+  });
   (function sizePills() {
     // Measure the widest possible label using a temporary off-screen probe pill
     const probe = document.createElement('div');
@@ -5753,11 +5838,23 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   function openStatusMenu(pill) {
     const currentId = pill.dataset.status;
     const isScannerSet = SCANNER_SET.has(currentId);
+    const scannerStatus = isScannerSet ? currentId : (pill.dataset.scannerStatus || 'present');
+    const scannerLabel = STATUS_CFG[scannerStatus]?.label || scannerStatus;
+
     let html = '<div class="status-menu-list">';
+
+    // Scanner status section
+    html += '<div class="status-menu-section-label">Scanner status</div>';
     if (isScannerSet) {
-      html += `<div class="status-menu-item is-disabled"><span>${STATUS_CFG[currentId].label}</span>${SVG_CHECK}</div>`;
-      html += `<div class="status-menu-divider"></div>`;
+      html += `<div class="status-menu-item is-disabled is-current"><span>${STATUS_CFG[currentId].label}</span>${SVG_CHECK}</div>`;
+    } else {
+      html += `<div class="status-menu-item" data-value="__revert"><span>Use scanner status (${scannerLabel})</span></div>`;
     }
+
+    html += `<div class="status-menu-divider"></div>`;
+
+    // Override options section
+    html += `<div class="status-menu-section-label">${isScannerSet ? 'Override with' : 'Override status'}</div>`;
     USER_OPTIONS.forEach(opt => {
       const isCurrent = opt.id === currentId;
       html += `<div class="status-menu-item${isCurrent ? ' is-current' : ''}" data-value="${opt.id}"><span>${opt.label}</span>${isCurrent ? SVG_CHECK : ''}</div>`;
@@ -5778,7 +5875,19 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         e.preventDefault();
         const newId = item.dataset.value;
         closeStatusMenu();
-        if (newId) openStatusModal(pill, newId);
+        if (!newId) return;
+        if (newId === '__revert') {
+          const scanner = pill.dataset.scannerStatus || 'present';
+          renderPill(pill, scanner);
+          delete pill.dataset.scannerStatus;
+          // Sync side-panel pill if this is the open row
+          if (typeof activeRow !== 'undefined' && activeRow && pill.closest('[data-row]') === activeRow) {
+            const spPill = document.getElementById('spStatusPill');
+            if (spPill) renderPill(spPill, scanner);
+          }
+        } else {
+          openStatusModal(pill, newId);
+        }
       });
     });
   }
@@ -5805,14 +5914,36 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   const scOverlay = document.getElementById('sc-overlay');
   const scSelect  = document.getElementById('sc-status-select');
   const scNotes   = document.getElementById('sc-notes');
+  const scRevertInfo    = document.getElementById('sc-revert-info');
+  const scInfoOverride  = document.getElementById('sc-info-override');
+  const scConfirmBtn    = document.getElementById('sc-confirm-btn');
   let scTargetPill = null;
   let scBulkRows   = [];
+
+  function syncScModeFromSelect() {
+    const isRevert = scSelect.value === '__revert';
+    scRevertInfo.style.display    = isRevert ? '' : 'none';
+    scInfoOverride.style.display  = isRevert ? 'none' : '';
+    scConfirmBtn.textContent      = isRevert ? 'Use scanner status' : 'Change issue status';
+  }
+
+  scSelect.addEventListener('change', syncScModeFromSelect);
 
   function openStatusModal(pill, preselectedId) {
     scTargetPill = pill;
     scSelect.value = preselectedId;
     scNotes.value = '';
-    document.querySelector('input[name="sc-scope"]').checked = true;
+    syncScModeFromSelect();
+    scOverlay.style.display = 'flex';
+  }
+
+  function openStatusModalForBulk(rows) {
+    scBulkRows = rows;
+    const firstPill = rows[0]?.querySelector('.status-drop');
+    scTargetPill = firstPill || null;
+    scSelect.value = firstPill && !SCANNER_SET.has(firstPill.dataset.status) ? firstPill.dataset.status : 'fixed';
+    scNotes.value = '';
+    syncScModeFromSelect();
     scOverlay.style.display = 'flex';
   }
 
@@ -5826,17 +5957,42 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   scOverlay.addEventListener('click', e => { if (e.target === scOverlay) closeStatusModal(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && scOverlay.style.display !== 'none') closeStatusModal(); });
 
+  function applyStatusToPill(pill, newId) {
+    if (!pill) return;
+    const currentId = pill.dataset.status;
+    if (SCANNER_SET.has(currentId) && !SCANNER_SET.has(newId)) {
+      pill.dataset.scannerStatus = currentId;
+    }
+    renderPill(pill, newId);
+  }
+
+  function revertPillToScanner(pill) {
+    if (!pill) return;
+    if (SCANNER_SET.has(pill.dataset.status)) return; // not overridden — no-op
+    const scanner = pill.dataset.scannerStatus || 'present';
+    renderPill(pill, scanner);
+    delete pill.dataset.scannerStatus;
+  }
+
   document.getElementById('sc-confirm-btn').addEventListener('click', () => {
     const newId = scSelect.value;
+    if (newId === '__revert') {
+      if (scBulkRows.length > 0) {
+        scBulkRows.forEach(row => revertPillToScanner(row.querySelector('.status-drop')));
+        scBulkRows = [];
+        deselectAll();
+      } else if (scTargetPill) {
+        revertPillToScanner(scTargetPill);
+      }
+      closeStatusModal();
+      return;
+    }
     if (scBulkRows.length > 0) {
-      scBulkRows.forEach(row => {
-        const pill = row.querySelector('.status-drop');
-        if (pill) renderPill(pill, newId);
-      });
+      scBulkRows.forEach(row => applyStatusToPill(row.querySelector('.status-drop'), newId));
       scBulkRows = [];
       deselectAll();
     } else if (scTargetPill) {
-      renderPill(scTargetPill, newId);
+      applyStatusToPill(scTargetPill, newId);
     }
     closeStatusModal();
   });
@@ -5879,7 +6035,6 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       const current = (row.querySelector('.severity-label')?.textContent.trim() || 'High').toLowerCase();
       svSelect.value = SEV_LABELS[current] ? current : 'high';
     }
-    document.querySelector('input[name="sv-scope"]').checked = true;
     svOverlay.style.display = 'flex';
   }
 
@@ -5937,9 +6092,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         openSeverityModal(rows[0]);
 
       } else if (action === 'status') {
-        scBulkRows = rows;
-        const firstPill = rows[0].querySelector('.status-drop');
-        openStatusModal(firstPill, firstPill ? firstPill.dataset.status : 'present');
+        openStatusModalForBulk(rows);
 
       } else if (action === 'assign') {
         // Open assign modal targeting the first selected row's assignee cell;
@@ -7089,409 +7242,103 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     }
   ];
 
-  const TIMELINE_DATA = [
-    [ // 0 — HTTP response header injection | Feil LLC | /catalog/products
-      { type:'scanner-seen',  date:'28 March 2026',    scan:'#50318', status:'new' },
-      { type:'jira',          date:'25 February 2026', author:'Ric Corbally', fields:[
-          {label:'Project',    value:'SEC'},
-          {label:'Issue type', value:'Bug'},
-          {label:'Priority',   value:'Critical'},
-          {label:'Assignee',   value:'Ric Corbally'}
-        ]},
-      { type:'ai',            date:'24 February 2026',
-        desc:'Burp AI has independently verified this issue is real and exploitable. Header injection confirmed on /catalog/products via X-Forwarded-For manipulation, enabling response splitting.' },
-      { type:'assignees',     date:'23 February 2026', author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Assigned for triage — header injection on /catalog/products needs sanitisation fix before next deployment.' },
-      { type:'scanner-first', date:'21 February 2026', scan:'#50310', status:'new',
-        desc:'HTTP response header injection detected on /catalog/products. User-supplied input is reflected into HTTP response headers without sanitisation, enabling header-splitting attacks.' }
-    ],
-    [ // 1 — XSS | Zenith Corp | /user/profile
-      { type:'scanner-seen',  date:'28 March 2026',  scan:'#50319', status:'present' },
-      { type:'status',        date:'27 March 2026',  author:'Ric Corbally', from:'present', to:'fixed',
-        quote:'Pushed fix to staging — output encoding applied to displayName parameter. Marking for re-test.' },
-      { type:'retest',        date:'25 March 2026',  author:'Chris Watson', from:'present', to:'fixed' },
-      { type:'comment',       date:'22 March 2026',  author:'Ric Corbally',
-        text:'Dev team has applied HTML entity encoding to the displayName field. Re-testing required before we can close this off.' },
-      { type:'tags',          date:'20 March 2026',  author:'Ric Corbally', tags:[{name:'Performance', bg:'#1353B9', color:'#ffffff'}] },
-      { type:'ai',            date:'16 March 2026',
-        desc:'Burp AI has independently verified this issue is real and exploitable. XSS confirmed on /user/profile via displayName parameter — payload executes without any encoding or sanitisation.' },
-      { type:'scanner-first', date:'15 March 2026',  scan:'#50305', status:'new',
-        desc:'Cross-site scripting on /user/profile. The application reflects user input without encoding, allowing script injection via the profile update form.' }
-    ],
-    [ // 2 — Information Disclosure | Nova Solutions | /api/data
-      { type:'scanner-first', date:'10 April 2026',  scan:'#50330', status:'new',
-        desc:'Information disclosure via error on /api/data. Verbose error messages expose internal stack traces, database query details, and file paths that could aid an attacker in targeted exploitation.' }
-    ],
-    [ // 3 — Improper Input Validation | CyberGuard Inc. | /user/profile
-      { type:'scanner-seen',  date:'15 May 2026',  scan:'#50348', status:'present' },
-      { type:'assignees',     date:'07 May 2026',  author:'Chris Wood', names:'Chris Wood',
-        desc:'Assigned to me — input validation failure on the user profile endpoint. Working with the dev team to add server-side validation before the next sprint.' },
-      { type:'scanner-first', date:'05 May 2026',  scan:'#50342', status:'new',
-        desc:'Improper input validation on /user/profile. User-supplied data is not validated against expected formats or ranges, allowing malformed input to reach the application backend.' }
-    ],
-    [ // 4 — SQL Injection | SecureNet | /login
-      { type:'scanner-seen',  date:'10 April 2026', scan:'#50331', status:'present' },
-      { type:'gitlab',        date:'25 March 2026', author:'Ric Corbally', fields:[
-          {label:'Project',   value:'security/backend'},
-          {label:'Milestone', value:'Sprint 22'},
-          {label:'Assignee',  value:'Chris Watson'},
-          {label:'Priority',  value:'Critical'}
-        ]},
-      { type:'comment',       date:'23 March 2026', author:'Ric Corbally',
-        text:'Confirmed time-based blind injection with 5-second delay payload. Database is running as root — blast radius is very high. Needs immediate parameterisation fix.' },
-      { type:'tags',          date:'22 March 2026', author:'Ric Corbally', tags:[{name:'Sprint21', bg:'#000B4F', color:'#ffffff'}] },
-      { type:'ai',            date:'21 March 2026',
-        desc:'Burp AI has independently verified this issue is real and exploitable. Time-based blind SQL injection confirmed on /login — 5-second delay reproducible with SLEEP() payload, database running as root.' },
-      { type:'scanner-first', date:'20 March 2026', scan:'#50308', status:'new',
-        desc:'SQL injection on /login. The username parameter is incorporated into a SQL query without parameterisation, allowing boolean-based and time-based blind injection attacks against the authentication endpoint.' }
-    ],
-    [ // 5 — XSS | DataShield | /comments
-      { type:'scanner-seen',  date:'08 April 2026', scan:'#50333', status:'present' },
-      { type:'retest',        date:'07 April 2026', author:'Chris Watson', from:'present', to:'fixed' },
-      { type:'comment',       date:'03 April 2026', author:'Ric Corbally',
-        text:'Escalated to the DataShield dev team — stored XSS with no server-side sanitisation at all. This affects all users viewing the comments page. Blocking the next release until fixed.' },
-      { type:'ai',            date:'02 April 2026',
-        desc:'Burp AI has independently verified this issue is real and exploitable. Stored XSS confirmed on /comments — injected payload persists and executes in a separate test account session without any user interaction.' },
-      { type:'scanner-first', date:'01 April 2026', scan:'#50328', status:'new',
-        desc:'Stored cross-site scripting on /comments. User-submitted comments are stored and rendered without output encoding, allowing an attacker to execute scripts in the browser of any user who views the affected page.' }
-    ],
-    [ // 6 — Directory Traversal | BlockSec | /files/download
-      { type:'scanner-seen',  date:'01 April 2026',   scan:'#50327', status:'verified' },
-      { type:'jira',          date:'25 January 2026', author:'Ric Corbally', fields:[
-          {label:'Project',    value:'SEC'},
-          {label:'Issue type', value:'Bug'},
-          {label:'Priority',   value:'High'},
-          {label:'Status',     value:'In Progress'}
-        ]},
-      { type:'ai',            date:'22 January 2026',
-        desc:'Burp AI was unable to independently verify this issue. The target endpoint requires a specific authentication context that was not available during testing — manual verification is recommended.' },
-      { type:'assignees',     date:'20 January 2026', author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Assigned for investigation — directory traversal on /files/download. Reviewing file path handling and access controls.' },
-      { type:'scanner-first', date:'16 January 2026', scan:'#50260', status:'new',
-        desc:'Directory traversal on /files/download. Path traversal sequences are not sanitised, allowing access to files outside the intended directory.' }
-    ],
-    [ // 7 — Insecure Deserialization | TechVault | /api/import
-      { type:'scanner-seen',  date:'25 March 2026', scan:'#50320', status:'present' },
-      { type:'comment',       date:'10 March 2026', author:'Chris Wood',
-        text:'Deserialization gadget chain analysis in progress. Initial testing suggests the endpoint deserialises Java objects — need to confirm which libraries are in the classpath before we can assess exploitability.' },
-      { type:'ai',            date:'07 March 2026',
-        desc:'Burp AI investigation was inconclusive. The endpoint requires a valid serialised object with the correct class structure — full exploitation could not be confirmed without deeper application context.' },
-      { type:'tags',          date:'05 March 2026', author:'Ric Corbally', tags:[{name:'Sprint21', bg:'#000B4F', color:'#ffffff'}] },
-      { type:'scanner-first', date:'01 March 2026', scan:'#50302', status:'new',
-        desc:'Insecure deserialisation on /api/import. User-controlled serialised objects are processed without integrity validation, potentially enabling remote code execution.' }
-    ],
-    [ // 8 — Server-Side Template Injection | Apex Digital | /render
-      { type:'scanner-seen',  date:'02 April 2026',  scan:'#50329', status:'present' },
-      { type:'gitlab',        date:'30 March 2026', author:'Chris Wood', fields:[
-          {label:'Project',   value:'security/web'},
-          {label:'Milestone', value:'Sprint 22'},
-          {label:'Assignee',  value:'Chris Wood'},
-          {label:'Priority',  value:'Critical'}
-        ]},
-      { type:'ai',            date:'29 March 2026',
-        desc:'Burp AI has independently verified this issue is real and exploitable. SSTI confirmed on /render — template directives injected via the name parameter achieve arbitrary expression evaluation on the server.' },
-      { type:'assignees',     date:'27 March 2026',  author:'Chris Wood', names:'Chris Wood',
-        desc:'Assigned — SSTI on /render endpoint. Investigating template context to confirm exploitability and assess impact.' },
-      { type:'scanner-first', date:'25 March 2026',  scan:'#50318', status:'new',
-        desc:'Server-side template injection on /render. User input is embedded directly into the template without sanitisation, allowing injection of template directives.' }
-    ],
-    [ // 9 — XXE | SecureNet | /api/xml
-      { type:'scanner-seen',  date:'28 March 2026', scan:'#50322', status:'accepted' },
-      { type:'comment',       date:'16 March 2026', author:'Alun Worrall',
-        text:'Security team has reviewed and accepted this risk for now. The XML endpoint is internal-only behind VPN — external exploitation is not currently possible. Logging for future remediation.' },
-      { type:'status',        date:'15 March 2026', author:'Alun Worrall', from:'present', to:'accepted',
-        quote:'Accepting risk — endpoint is internal-only. Will revisit if the network perimeter changes.' },
-      { type:'ai',            date:'07 March 2026',
-        desc:'Burp AI has independently verified this issue is real and exploitable. XXE confirmed on /api/xml — external entity declarations are processed, enabling local file read via file:// URI.' },
-      { type:'scanner-first', date:'05 March 2026', scan:'#50303', status:'new',
-        desc:'XML external entity injection on /api/xml. The XML parser processes external entity declarations, enabling file disclosure and potential SSRF.' }
-    ],
-    [ // 10 — Remote Code Execution | DataShield | /upload/process
-      { type:'scanner-seen',  date:'15 February 2026', scan:'#50280', status:'false-positive' },
-      { type:'assignees',     date:'12 January 2026',  author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Assigned — possible RCE on /upload/process. Need to verify whether uploaded files are actually executed or just stored.' },
-      { type:'scanner-first', date:'09 January 2026',  scan:'#50255', status:'new',
-        desc:'Potential remote code execution on /upload/process. Uploaded files with executable extensions may be processed by the server runtime.' }
-    ],
-    [ // 11 — CSRF Token Bypass | CloudFirst | /settings/account
-      { type:'scanner-seen',  date:'01 April 2026',  scan:'#50326', status:'present' },
-      { type:'assignees',     date:'12 March 2026',  author:'Ric Corbally', names:'Alun Worrall',
-        desc:'Assigned to Alun — CSRF token not validated on /settings/account. Needs a fix in the form submission handler.' },
-      { type:'scanner-first', date:'10 March 2026',  scan:'#50307', status:'new',
-        desc:'CSRF token bypass on /settings/account. State-changing requests are accepted without verifying the anti-CSRF token, allowing cross-origin requests to modify account settings.' }
-    ],
-    [ // 12 — Open Redirect | Zenith Corp | /redirect
-      { type:'scanner-seen',  date:'01 April 2026',  scan:'#50325', status:'new' },
-      { type:'assignees',     date:'28 March 2026',  author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Assigned for triage — open redirect on /redirect. Verifying whether the destination parameter can be used in a phishing scenario.' },
-      { type:'scanner-first', date:'26 March 2026',  scan:'#50317', status:'new',
-        desc:'Open redirect on /redirect. The destination URL parameter is not validated, allowing an attacker to redirect users to arbitrary external sites.' }
-    ],
-    [ // 13 — Broken Access Control | DataShield | /admin/users
-      { type:'scanner-seen',  date:'25 March 2026', scan:'#50315', status:'verified' },
-      { type:'scanner-first', date:'10 March 2026', scan:'#50306', status:'new',
-        desc:'Broken access control on /admin/users. Non-administrator users can enumerate and access account details for all users by modifying the user ID parameter.' }
-    ],
-    [ // 14 — Path Traversal via Upload | Feil LLC | /uploads/view
-      { type:'scanner-seen',  date:'20 March 2026',  scan:'#50310', status:'present' },
-      { type:'assignees',     date:'18 February 2026', author:'Ric Corbally', names:'Chris Wood',
-        desc:'Assigned to Chris — path traversal via filename on /uploads/view. Checking whether file path normalisation is applied before resolving the request.' },
-      { type:'scanner-first', date:'15 February 2026', scan:'#50285', status:'new',
-        desc:'Path traversal via upload on /uploads/view. The filename parameter accepts traversal sequences that resolve outside the intended upload directory.' }
-    ],
-    [ // 15 — Insecure Direct Object Reference | Nova Solutions | /orders/view
-      { type:'scanner-seen',  date:'02 April 2026',  scan:'#50330', status:'new' },
-      { type:'assignees',     date:'22 March 2026',  author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Assigned for triage — IDOR on /orders/view. Any authenticated user can access any order by incrementing the order ID.' },
-      { type:'scanner-first', date:'20 March 2026',  scan:'#50309', status:'new',
-        desc:'Insecure direct object reference on /orders/view. Order records are accessible to any authenticated user by manipulating the order ID parameter without ownership checks.' }
-    ],
-    [ // 16 — CORS Misconfiguration | CyberGuard Inc. | /api/cors
-      { type:'scanner-seen',  date:'10 March 2026',  scan:'#50304', status:'scanning' },
-      { type:'scanner-first', date:'27 January 2026', scan:'#50265', status:'new',
-        desc:'CORS misconfiguration on /api/cors. The endpoint reflects arbitrary origins with Access-Control-Allow-Credentials: true, allowing any site to make authenticated cross-origin requests and read responses.' }
-    ],
-    [ // 17 — Weak Password Policy | CloudFirst | /auth/register
-      { type:'scanner-first', date:'01 April 2026', scan:'#50328', status:'new',
-        desc:'Weak password policy on /auth/register. Passwords as short as four characters are accepted with no complexity requirements, significantly increasing the risk of brute-force and credential-stuffing attacks.' }
-    ],
-    [ // 18 — Missing Security Headers | TechVault | /api/health
-      { type:'scanner-seen',  date:'01 April 2026',  scan:'#50327', status:'new' },
-      { type:'scanner-first', date:'30 March 2026',  scan:'#50324', status:'new',
-        desc:'Missing security headers on /api/health. Responses lack Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, and Referrer-Policy headers.' }
-    ],
-    [ // 19 — Clickjacking | BlockSec | /dashboard
-      { type:'scanner-seen',  date:'01 April 2026',  scan:'#50326', status:'new' },
-      { type:'scanner-first', date:'05 March 2026',  scan:'#50301', status:'new',
-        desc:'Clickjacking vulnerability on /dashboard. The page can be embedded in a cross-origin iframe as no X-Frame-Options or frame-ancestors CSP directive is set.' }
-    ],
-    [ // 20 — Unvalidated Redirects | Apex Digital | /login/callback
-      { type:'scanner-seen',  date:'10 January 2026', scan:'#50258', status:'fixed' },
-      { type:'scanner-first', date:'01 January 2026', scan:'#50250', status:'new',
-        desc:'Unvalidated redirects on /login/callback. The redirect_to parameter is not validated against an allowlist, allowing post-authentication redirection to attacker-controlled sites.' }
-    ],
-    [ // 21 — Stored XSS via Comment Field | Zenith Corp | /forum/post
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50371', status:'present' },
-      { type:'gitlab',        date:'01 April 2026', author:'Ric Corbally', fields:[
-          {label:'Project',   value:'security/frontend'},
-          {label:'Milestone', value:'Sprint 22'},
-          {label:'Assignee',  value:'Ric Corbally'}
-        ]},
-      { type:'tags',          date:'28 March 2026',  author:'Ric Corbally', tags:[{name:'Europe', bg:'#2E8802', color:'#ffffff'}] },
-      { type:'scanner-first', date:'22 March 2026',  scan:'#50340', status:'new',
-        desc:'Stored XSS identified in comment submission at /forum/post. User input is persisted and rendered without output encoding, allowing persistent script injection affecting all viewers.' }
-    ],
-    [ // 22 — Command Injection | SecureNet | /tools/ping
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50372', status:'present' },
-      { type:'jira',          date:'03 April 2026', author:'Ric Corbally', fields:[
-          {label:'Project',    value:'SEC'},
-          {label:'Issue type', value:'Bug'},
-          {label:'Priority',   value:'Critical'},
-          {label:'Status',     value:'In Progress'}
-        ]},
-      { type:'comment',       date:'02 April 2026', author:'Ric Corbally',
-        text:'Confirmed OS command injection — pipe character allows full shell access as the web server user. Escalating to P0. DevOps team alerted. Endpoint should be taken offline until patched.' },
-      { type:'assignees',     date:'01 April 2026',  author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Critical — assigned for immediate triage. Command injection on network tools endpoint requires urgent remediation.' },
-      { type:'scanner-first', date:'25 March 2026',  scan:'#50345', status:'new',
-        desc:'Command injection found on /tools/ping. User-supplied host parameter passed unsanitised to OS shell. Shell metacharacters allow arbitrary command execution as the web server process.' }
-    ],
-    [ // 23 — IDOR | BlockSec | /api/accounts/{id}
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50365', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50365', status:'new',
-        desc:'Insecure direct object reference on /api/accounts/{id}. No server-side ownership check — any authenticated user can retrieve account data by substituting a different numeric identifier.' }
-    ],
-    [ // 24 — Verbose Error Messages | TechVault | /api/query
-      { type:'scanner-seen',  date:'03 April 2026',  scan:'#50360', status:'present' },
-      { type:'scanner-first', date:'10 March 2026',  scan:'#50310', status:'new',
-        desc:'Verbose error messages returned on /api/query. Stack traces expose internal file paths, database schema, and framework version. Detailed diagnostics should be suppressed from client-facing responses.' }
-    ],
-    [ // 25 — Authentication Bypass | DataShield | /admin/dashboard
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50373', status:'new' },
-      { type:'assignees',     date:'03 April 2026',  author:'Chris Watson', names:'Chris Watson',
-        desc:'Authentication bypass on admin dashboard — assigned for urgent investigation before next release.' },
-      { type:'scanner-first', date:'03 April 2026',  scan:'#50362', status:'new',
-        desc:'Authentication bypass detected on /admin/dashboard. A code path omits credential verification under specific conditions, allowing unauthenticated access to administrative functionality.' }
-    ],
-    [ // 26 — SSRF | Nova Solutions | /fetch/preview
-      { type:'scanner-seen',  date:'02 April 2026',  scan:'#50355', status:'accepted' },
-      { type:'status-change', date:'20 March 2026',  author:'Ric Corbally', from:'present', to:'accepted',
-        quote:'Risk accepted — internal network is air-gapped from production. SSRF cannot reach sensitive services in current architecture. Will revisit if network topology changes.' },
-      { type:'scanner-first', date:'14 March 2026',  scan:'#50315', status:'new',
-        desc:'SSRF on /fetch/preview. The url parameter is fetched server-side without destination validation, allowing requests to internal RFC 1918 addresses and cloud metadata endpoints.' }
-    ],
-    [ // 27 — Email Address Disclosure | CloudFirst | /api/users/search
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50366', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50366', status:'new',
-        desc:'Email addresses of registered users exposed in unauthenticated /api/users/search responses. PII should not be returned without appropriate authorisation checks.' }
-    ],
-    [ // 28 — Path Traversal | CyberGuard Inc. | /download/file
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50374', status:'present' },
-      { type:'tags',          date:'29 March 2026',  author:'Ric Corbally', tags:[{name:'Priority', bg:'#1353B9', color:'#ffffff'}] },
-      { type:'assignees',     date:'29 March 2026',  author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Path traversal on file download endpoint — priority escalated. Can read arbitrary server files including application config.' },
-      { type:'scanner-first', date:'20 March 2026',  scan:'#50330', status:'new',
-        desc:'Path traversal via filename parameter on /download/file. Directory traversal sequences escape the intended download directory, exposing configuration files and application source.' }
-    ],
-    [ // 29 — Broken Access Control | Feil LLC | /api/admin/users
-      { type:'scanner-seen',  date:'03 April 2026',  scan:'#50361', status:'present' },
-      { type:'scanner-first', date:'12 March 2026',  scan:'#50312', status:'new',
-        desc:'Broken access control on /api/admin/users. Role checks rely on a client-supplied header that can be manipulated, granting ordinary users access to administrative endpoints.' }
-    ],
-    [ // 30 — Cookie Without Secure Flag | Apex Digital | /auth/session
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50367', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50367', status:'new',
-        desc:'Session cookie set without Secure attribute on /auth/session. Cookie will be transmitted over unencrypted HTTP connections, exposing session tokens to network interception.' }
-    ],
-    [ // 31 — User Enumeration | SecureNet | /auth/login
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50368', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50368', status:'new',
-        desc:'User enumeration via distinct login error messages on /auth/login. "Invalid username" vs "Invalid password" responses allow systematic discovery of registered accounts.' }
-    ],
-    [ // 32 — Prototype Pollution | Zenith Corp | /api/config/merge
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50375', status:'scanning' },
-      { type:'scanner-first', date:'30 March 2026',  scan:'#50352', status:'new',
-        desc:'Prototype pollution in JSON merge endpoint at /api/config/merge. Submitted __proto__ properties are merged into the Object prototype, potentially corrupting application state or enabling code execution in Node.js.' }
-    ],
-    [ // 33 — JWT Algorithm Confusion | BlockSec | /api/auth/verify
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50376', status:'present' },
-      { type:'tags',          date:'02 April 2026',  author:'Chris Watson', tags:[{name:'Performance', bg:'#1353B9', color:'#ffffff'}] },
-      { type:'assignees',     date:'02 April 2026',  author:'Chris Watson', names:'Chris Watson',
-        desc:'JWT algorithm confusion — reviewing impact across all token-protected endpoints.' },
-      { type:'scanner-first', date:'28 March 2026',  scan:'#50350', status:'new',
-        desc:'JWT algorithm confusion on /api/auth/verify. Server accepts HS256 tokens signed with the RS256 public key, allowing arbitrary JWT forgery and complete authentication bypass.' }
-    ],
-    [ // 34 — Directory Listing | DataShield | /static/assets/
-      { type:'scanner-seen',  date:'03 April 2026',  scan:'#50363', status:'present' },
-      { type:'scanner-first', date:'11 March 2026',  scan:'#50311', status:'new',
-        desc:'Directory listing enabled on /static/assets/ and /backups/. Web server returns file listings for directories without an index file, exposing backup archives and internal scripts.' }
-    ],
-    [ // 35 — File Upload Without Validation | Nova Solutions | /upload/document
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50377', status:'new' },
-      { type:'scanner-first', date:'05 April 2026',  scan:'#50377', status:'new',
-        desc:'Unrestricted file upload on /upload/document. Content-Type validation is client-controlled and bypassable. Attacker can upload web shells or HTML files for stored XSS.' }
-    ],
-    [ // 36 — Internal IP Disclosure | TechVault | /api/health
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50369', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50369', status:'new',
-        desc:'Internal RFC 1918 IP addresses disclosed in X-Forwarded-For and error response bodies on /api/health. Reveals internal network topology to external clients.' }
-    ],
-    [ // 37 — WebSocket CSWSH | CloudFirst | /ws/notifications
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50378', status:'present' },
-      { type:'tags',          date:'31 March 2026',  author:'Ric Corbally', tags:[{name:'Marketing', bg:'#FF7648', color:'#ffffff'}] },
-      { type:'scanner-first', date:'26 March 2026',  scan:'#50346', status:'new',
-        desc:'Cross-site WebSocket hijacking on /ws/notifications. No Origin header validation or CSRF token on handshake. Malicious sites can establish WebSocket connections as authenticated users.' }
-    ],
-    [ // 38 — Race Condition in Payment | Feil LLC | /api/payment/process
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50379', status:'present' },
-      { type:'assignees',     date:'02 April 2026',  author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Race condition in payment flow — concurrent request testing confirmed double-spend possible. Assigned for urgent fix.' },
-      { type:'scanner-first', date:'27 March 2026',  scan:'#50347', status:'new',
-        desc:'Race condition on /api/payment/process. Non-atomic balance check and deduction allows concurrent requests to spend the same funds multiple times.' }
-    ],
-    [ // 39 — Sensitive Data in URL | CyberGuard Inc. | /auth/redirect
-      { type:'scanner-seen',  date:'03 April 2026',  scan:'#50364', status:'fixed' },
-      { type:'scanner-first', date:'09 March 2026',  scan:'#50309', status:'new',
-        desc:'Session tokens transmitted as URL query parameters on /auth/redirect. Tokens exposed in server logs, browser history, and Referer headers on subsequent navigation.' }
-    ],
-    [ // 40 — Mass Assignment | Apex Digital | /api/users/update
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50380', status:'new' },
-      { type:'scanner-first', date:'05 April 2026',  scan:'#50380', status:'new',
-        desc:'Mass assignment on /api/users/update. All submitted fields are bound to the user model without filtering. Attacker can set role=admin or other privileged attributes not present in the form.' }
-    ],
-    [ // 41 — Server Version Disclosure | SecureNet | (global)
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50370', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50370', status:'new',
-        desc:'Web server version disclosed in Server and X-Powered-By response headers on all responses. Version strings allow targeted lookup of known CVEs for the identified software.' }
-    ],
-    [ // 42 — Subdomain Takeover | Zenith Corp | staging.zenithcorp.io
-      { type:'scanner-seen',  date:'02 April 2026',  scan:'#50356', status:'accepted' },
-      { type:'status-change', date:'25 March 2026',  author:'Chris Watson', from:'present', to:'accepted',
-        quote:'Accepted — subdomain pointed at decommissioned Heroku app. DNS record removal scheduled for next maintenance window. Risk accepted until DNS TTL expires.' },
-      { type:'scanner-first', date:'18 March 2026',  scan:'#50325', status:'new',
-        desc:'Subdomain takeover risk on staging.zenithcorp.io. CNAME points to an unclaimed Heroku endpoint. Attacker can register the target app name and serve content under the subdomain.' }
-    ],
-    [ // 43 — Insecure Cookie Attributes | BlockSec | /auth/session
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50381', status:'present' },
-      { type:'scanner-first', date:'13 March 2026',  scan:'#50313', status:'new',
-        desc:'Authentication cookies missing HttpOnly and SameSite attributes on /auth/session. HttpOnly absence exposes cookies to XSS extraction; missing SameSite enables CSRF attacks.' }
-    ],
-    [ // 44 — GraphQL Introspection | DataShield | /graphql
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50382', status:'present' },
-      { type:'assignees',     date:'03 April 2026',  author:'Chris Watson', names:'Chris Watson',
-        desc:'GraphQL introspection enabled in production — reviewing all exposed types and mutations for undocumented sensitive operations.' },
-      { type:'scanner-first', date:'24 March 2026',  scan:'#50344', status:'new',
-        desc:'GraphQL introspection enabled on /graphql in production. Full schema including all types, mutations, and internal fields accessible to any client without authentication.' }
-    ],
-    [ // 45 — HTTP Parameter Pollution | Nova Solutions | /api/transfer
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50383', status:'new' },
-      { type:'scanner-first', date:'05 April 2026',  scan:'#50383', status:'new',
-        desc:'HTTP parameter pollution on /api/transfer. Duplicate parameter names handled inconsistently between validation layer and business logic, allowing WAF bypass and transfer amount manipulation.' }
-    ],
-    [ // 46 — HTTP TRACE | TechVault | (global)
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50384', status:'new' },
-      { type:'tags',          date:'04 April 2026',  author:'Ric Corbally', tags:[{name:'USA', bg:'#8BCF81', color:'#000023'}] },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50384', status:'new',
-        desc:'HTTP TRACE method enabled on web server. TRACE echoes request headers in response body, enabling cross-site tracing (XST) to extract HttpOnly cookies in some browser configurations.' }
-    ],
-    [ // 47 — Autocomplete on Sensitive Fields | CloudFirst | /auth/login
-      { type:'scanner-seen',  date:'03 April 2026',  scan:'#50357', status:'new' },
-      { type:'scanner-first', date:'03 April 2026',  scan:'#50357', status:'new',
-        desc:'Browser autocomplete not disabled on password and account number fields at /auth/login and /account/payment. Sensitive values may be stored and auto-populated on shared devices.' }
-    ],
-    [ // 48 — BOLA | Feil LLC | /api/orders/{id}
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50385', status:'present' },
-      { type:'tags',          date:'03 April 2026',  author:'Ric Corbally', tags:[{name:'Priority', bg:'#1353B9', color:'#ffffff'}] },
-      { type:'assignees',     date:'03 April 2026',  author:'Ric Corbally', names:'Ric Corbally',
-        desc:'BOLA on orders API — any authenticated user can access any order record. Priority escalated for immediate fix.' },
-      { type:'scanner-first', date:'29 March 2026',  scan:'#50351', status:'new',
-        desc:'Broken object level authorization on /api/orders/{id}. Server returns order data for any ID without verifying the requesting user owns the referenced order.' }
-    ],
-    [ // 49 — XXE via File Upload | CyberGuard Inc. | /import/xml
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50386', status:'present' },
-      { type:'scanner-first', date:'21 March 2026',  scan:'#50335', status:'new',
-        desc:'XXE via XML file upload on /import/xml. External entity resolution enabled in XML parser. Crafted DOCX or SVG files can read local files or trigger SSRF to internal services.' }
-    ],
-    [ // 50 — Referrer Leakage | Apex Digital | (global)
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50387', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50387', status:'new',
-        desc:'No Referrer-Policy header set. Full URLs including query parameters with tokens and user identifiers are transmitted to third-party analytics and CDN providers via the Referer header.' }
-    ],
-    [ // 51 — Insufficient Logging | SecureNet | (global)
-      { type:'scanner-seen',  date:'02 April 2026',  scan:'#50358', status:'accepted' },
-      { type:'status-change', date:'22 March 2026',  author:'Chris Watson', from:'present', to:'accepted',
-        quote:'Accepted with compensating control — SIEM correlation rules in place for anomalous access patterns. Full security event logging will be implemented in Q3 roadmap item.' },
-      { type:'scanner-first', date:'16 March 2026',  scan:'#50320', status:'new',
-        desc:'Insufficient logging of security events. Failed authentication, access control violations, and privilege escalation attempts are not recorded, hindering incident detection and response.' }
-    ],
-    [ // 52 — API Key in JS | Zenith Corp | /static/app.bundle.js
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50388', status:'present' },
-      { type:'scanner-first', date:'23 March 2026',  scan:'#50342', status:'new',
-        desc:'Secret API key hardcoded in client-side JavaScript bundle at /static/app.bundle.js. Key has broad permissions and is directly extractable by any user who inspects the page source.' }
-    ],
-    [ // 53 — security.txt Missing | BlockSec | /.well-known/security.txt
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50389', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50389', status:'new',
-        desc:'No security.txt file present at /.well-known/security.txt. Security researchers have no standardised disclosure channel, increasing risk of public vulnerability disclosure without prior notification.' }
-    ],
-    [ // 54 — Unsafe Deserialization | DataShield | /api/import/data
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50390', status:'scanning' },
-      { type:'assignees',     date:'04 April 2026',  author:'Chris Watson', names:'Chris Watson',
-        desc:'Unsafe deserialization under active investigation — scanning additional import endpoints for the same pattern.' },
-      { type:'scanner-first', date:'31 March 2026',  scan:'#50354', status:'new',
-        desc:'Unsafe deserialization on /api/import/data. Native deserialisation with no type restrictions allows crafted payloads to execute arbitrary code during object reconstruction.' }
-    ],
-    [ // 55 — X-Content-Type-Options Missing | Nova Solutions | (global)
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50391', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50391', status:'new',
-        desc:'X-Content-Type-Options: nosniff header absent on all responses. Browsers may MIME-sniff uploaded files and render them as HTML or JavaScript, enabling XSS via file upload functionality.' }
-    ]
+  // Master timeline — comprehensive reference of every event type and status
+  // applied to every issue so developers see all examples wherever they click.
+  // Includes a collapsed group of successive same-status scanner observations.
+  const MASTER_TIMELINE = [
+    // Successive same-status scanner observations — collapse into a group
+    { type:'scanner-seen',  date:'07 May 2026',     scan:'#50420', status:'present' },
+    { type:'scanner-seen',  date:'06 May 2026',     scan:'#50419', status:'present' },
+    { type:'scanner-seen',  date:'05 May 2026',     scan:'#50418', status:'present' },
+
+    // Status change: false-positive → present
+    { type:'status',        date:'03 May 2026',     author:'Ric Corbally', from:'false-positive', to:'present',
+      quote:'Re-classified after additional findings on retest. Issue is real after all.' },
+
+    // Status change: verified → false-positive
+    { type:'status',        date:'30 April 2026',   author:'Chris Watson', from:'verified', to:'false-positive',
+      quote:'Marked as false positive after manual verification — payload reflects only in error response, no exploitation path.' },
+
+    // Status change: accepted → verified
+    { type:'status',        date:'25 April 2026',   author:'Ric Corbally', from:'accepted', to:'verified',
+      quote:'Risk re-evaluated — exploit chain reproducible end-to-end. Escalating to verified.' },
+
+    // Status change: fixed-confirmed → accepted
+    { type:'status',        date:'20 April 2026',   author:'Alun Worrall', from:'fixed-confirmed', to:'accepted',
+      quote:'Accepting risk while a permanent fix is scheduled for next quarter.' },
+
+    // Retest: regressed → fixed-confirmed
+    { type:'retest',        date:'18 April 2026',   author:'Chris Watson', from:'regressed', to:'fixed-confirmed' },
+
+    // Scanner couldn't reach the endpoint this scan
+    { type:'scanner-seen',  date:'17 April 2026',   scan:'#50404', status:'needs-retest' },
+
+    // Single scanner-seen with a different status
+    { type:'scanner-seen',  date:'16 April 2026',   scan:'#50405', status:'scanning' },
+
+    // Scanner-seen 'regressed'
+    { type:'scanner-seen',  date:'14 April 2026',   scan:'#50402', status:'regressed' },
+
+    // Status change: fixed → regressed
+    { type:'status',        date:'13 April 2026',   author:'Ric Corbally', from:'fixed', to:'regressed',
+      quote:'Issue reappeared in latest deployment — fix was reverted by an upstream merge.' },
+
+    // Status change: present → fixed (unconfirmed)
+    { type:'status',        date:'08 April 2026',   author:'Ric Corbally', from:'present', to:'fixed',
+      quote:'Patch deployed to staging — output encoding applied. Pending re-test to confirm.' },
+
+    // Comment
+    { type:'comment',       date:'05 April 2026',   author:'Chris Wood',
+      text:'Dev team has applied the recommended sanitisation. Ready for re-test once next scan runs.' },
+
+    // Assignees added
+    { type:'assignees',     date:'02 April 2026',   author:'Ric Corbally', names:'Ric Corbally',
+      desc:'Assigned for triage and remediation coordination with the dev team.' },
+
+    // GitLab integration
+    { type:'gitlab',        date:'01 April 2026',   author:'Ric Corbally', fields:[
+        {label:'Project',   value:'security/backend'},
+        {label:'Milestone', value:'Sprint 22'},
+        {label:'Assignee',  value:'Chris Watson'},
+        {label:'Priority',  value:'Critical'}
+      ]},
+
+    // JIRA integration
+    { type:'jira',          date:'31 March 2026',   author:'Ric Corbally', fields:[
+        {label:'Project',    value:'SEC'},
+        {label:'Issue type', value:'Bug'},
+        {label:'Priority',   value:'Critical'},
+        {label:'Assignee',   value:'Ric Corbally'}
+      ]},
+
+    // Splunk integration
+    { type:'splunk',        date:'30 March 2026',   author:'Ric Corbally', fields:[
+        {label:'Index',      value:'security'},
+        {label:'Sourcetype', value:'burp:scan:findings'},
+        {label:'Notable ID', value:'NOT-2026-481'},
+        {label:'Owner',      value:'Ric Corbally'}
+      ]},
+
+    // AI investigation
+    { type:'ai',            date:'30 March 2026',
+      desc:'Burp AI has independently verified this issue is real and exploitable. Payload executes in the target context without user interaction.' },
+
+    // First detection
+    { type:'scanner-first', date:'28 March 2026',   scan:'#50380', status:'new',
+      desc:'Issue first detected on this endpoint. The vulnerable parameter accepts unsanitised input that is reflected back to the user.' }
   ];
+
+  // Use a deep copy per row so mutations (adding a comment, retest) don't leak across rows.
+  const TIMELINE_DATA = Array.from(
+    { length: 56 },
+    () => JSON.parse(JSON.stringify(MASTER_TIMELINE))
+  );
 
   const TL_SCANNER_BADGE = `<div class="tl-scanner-badge"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9.55859 0.124022C9.80173-0.0663387 10.1511-0.0341889 10.3555 0.197265C11.952 2.00852 12.833 4.34041 12.833 6.75488C12.833 9.16941 11.9521 11.5012 10.3555 13.3125C10.1511 13.5441 9.8018 13.5763 9.55859 13.3857L1.68164 7.21387C1.54071 7.10329 1.45801 6.93403 1.45801 6.75488C1.45805 6.57573 1.54067 6.40644 1.68164 6.2959L9.55859 0.124022ZM2.9873 6.75488L9.83105 12.1172C11.0177 10.5871 11.667 8.70151 11.667 6.75488C11.667 4.80827 11.0177 2.92261 9.83105 1.39258L2.9873 6.75488ZM8.61621 5.26562C8.77335 5.2286 8.93885 5.25821 9.07324 5.34766L10.8232 6.51465C11.0912 6.6933 11.1638 7.05521 10.9854 7.32324C10.8067 7.59123 10.4448 7.66387 10.1768 7.48535L8.94629 6.66504L8.08984 8.16406C7.93624 8.43287 7.59918 8.53494 7.32227 8.39648L5.57227 7.52148C5.28434 7.37734 5.16757 7.0273 5.31152 6.73926C5.45556 6.45119 5.80565 6.33464 6.09375 6.47851L7.35059 7.10644L8.24316 5.54394C8.32338 5.40357 8.45886 5.30277 8.61621 5.26562Z" fill="white"/></svg> Scanner</div>`;
   const TL_ARROW = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M3 8h10M9 4l4 4-4 4" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const TL_GITLAB_ICON = `<svg width="16" height="16" viewBox="0 0 24.0258 22.2425" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;color:#0094FF"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.54897 1.59416C4.54775 1.59044 4.54658 1.58671 4.54544 1.58296L4.54897 1.59416ZM5.09981 3.28536L6.99151 9.09226C7.12562 9.50391 7.50939 9.78251 7.94233 9.78251H16.0423C16.4756 9.78251 16.8595 9.50354 16.9934 9.09151L18.8791 3.2876L20.7713 9.11151L21.9956 12.7364L11.9923 20.0063L2.02791 12.7646L5.09981 3.28536ZM22.1396 12.8108L22.059 12.6999C22.07 12.6855 22.0835 12.673 22.0989 12.6631L22.1858 12.7974L22.1396 12.8108ZM22.1628 12.8427L22.6423 13.5025L22.2058 12.8282L22.1628 12.8427ZM23.2126 14.3242L12.5802 22.0514C12.2297 22.3062 11.755 22.3062 11.4044 22.0514L0.754431 14.3114L0.74987 14.3081C0.437123 14.0781 0.20514 13.7551 0.0871071 13.3852C-0.0305217 13.0167 -0.0289709 12.6204 0.0914815 12.2528L3.75127 0.96351C3.75692 0.946108 3.76305 0.928865 3.76965 0.9118C3.84937 0.705674 3.9761 0.521013 4.13973 0.372501C4.40301 0.132847 4.74625 0 5.10233 0C5.45923 0 5.80323 0.13346 6.06675 0.374161C6.0737 0.380505 6.08055 0.386947 6.08732 0.393485C6.25789 0.55836 6.3844 0.763293 6.45535 0.989523L8.66829 7.78251H15.3158L17.5313 0.96351C17.5369 0.946108 17.5431 0.928865 17.5497 0.9118C17.6294 0.705671 17.7561 0.521009 17.9197 0.372501C18.183 0.132848 18.5263 0 18.8823 0C19.2392 0 19.5832 0.133459 19.8468 0.374161C19.8537 0.380505 19.8606 0.386947 19.8673 0.393485C20.038 0.558476 20.1646 0.763586 20.2355 0.990013L22.6716 8.4879L23.9397 12.2425C23.9418 12.2484 23.9437 12.2544 23.9456 12.2603C23.948 12.2678 23.9503 12.2754 23.9524 12.2829C24.0631 12.6629 24.0483 13.0685 23.9102 13.4394C23.7758 13.8003 23.5317 14.1097 23.2126 14.3242ZM17.9197 0.372501C17.9203 0.371949 17.921 0.371398 17.9216 0.370847L18.5923 1.11251L17.9179 0.374161C17.9185 0.373607 17.9191 0.373053 17.9197 0.372501ZM19.2631 1.85417L19.2668 1.85086C19.2655 1.85197 19.2643 1.85307 19.2631 1.85417Z" fill="currentColor"/></svg>`;
   const TL_JIRA_ICON   = `<svg width="16" height="16" viewBox="0 0 20.0711 20.0711" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;color:#0094FF"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.41421 10.0355L10.0355 16.6569L16.6569 10.0355L10.0355 3.41421L3.41421 10.0355ZM0.585787 8.62133C-0.195262 9.40238 -0.195263 10.6687 0.585786 11.4498L8.62133 19.4853C9.40238 20.2663 10.6687 20.2663 11.4498 19.4853L19.4853 11.4498C20.2663 10.6687 20.2663 9.40238 19.4853 8.62133L11.4498 0.585787C10.6687 -0.195262 9.40238 -0.195263 8.62133 0.585786L0.585787 8.62133Z" fill="currentColor"/></svg>`;
+  const TL_SPLUNK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 110 110" fill="none" style="flex-shrink:0"><g clip-path="url(#tl-splunk-clip)"><path fill="url(#tl-splunk-grad)" d="M90.6 109.1h-72C8.3 109.1 0 100.8 0 90.6v-72C0 8.3 8.3 0 18.5 0h72C100.7 0 109 8.3 109 18.5v72c.1 10.3-8.2 18.6-18.4 18.6"/><path fill="#F2F2F2" d="M73 54.9c0 .1.1.2.1.3-.5.3-1.1.5-1.7.7-12.7 5.5-25.3 11-38 16.4-.5.3-.8.5-.8 1.1.1 2.6.1 5.2 0 7.9-.1.8.3.8.9.5 15.3-6.6 30.6-13.1 45.9-19.7.7-.3.8-.6.8-1.3q-.15-5.85 0-11.7c0-.7-.2-1-.8-1.2l-8.4-3c-12.4-4.4-24.8-8.8-37.2-13.3-1.1-.4-1.2-.4-1.2.8 0 2.6.1 5.3-.1 7.9-.1.8.3 1.2 1 1.4l30.6 10.2c3.1 1.1 6 2 8.9 3"/><path fill="#F2F2F2" d="M73 54.9c-2.9-1-5.8-2-8.7-2.9-10.3-3.4-20.5-6.8-30.7-10.2-.8-.3-1-.6-1-1.4.1-2.6.1-5.3.1-8 0-1.2 0-1.2 1.2-.8C46.3 36 58.7 40.4 71 44.9l8.4 3c.7.2.9.6.8 1.2q-.15 5.85 0 11.7c0 .7-.2 1-.8 1.3-15.4 6.6-30.6 13.3-46 19.8-.6.3-.9.3-.9-.5.1-2.6.1-5.2 0-7.9 0-.6.2-.9.8-1.1 12.7-5.5 25.3-11 38-16.4.5-.3 1.1-.5 1.7-.7z"/></g><defs><linearGradient id="tl-splunk-grad" x1="117.961" x2="-4.396" y1="111.505" y2="1.606" gradientUnits="userSpaceOnUse"><stop stop-color="#78B43A"/><stop offset=".952" stop-color="#A2CE6A"/></linearGradient><clipPath id="tl-splunk-clip"><path fill="#fff" d="M0 0h109.1v109.1H0z"/></clipPath></defs></svg>`;
   const TL_AI_SYMBOL   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;color:#5B4FFF"><path d="M20.281 15.209C15.994 13.977 15.023 13.006 13.791 8.719a.29.29 0 00-.582 0C11.977 13.007 11.006 13.977 6.719 15.209a.29.29 0 000 .582c4.287 1.232 5.258 2.203 6.49 6.49a.29.29 0 00.582 0c1.232-4.287 2.203-5.258 6.49-6.49a.29.29 0 000-.582Z" fill="currentColor"/><path d="M22.797 4.23C20.108 3.457 19.543 2.893 18.77.203a.25.25 0 00-.5 0C17.497 2.893 16.932 3.457 14.243 4.23a.25.25 0 000 .47c2.689.773 3.254 1.338 4.027 4.027a.25.25 0 00.5 0C19.543 6.038 20.108 5.473 22.797 4.7a.25.25 0 000-.47Z" fill="currentColor"/><path d="M11 7.5a.25.25 0 00-.188-.242C7.624 6.341 6.955 5.672 6.038 2.484a.25.25 0 00-.476 0C4.645 5.672 3.976 6.341.788 7.258A.25.25 0 00.788 7.742C3.976 8.659 4.645 9.328 5.562 12.516a.25.25 0 00.476 0C6.955 9.328 7.624 8.659 10.812 7.742A.25.25 0 0011 7.5Z" fill="currentColor"/></svg>`;
 
   function tlStatusPill(statusId) {
@@ -7517,6 +7364,30 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         </div>
         <div class="tl-content">${tlStatusPill(ev.status)}<span class="tl-title">${title}</span></div>
         ${ev.desc ? `<p class="tl-desc">${ev.desc}</p>` : ''}
+      </div>`;
+
+    } else if (ev.type === 'scanner-seen-group') {
+      wrap.className = 'tl-card-wrap';
+      wrap.dataset.tlType = 'scanner-seen';
+      wrap.dataset.count = ev.count;
+      const rows = ev.observations.map(o =>
+        `<div class="tl-group-row"><span class="tl-group-row-date">${o.date}</span><a class="tl-group-row-scan" href="burp-dast-scan-detail.html">${o.scan}</a></div>`
+      ).join('');
+      wrap.innerHTML = `<div class="tl-card tl-card-scanner tl-card-scanner-group">
+        <div class="tl-card-header">
+          <div class="tl-date-col"><span class="tl-date">${ev.date}</span></div>
+          ${TL_SCANNER_BADGE}
+        </div>
+        <div class="tl-content">${tlStatusPill(ev.status)}<span class="tl-title">Observed in ${ev.count} scans</span></div>
+        <div class="tl-group-meta">
+          <span>Most recent: <strong>${ev.latestScan}</strong></span>
+          <span>First in run: <strong>${ev.earliestDate}</strong></span>
+        </div>
+        <button class="tl-group-toggle" type="button">
+          <span class="tl-group-toggle-label">Show all ${ev.count} scans</span>
+          <svg class="tl-group-toggle-chev" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="tl-group-list">${rows}</div>
       </div>`;
 
     } else if (ev.type === 'status' || ev.type === 'status-change') {
@@ -7572,6 +7443,19 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         <div class="tl-content">${TL_JIRA_ICON}<span class="tl-title">JIRA ticket created</span></div>
         ${jiraFields ? `<div class="tl-fields">${jiraFields}</div>` : ''}`;
 
+    } else if (ev.type === 'splunk') {
+      wrap.className = 'tl-card';
+      const splunkFields = (ev.fields || []).map(f =>
+        `<div class="tl-field-row"><span class="tl-field-label">${f.label}:</span><span class="tl-field-value">${f.value}</span></div>`
+      ).join('');
+      wrap.innerHTML = `
+        <div class="tl-card-header">
+          <div class="tl-date-col"><span class="tl-date">${ev.date}</span></div>
+          <span class="tl-author">${ev.author}</span>
+        </div>
+        <div class="tl-content">${TL_SPLUNK_ICON}<span class="tl-title">Splunk notable created</span></div>
+        ${splunkFields ? `<div class="tl-fields">${splunkFields}</div>` : ''}`;
+
     } else if (ev.type === 'ai') {
       wrap.className = 'tl-card';
       wrap.innerHTML = `
@@ -7581,18 +7465,6 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         </div>
         <div class="tl-content">${TL_AI_SYMBOL}<span class="tl-title">AI investigation</span></div>
         ${ev.desc ? `<p class="tl-desc">${ev.desc}</p>` : ''}`;
-
-    } else if (ev.type === 'tags') {
-      wrap.className = 'tl-card';
-      const tagsHtml = ev.tags.map(t =>
-        `<span class="tl-tag" style="background:${t.bg};color:${t.color}">${t.name}</span>`
-      ).join('');
-      wrap.innerHTML = `
-        <div class="tl-card-header">
-          <div class="tl-date-col"><span class="tl-date">${ev.date}</span></div>
-          <span class="tl-author">${ev.author}</span>
-        </div>
-        <div class="tl-content"><span class="tl-title">Added tags:</span>${tagsHtml}</div>`;
 
     } else if (ev.type === 'assignees') {
       wrap.className = 'tl-card-wrap';
@@ -7651,15 +7523,71 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     document.querySelectorAll('.tl-filter-btn[data-filter]').forEach(btn => {
       if (btn.dataset.filter === 'all') return;
       const f = btn.dataset.filter;
-      const has = f === 'integrations' ? (types.has('gitlab') || types.has('jira')) : types.has(f);
+      const has = f === 'integrations' ? (types.has('gitlab') || types.has('jira') || types.has('splunk')) : types.has(f);
       btn.style.display = has ? '' : 'none';
     });
     const bar = document.querySelector('.tl-filters');
     if (bar) bar.style.display = types.size <= 1 ? 'none' : '';
   }
 
+  function groupScannerObservations(events) {
+    const result = [];
+    let i = 0;
+    while (i < events.length) {
+      const ev = events[i];
+      if (ev.type === 'scanner-seen') {
+        let j = i + 1;
+        while (j < events.length && events[j].type === 'scanner-seen' && events[j].status === ev.status) {
+          j++;
+        }
+        const runLength = j - i;
+        if (runLength >= 2) {
+          const observations = events.slice(i, j);
+          result.push({
+            type: 'scanner-seen-group',
+            status: ev.status,
+            observations,
+            count: runLength,
+            date: observations[0].date,
+            latestScan: observations[0].scan,
+            earliestDate: observations[runLength - 1].date,
+            earliestScan: observations[runLength - 1].scan
+          });
+          i = j;
+          continue;
+        }
+      }
+      result.push(ev);
+      i++;
+    }
+    return result;
+  }
+
   function renderTimeline(rowIndex) {
-    const events   = TIMELINE_DATA[rowIndex];
+    const raw = TIMELINE_DATA[rowIndex];
+    // Sync the most recent scanner-seen event with the row's current scanner status,
+    // so the timeline never contradicts the displayed pill.
+    if (raw) {
+      const row = document.querySelectorAll('[data-row]')[rowIndex];
+      const pill = row && row.querySelector('.status-drop');
+      if (pill) {
+        const currentStatus = pill.dataset.status;
+        const scannerStatus = SCANNER_SET.has(currentStatus)
+          ? currentStatus
+          : (pill.dataset.scannerStatus || null);
+        if (scannerStatus) {
+          for (let i = 0; i < raw.length; i++) {
+            if (raw[i].type === 'scanner-seen') {
+              if (raw[i].status !== scannerStatus) {
+                raw[i] = Object.assign({}, raw[i], { status: scannerStatus });
+              }
+              break;
+            }
+          }
+        }
+      }
+    }
+    const events  = raw ? groupScannerObservations(raw) : null;
     const tlCards  = document.getElementById('tlCards');
     const tlDotCol = document.getElementById('tlDotCol');
     if (!tlCards || !tlDotCol || !events) return;
@@ -7740,13 +7668,27 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         const t = card.dataset.tlType;
         const show = filter === 'all'
           || t === filter
-          || (filter === 'integrations' && (t === 'gitlab' || t === 'jira'));
+          || (filter === 'integrations' && (t === 'gitlab' || t === 'jira' || t === 'splunk'));
         card.style.display = show ? '' : 'none';
         const dot = tlDotCol.querySelectorAll('.tl-dot')[i];
         if (dot) dot.style.display = show ? '' : 'none';
       });
       requestAnimationFrame(positionTimelineDots);
     });
+  });
+
+  // Scanner-observation group expand/collapse
+  document.getElementById('tlCards').addEventListener('click', function(e) {
+    const toggle = e.target.closest('.tl-group-toggle');
+    if (!toggle) return;
+    const card = toggle.closest('.tl-card-scanner-group');
+    if (!card) return;
+    const wrap = card.parentElement;
+    const count = wrap && wrap.dataset.count ? wrap.dataset.count : '';
+    const expanded = card.classList.toggle('is-expanded');
+    const label = toggle.querySelector('.tl-group-toggle-label');
+    if (label) label.textContent = expanded ? `Hide all ${count} scans` : `Show all ${count} scans`;
+    requestAnimationFrame(positionTimelineDots);
   });
 
   // Comment textarea → enable/disable button
@@ -7928,6 +7870,8 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         if (eviEl) eviEl.textContent = aiData.evidence || '';
         if (detEl) detEl.textContent = aiData.details  || '';
         if (repEl) repEl.textContent = aiData.repro    || '';
+        const updatedEl = document.getElementById('spAIUpdated');
+        if (updatedEl) updatedEl.textContent = getAIUpdatedDate(rowIdx);
       }
     } else {
       // No AI output — hide badge
@@ -8235,11 +8179,11 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     // AI result detail data per row index
     const AI_DETAIL = {
       0: {
-        summary: 'The DAST scanner reported HTTP response header injection on /catalog/products. Testing confirmed that user-supplied input in the X-Forwarded-For header is reflected into the Location response header without sanitisation, enabling response splitting attacks.',
-        impact:  'An attacker can inject arbitrary headers into HTTP responses, enabling cache poisoning, cross-site scripting via injected HTML, and session fixation by setting Set-Cookie headers on behalf of the server.',
-        evidence: 'Payload: X-Forwarded-For: legit\\r\\nSet-Cookie: injected=true\\r\\n. Server responded with the injected Set-Cookie header present in the 302 redirect response.',
-        details:  'The vulnerability exists in the redirect handler at /catalog/products line 147. The Location header is constructed by concatenating the X-Forwarded-For value without stripping CR/LF characters.',
-        repro:    '1. Send a GET request to /catalog/products with the header X-Forwarded-For: test\\r\\nSet-Cookie: ai=confirmed. 2. Observe that the response contains the injected header. 3. Demonstrate response splitting by injecting a full HTTP response body.'
+        summary: "HTTP response header injection vulnerability confirmed in the 'category' parameter of the /catalog endpoint at ginandjuice.shop. Attackers can inject arbitrary HTTP headers into the response by including CRLF sequences in the category parameter value.",
+        impact:  "An attacker can inject arbitrary HTTP headers into the application's responses. This vulnerability can be exploited to:\n\n1. Perform cross-site scripting (XSS) attacks by manipulating caching headers or setting malicious cookies that execute JavaScript\n2. Conduct session fixation attacks by injecting Set-Cookie headers with attacker-controlled session identifiers\n3. Bypass security controls by injecting headers like X-Frame-Options, Content-Security-Policy, or other security-related headers with permissive values\n4. Poison HTTP caches by manipulating cache control headers, potentially serving malicious content to other users\n5. Manipulate browser behavior by injecting headers that control content rendering or security policies\n\nWhile HTTP/2 protocol provides some protection against full response splitting (injecting content into the response body), the ability to inject arbitrary headers still presents significant security risks. The injected content is also reflected in the HTML body, which could potentially be leveraged for additional attacks depending on how the application processes this data.",
+        evidence: "Multiple test requests were sent to confirm the vulnerability:\n\n1. Baseline test with normal value:\n   Request: GET /catalog?searchTerm=&category=normal\n   Response: Set-Cookie: category=normal; Secure; HttpOnly\n   (Single line, properly formatted)\n\n2. Custom header injection test:\n   Request: GET /catalog?searchTerm=&category=test%0d%0aX-Injected-Header%3A%20injected\n   Response headers showed:\n   Set-Cookie: category=test\n   X-Injected-Header: injected; Secure; HttpOnly\n\n   The custom header \"X-Injected-Header\" was successfully injected as a separate HTTP response header.\n\n3. Confirmation with different custom header:\n   Request: GET /catalog?searchTerm=&category=test%0d%0aX-Custom-Header%3A%20value123\n   Response headers showed:\n   Set-Cookie: category=test\n   X-Custom-Header: value123; Secure; HttpOnly\n\nThe injected headers appear as separate HTTP headers in the response, confirming that the CRLF sequences are being interpreted as newline characters. The injected values were also reflected in the HTML response body, where they appeared in hidden form fields and JavaScript code with the literal CRLF sequences preserved (shown as \"\\r\\n\" in JavaScript).",
+        details:  "The application fails to sanitize CRLF (Carriage Return Line Feed) characters in the 'category' query parameter before copying its value into the 'Set-Cookie' response header. When a user-supplied value containing URL-encoded CRLF sequences (%0d%0a) is submitted via the category parameter, the application interprets these as newline characters, allowing an attacker to break out of the current Set-Cookie header and inject arbitrary HTTP headers into the response.\n\nIn normal operation, when the category parameter contains a benign value like \"normal\", the server responds with a properly formatted cookie:\nSet-Cookie: category=normal; Secure; HttpOnly\n\nHowever, when CRLF sequences are injected (e.g., \"test%0d%0aX-Custom-Header:%20value123\"), the server generates a malformed response with an injected header:\nSet-Cookie: category=test\nX-Custom-Header: value123; Secure; HttpOnly\n\nThe vulnerability exists because the application directly reflects the category parameter value into the Set-Cookie header without encoding or stripping CRLF characters. While the application is using HTTP/2 protocol, which has some inherent protections against response splitting attacks, the header injection itself is still successful and exploitable.",
+        repro:    "1. Send a GET request to https://ginandjuice.shop/catalog with the query parameters: searchTerm= (empty) and category=test%0d%0aX-Custom-Header%3A%20value123\n2. The %0d%0a represents a URL-encoded CRLF (Carriage Return Line Feed) sequence\n3. Observe the HTTP response headers\n4. The response will contain the injected header \"X-Custom-Header: value123\" as a separate HTTP header, appearing after the Set-Cookie header for the category parameter\n5. The Set-Cookie header will be split across two lines: \"Set-Cookie: category=test\" followed by \"X-Custom-Header: value123; Secure; HttpOnly\"\n6. This confirms that arbitrary HTTP headers can be injected by including CRLF sequences in the category parameter"
       },
       1: {
         summary: 'The DAST scanner reported a reflected cross-site scripting vulnerability on /user/profile. Testing confirmed that the "displayName" parameter is reflected into the HTML response without output encoding, allowing script execution in the victim\'s browser.',
@@ -9128,43 +9072,43 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:white"><path d="M20.281 15.2093C15.9937 13.9771 15.0231 13.0065 13.7908 8.7191C13.7536 8.58935 13.6351 8.50012 13.5002 8.50012C13.3653 8.50012 13.2467 8.58935 13.2095 8.7191C11.977 13.0068 11.0064 13.9771 6.719 15.2093C6.58924 15.2465 6.50002 15.3651 6.50002 15.5C6.50002 15.6349 6.58924 15.7534 6.719 15.7906C11.0067 17.0232 11.977 17.9935 13.2095 22.2811C13.2467 22.4109 13.3653 22.5001 13.5002 22.5001C13.6351 22.5001 13.7536 22.4109 13.7908 22.2811C15.0231 17.9938 15.9934 17.0232 20.281 15.7906C20.4108 15.7534 20.5 15.6349 20.5 15.5C20.5 15.3651 20.4108 15.2468 20.281 15.2093Z" fill="currentColor"/><path d="M22.7968 4.23013C20.1075 3.45742 19.5431 2.89269 18.7698 0.203212C18.7352 0.0828006 18.6252 0 18.5 0C18.3748 0 18.2648 0.0828006 18.2303 0.203212C17.4573 2.89269 16.8925 3.45742 14.2032 4.23013C14.0828 4.26465 14 4.37468 14 4.49986C14 4.62504 14.0828 4.73507 14.2032 4.76959C16.8925 5.54259 17.4573 6.10731 18.2303 8.79679C18.2648 8.9172 18.3748 9 18.5 9C18.6252 9 18.7352 8.9172 18.7698 8.79679C19.5431 6.10731 20.1075 5.54259 22.7968 4.76959C22.9172 4.73507 23 4.62532 23 4.49986C23 4.3744 22.9172 4.26465 22.7968 4.23013Z" fill="currentColor"/><path d="M11 7.50009C11 7.30786 10.8729 7.1389 10.6879 7.08589C7.49971 6.16911 6.83077 5.50017 5.91442 2.31193C5.86141 2.12703 5.69245 1.99988 5.50022 1.99988C5.30798 1.99988 5.13902 2.12703 5.08601 2.31193C4.16923 5.50017 3.50029 6.16911 0.312057 7.08589C0.12715 7.1389 0 7.30743 0 7.50009C0 7.69276 0.12715 7.86129 0.312057 7.9143C3.49986 8.83021 4.16923 9.49958 5.08601 12.6878C5.13902 12.8727 5.30798 12.9999 5.50022 12.9999C5.69245 12.9999 5.86141 12.8727 5.91442 12.6878C6.83077 9.49958 7.50014 8.83021 10.6879 7.9143C10.8729 7.86086 11 7.69233 11 7.50009Z" fill="currentColor"/></svg>
                 Burp AI results:
               </span>
-              <span class="sp-ai-panel-chevron">
+              <span class="sp-ai-acc-actions"><span class="sp-ai-updated" id="spAIUpdated"></span><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy all" onclick="event.stopPropagation(); copyAllAI(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-panel-chevron">
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span>
+              </span></span>
             </div>
             <div class="sp-ai-panel-body">
               <div class="sp-ai-accordion open">
                 <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
                   <span class="sp-ai-acc-title">Summary</span>
-                  <span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
                 </div>
                 <div class="sp-ai-acc-body"><p class="sp-ai-acc-summary" id="spAISummary"></p></div>
               </div>
               <div class="sp-ai-accordion">
                 <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
                   <span class="sp-ai-acc-title">Impact</span>
-                  <span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
                 </div>
                 <div class="sp-ai-acc-body" id="spAIImpact"></div>
               </div>
               <div class="sp-ai-accordion">
                 <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
                   <span class="sp-ai-acc-title">Evidence</span>
-                  <span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
                 </div>
                 <div class="sp-ai-acc-body" id="spAIEvidence"></div>
               </div>
               <div class="sp-ai-accordion">
                 <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
                   <span class="sp-ai-acc-title">Details</span>
-                  <span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
                 </div>
                 <div class="sp-ai-acc-body" id="spAIDetails"></div>
               </div>
               <div class="sp-ai-accordion">
                 <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
                   <span class="sp-ai-acc-title">Reproduction steps</span>
-                  <span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
                 </div>
                 <div class="sp-ai-acc-body" id="spAIRepro"></div>
               </div>
@@ -9229,7 +9173,6 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         <button class="tl-filter-btn" data-filter="retest">Re-tests</button>
         <button class="tl-filter-btn" data-filter="comment">Comments</button>
         <button class="tl-filter-btn" data-filter="assignees">Assignments</button>
-        <button class="tl-filter-btn" data-filter="tags">Tags</button>
         <button class="tl-filter-btn" data-filter="integrations">Integrations</button>
         <button class="tl-filter-btn" data-filter="ai">AI investigation</button>
       </div>
@@ -10017,5 +9960,59 @@ document.addEventListener('DOMContentLoaded', function() {
     requestAnimationFrame(function() { requestAnimationFrame(setup); });
   })();
   </script>
+<script>
+  // Per-issue "Updated" timestamp for the Burp AI panel header.
+  // Issue 0 uses a fixed example date; other issues get a deterministic random date.
+  window.getAIUpdatedDate = function (idx) {
+    if (idx === 0) return 'Updated March 3, at 1:41 PM';
+    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const seed = (idx + 1) * 7919;
+    const month = months[seed % 12];
+    const day   = ((Math.floor(seed / 7) * 17) % 28) + 1;
+    const hour  = ((Math.floor(seed / 11) * 13) % 12) + 1;
+    const min   = ((Math.floor(seed / 13) * 41) % 60).toString().padStart(2, '0');
+    const ampm  = ((Math.floor(seed / 17)) % 2) ? 'PM' : 'AM';
+    return `Updated ${month} ${day}, at ${hour}:${min} ${ampm}`;
+  };
+
+  // Copy handlers for the Burp AI results accordion
+  window.copyAIAccordion = function (btn) {
+    const accordion = btn.closest('.sp-ai-accordion');
+    if (!accordion) return;
+    const body = accordion.querySelector('.sp-ai-acc-body');
+    if (!body) return;
+    const text = (body.textContent || '').trim();
+    if (!text) return;
+    const flash = () => {
+      btn.classList.add('is-copied');
+      setTimeout(() => btn.classList.remove('is-copied'), 2000);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(flash, flash);
+    } else {
+      flash();
+    }
+  };
+  window.copyAllAI = function (btn) {
+    const panel = btn.closest('.sp-ai-panel');
+    if (!panel) return;
+    const parts = [];
+    panel.querySelectorAll('.sp-ai-accordion').forEach(acc => {
+      const title = (acc.querySelector('.sp-ai-acc-title')?.textContent || '').trim();
+      const body  = (acc.querySelector('.sp-ai-acc-body')?.textContent  || '').trim();
+      if (title || body) parts.push(title + '\n' + body);
+    });
+    const text = parts.join('\n\n');
+    const flash = () => {
+      btn.classList.add('is-copied');
+      setTimeout(() => btn.classList.remove('is-copied'), 2000);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(flash, flash);
+    } else {
+      flash();
+    }
+  };
+</script>
 </body>
 </html>

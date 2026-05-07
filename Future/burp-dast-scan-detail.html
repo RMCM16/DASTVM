@@ -1545,6 +1545,7 @@
     }
     .fp-item:hover .fp-lbl { color: #000023; }
     .fp-item--disabled { opacity: 0.35; pointer-events: none; }
+    .fp-count { margin-left: auto; }
 
     /* ── Site tree filter ── */
     .fp-site-tree { width: 340px; max-height: none; overflow: hidden; padding: 0; border-color: #333332; }
@@ -1867,6 +1868,7 @@
     .col-last       { width: 120px; }
     .col-age        { width: 90px; }
     .col-detection  { width: 170px; }
+    .col-detection .det-regressed { color: #D6213F; }
     .col-status     { width: 173px; }
     .col-assignee   { width: 110px; }
     .col-tags       { width: 160px; }
@@ -2143,6 +2145,14 @@
     .status-menu-item .item-check { flex-shrink: 0; color: #8C8D8E; }
     .status-menu-item:not(.is-disabled) .item-check { color: #333332; }
     .status-menu-divider { height: 1px; background: #EBF0F2; margin: 6px 0; }
+    .status-menu-section-label {
+      font-family: var(--font);
+      font-size: 11px; font-weight: 600;
+      color: #8C8D8E; text-transform: uppercase; letter-spacing: 0.5px;
+      padding: 6px 6px 4px;
+    }
+    .status-menu-section-label:first-child { padding-top: 2px; }
+    .status-menu-item.is-current { font-weight: 500; }
 
     /* Status change modal */
     .sc-overlay {
@@ -2225,32 +2235,6 @@
       width: 18px; height: 18px;
       display: flex; align-items: center; justify-content: center;
     }
-    .sc-divider { border: none; border-top: 1px solid #CBD0D1; margin: 0; }
-    .sc-radios { display: flex; flex-direction: column; gap: 20px; }
-    .sc-radio-label {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      font-family: var(--font);
-      font-weight: 400;
-      font-size: 14px;
-      line-height: 1.4;
-      letter-spacing: 0.07px;
-      color: #333332;
-      user-select: none;
-    }
-    .sc-radio-label input[type="radio"] { display: none; }
-    .sc-radio-btn {
-      width: 19px; height: 19px;
-      border-radius: 50%;
-      border: 2px solid #CBD0D1;
-      flex-shrink: 0;
-      background: #fff;
-      display: flex; align-items: center; justify-content: center;
-      transition: border-color 0.1s;
-    }
-    .sc-radio-label input[type="radio"]:checked ~ .sc-radio-btn { border: 6px solid #0094FF; }
     .sc-textarea {
       width: 100%;
       flex: 1;
@@ -3146,6 +3130,39 @@
     .tl-field-label { min-width: 100px; flex-shrink: 0; color: #676667; font-weight: 400; white-space: nowrap; }
     .tl-field-value { color: #333332; font-weight: 400; flex: 1; min-width: 0; }
 
+    /* Grouped scanner observations — collapse consecutive same-status scans */
+    .tl-card-scanner-group { background: #F0F8FB; border: none; }
+    .tl-group-meta {
+      display: flex; gap: 24px; flex-wrap: wrap;
+      font-family: var(--font); font-size: 13px; font-weight: 400;
+      color: #676667; line-height: 1.4; letter-spacing: 0.07px;
+    }
+    .tl-group-meta strong { color: #333332; font-weight: 500; }
+    .tl-group-toggle {
+      align-self: flex-start;
+      background: none; border: none; padding: 0; margin-top: 4px;
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font); font-size: 14px; font-weight: 500;
+      color: #FF6633; cursor: pointer; line-height: 1.4;
+    }
+    .tl-group-toggle:hover { color: #cc4f29; }
+    .tl-group-toggle-chev { transition: transform 0.15s; flex-shrink: 0; }
+    .tl-card-scanner-group.is-expanded .tl-group-toggle-chev { transform: rotate(180deg); }
+    .tl-group-list {
+      display: none; margin-top: 5px;
+      flex-direction: column; gap: 6px;
+    }
+    .tl-card-scanner-group.is-expanded .tl-group-list { display: flex; }
+    .tl-group-row {
+      display: flex; align-items: center; gap: 16px;
+      font-family: var(--font); font-size: 13px; line-height: 1.4;
+    }
+    .tl-group-row-date { color: #676667; min-width: 124px; flex-shrink: 0; }
+    .tl-group-row-scan {
+      color: #FF6633; font-weight: 500; text-decoration: none;
+    }
+    .tl-group-row-scan:hover { text-decoration: underline; }
+
     /* ── Age popover ── */
     .age-popover {
       position: fixed;
@@ -3878,7 +3895,8 @@
       min-height: 0;
     }
     .issues-grid-card .filter-bar { margin: 0; padding: 0 0 20px; top: 0; }
-    .issues-grid-card .table-section { margin: 0; padding: 0; background: transparent; flex: 1; min-height: 0; }
+    .issues-grid-card .table-section { margin: 0; padding: 0; background: transparent; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    .issues-grid-card .table-scroll-wrap { flex: 1; min-height: 0; overflow-y: auto; }
     .issues-grid-card .download-row { padding: 0 0 30px; }
     .issues-grid-card .table-header-sticky-wrap { top: 0; }
 
@@ -4377,7 +4395,7 @@
                 <div class="td col-age">
                   <span class="age-badge age-overdue">405 days</span>
                 </div>
-                <div class="td col-detection">Present</div>
+                <div class="td col-detection"><span class="det-new">New</span></div>
                 <div class="td col-status">
                   <div class="status-drop" data-status="open"></div>
                 </div>
@@ -4443,7 +4461,7 @@
                 <div class="td col-age">
                   <span class="age-badge age-overdue">400 days</span>
                 </div>
-                <div class="td col-detection">Present</div>
+                <div class="td col-detection"><span class="det-regressed">Regressed</span></div>
                 <div class="td col-status">
                   <div class="status-drop" data-status="open"></div>
                 </div>
@@ -4476,7 +4494,7 @@
                 <div class="td col-age">
                   <span class="age-badge age-overdue">406 days</span>
                 </div>
-                <div class="td col-detection">Present</div>
+                <div class="td col-detection"><span class="det-regressed">Regressed</span></div>
                 <div class="td col-status">
                   <div class="status-drop" data-status="open"></div>
                 </div>
@@ -4542,7 +4560,7 @@
                 <div class="td col-age">
                   <span class="age-badge age-overdue">410 days</span>
                 </div>
-                <div class="td col-detection">Present</div>
+                <div class="td col-detection"><span class="det-new">New</span></div>
                 <div class="td col-status">
                   <div class="status-drop" data-status="accepted"></div>
                 </div>
@@ -4575,7 +4593,7 @@
                 <div class="td col-age">
                   <span class="age-badge age-overdue">401 days</span>
                 </div>
-                <div class="td col-detection">Present</div>
+                <div class="td col-detection"><span class="det-new">New</span></div>
                 <div class="td col-status">
                   <div class="status-drop" data-status="open"></div>
                 </div>
@@ -4858,13 +4876,6 @@
           <span class="sc-select-chevron"><svg width="11" height="6" viewBox="0 0 10.5 6" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.21967 0.21967C0.512563 -0.0732233 0.987437 -0.0732233 1.28033 0.21967L5.25 4.18934L9.21967 0.21967C9.51256 -0.0732233 9.98744 -0.0732233 10.2803 0.21967C10.5732 0.512563 10.5732 0.987437 10.2803 1.28033L5.78033 5.78033C5.48744 6.07322 5.01256 6.07322 4.71967 5.78033L0.21967 1.28033C-0.0732233 0.987437 -0.0732233 0.512563 0.21967 0.21967Z" fill="#333332"/></svg></span>
         </div>
       </div>
-      <hr class="sc-divider">
-      <div class="sc-radios">
-        <label class="sc-radio-label"><input type="radio" name="sv-scope" value="type-site" checked><span class="sc-radio-btn"></span>This issue and all existing issues of the same type for this site</label>
-        <label class="sc-radio-label"><input type="radio" name="sv-scope" value="type-url-site"><span class="sc-radio-btn"></span>This issue and all existing issues of the same type and URL for this site</label>
-        <label class="sc-radio-label"><input type="radio" name="sv-scope" value="all-sites"><span class="sc-radio-btn"></span>These issues across all sites and future occurrences</label>
-      </div>
-      <hr class="sc-divider">
       <div class="sc-field">
         <span class="sc-label">Notes:</span>
         <textarea id="sv-notes" class="sc-textarea" placeholder=""></textarea>
@@ -4901,25 +4912,6 @@
           </span>
         </div>
       </div>
-      <hr class="sc-divider">
-      <div class="sc-radios">
-        <label class="sc-radio-label">
-          <input type="radio" name="sc-scope" value="type-site" checked>
-          <span class="sc-radio-btn"></span>
-          This issue and all existing issues of the same type for this site
-        </label>
-        <label class="sc-radio-label">
-          <input type="radio" name="sc-scope" value="type-url-site">
-          <span class="sc-radio-btn"></span>
-          This issue and all existing issues of the same type and URL for this site
-        </label>
-        <label class="sc-radio-label">
-          <input type="radio" name="sc-scope" value="all-sites">
-          <span class="sc-radio-btn"></span>
-          These issues across all sites and future occurrences
-        </label>
-      </div>
-      <hr class="sc-divider">
       <div class="sc-field">
         <span class="sc-label">Notes:</span>
         <textarea id="sc-notes" class="sc-textarea" placeholder=""></textarea>
@@ -5344,7 +5336,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         },
       },
       {
-        id: 'status', label: 'Status', title: 'Filter by status',
+        id: 'status', label: 'Current status', title: 'Filter by current status',
         options: () => ['New', 'Present', 'Regressed', 'Scanning',
                         'Fixed (confirmed)', 'Fixed (unconfirmed)',
                         'Accepted risk', 'False positive', 'Verified risk'],
@@ -5369,13 +5361,6 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
             if (n) s.add(n.textContent.trim());
           });
           return [...s].sort();
-        },
-        countFn(o) {
-          const count = rows.filter(r => {
-            const n = r.querySelector('.issue-name');
-            return n && n.textContent.trim() === o;
-          }).length;
-          return `${o} (${count})`;
         },
         match(row, sel) {
           const n = row.querySelector('.issue-name');
@@ -5573,11 +5558,11 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         </div>` : '';
 
       const itemsHtml = opts.map(o => {
-        const hasMatch = rows.some(row => def.match(row, new Set([o])));
-        const lbl = def.countFn ? def.countFn(o) : o;
-        return `<label class="fp-item${hasMatch ? '' : ' fp-item--disabled'}">
-          <input type="checkbox" class="fp-cb" value="${o}"${hasMatch ? '' : ' disabled'}>
-          <span class="fp-lbl">${lbl}</span>
+        const count = rows.filter(row => def.match(row, new Set([o]))).length;
+        return `<label class="fp-item${count > 0 ? '' : ' fp-item--disabled'}">
+          <input type="checkbox" class="fp-cb" value="${o}"${count > 0 ? '' : ' disabled'}>
+          <span class="fp-lbl">${o}</span>
+          <span class="scan-tab-badge fp-count">${count}</span>
         </label>`;
       }).join('');
 
@@ -5602,13 +5587,15 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         const opening = !pop.classList.contains('is-open');
         closeAll();
         if (opening) {
-          // Re-evaluate disabled state against current row data
+          // Re-evaluate count + disabled state against current row data
           pop.querySelectorAll('.fp-item').forEach(item => {
             const cb = item.querySelector('.fp-cb');
             if (!cb) return;
-            const hasMatch = rows.some(row => def.match(row, new Set([cb.value])));
-            item.classList.toggle('fp-item--disabled', !hasMatch);
-            cb.disabled = !hasMatch;
+            const n = rows.filter(row => def.match(row, new Set([cb.value]))).length;
+            item.classList.toggle('fp-item--disabled', n === 0);
+            cb.disabled = n === 0;
+            const badge = item.querySelector('.fp-count');
+            if (badge) badge.textContent = n;
           });
           pop.classList.add('is-open');
           chip.classList.add('is-open');
@@ -6028,11 +6015,23 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   function openStatusMenu(pill) {
     const currentId = pill.dataset.status;
     const isScannerSet = SCANNER_SET.has(currentId);
+    const scannerStatus = isScannerSet ? currentId : (pill.dataset.scannerStatus || 'present');
+    const scannerLabel = (STATUS_CFG[scannerStatus] && STATUS_CFG[scannerStatus].label) || scannerStatus;
+
     let html = '<div class="status-menu-list">';
+
+    // Scanner status section
+    html += '<div class="status-menu-section-label">Scanner status</div>';
     if (isScannerSet) {
-      html += `<div class="status-menu-item is-disabled"><span>${STATUS_CFG[currentId].label}</span>${SVG_CHECK}</div>`;
-      html += `<div class="status-menu-divider"></div>`;
+      html += `<div class="status-menu-item is-disabled is-current"><span>${STATUS_CFG[currentId].label}</span>${SVG_CHECK}</div>`;
+    } else {
+      html += `<div class="status-menu-item" data-value="__revert"><span>Use scanner status (${scannerLabel})</span></div>`;
     }
+
+    html += `<div class="status-menu-divider"></div>`;
+
+    // Override options section
+    html += `<div class="status-menu-section-label">${isScannerSet ? 'Override with' : 'Override status'}</div>`;
     USER_OPTIONS.forEach(opt => {
       const isCurrent = opt.id === currentId;
       html += `<div class="status-menu-item${isCurrent ? ' is-current' : ''}" data-value="${opt.id}"><span>${opt.label}</span>${isCurrent ? SVG_CHECK : ''}</div>`;
@@ -6053,7 +6052,18 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         e.preventDefault();
         const newId = item.dataset.value;
         closeStatusMenu();
-        if (newId) openStatusModal(pill, newId);
+        if (!newId) return;
+        if (newId === '__revert') {
+          const scanner = pill.dataset.scannerStatus || 'present';
+          renderPill(pill, scanner);
+          delete pill.dataset.scannerStatus;
+          if (typeof activeRow !== 'undefined' && activeRow && pill.closest('[data-row]') === activeRow) {
+            const spPill = document.getElementById('spStatusPill');
+            if (spPill) renderPill(spPill, scanner);
+          }
+        } else {
+          openStatusModal(pill, newId);
+        }
       });
     });
   }
@@ -6076,6 +6086,30 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   }
   wireStatusPills();
 
+  // Seed underlying scanner status on pills that start with a user-set state
+  document.querySelectorAll('.status-drop').forEach(pill => {
+    if (!SCANNER_SET.has(pill.dataset.status) && !pill.dataset.scannerStatus) {
+      pill.dataset.scannerStatus = 'present';
+    }
+  });
+
+  function applyStatusToPill(pill, newId) {
+    if (!pill) return;
+    const currentId = pill.dataset.status;
+    if (SCANNER_SET.has(currentId) && !SCANNER_SET.has(newId)) {
+      pill.dataset.scannerStatus = currentId;
+    }
+    renderPill(pill, newId);
+  }
+
+  function revertPillToScanner(pill) {
+    if (!pill) return;
+    if (SCANNER_SET.has(pill.dataset.status)) return;
+    const scanner = pill.dataset.scannerStatus || 'present';
+    renderPill(pill, scanner);
+    delete pill.dataset.scannerStatus;
+  }
+
   // ── Status change modal ───────────────────────────────────────────────────
   const scOverlay = document.getElementById('sc-overlay');
   const scSelect  = document.getElementById('sc-status-select');
@@ -6087,7 +6121,6 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     scTargetPill = pill;
     scSelect.value = preselectedId;
     scNotes.value = '';
-    document.querySelector('input[name="sc-scope"]').checked = true;
     scOverlay.style.display = 'flex';
   }
 
@@ -6106,12 +6139,12 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     if (scBulkRows.length > 0) {
       scBulkRows.forEach(row => {
         const pill = row.querySelector('.status-drop');
-        if (pill) renderPill(pill, newId);
+        applyStatusToPill(pill, newId);
       });
       scBulkRows = [];
       deselectAll();
     } else if (scTargetPill) {
-      renderPill(scTargetPill, newId);
+      applyStatusToPill(scTargetPill, newId);
     }
     closeStatusModal();
   });
@@ -6154,7 +6187,6 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       const current = (row.querySelector('.severity-label')?.textContent.trim() || 'High').toLowerCase();
       svSelect.value = SEV_LABELS[current] ? current : 'high';
     }
-    document.querySelector('input[name="sv-scope"]').checked = true;
     svOverlay.style.display = 'flex';
   }
 
@@ -7358,404 +7390,86 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     }
   ];
 
-  const TIMELINE_DATA = [
-    [ // 0 — HTTP response header injection | Feil LLC | /catalog/products
-      { type:'scanner-seen',  date:'28 March 2026',    scan:'#50318', status:'new' },
-      { type:'jira',          date:'25 February 2026', author:'Ric Corbally', fields:[
-          {label:'Project',    value:'SEC'},
-          {label:'Issue type', value:'Bug'},
-          {label:'Priority',   value:'Critical'},
-          {label:'Assignee',   value:'Ric Corbally'}
-        ]},
-      { type:'ai',            date:'24 February 2026',
-        desc:'Burp AI has independently verified this issue is real and exploitable. Header injection confirmed on /catalog/products via X-Forwarded-For manipulation, enabling response splitting.' },
-      { type:'assignees',     date:'23 February 2026', author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Assigned for triage — header injection on /catalog/products needs sanitisation fix before next deployment.' },
-      { type:'scanner-first', date:'21 February 2026', scan:'#50310', status:'new',
-        desc:'HTTP response header injection detected on /catalog/products. User-supplied input is reflected into HTTP response headers without sanitisation, enabling header-splitting attacks.' }
-    ],
-    [ // 1 — XSS | Zenith Corp | /user/profile
-      { type:'scanner-seen',  date:'28 March 2026',  scan:'#50319', status:'present' },
-      { type:'status',        date:'27 March 2026',  author:'Ric Corbally', from:'present', to:'fixed',
-        quote:'Pushed fix to staging — output encoding applied to displayName parameter. Marking for re-test.' },
-      { type:'retest',        date:'25 March 2026',  author:'Chris Watson', from:'present', to:'fixed' },
-      { type:'comment',       date:'22 March 2026',  author:'Ric Corbally',
-        text:'Dev team has applied HTML entity encoding to the displayName field. Re-testing required before we can close this off.' },
-      { type:'tags',          date:'20 March 2026',  author:'Ric Corbally', tags:[{name:'Performance', bg:'#1353B9', color:'#ffffff'}] },
-      { type:'ai',            date:'16 March 2026',
-        desc:'Burp AI has independently verified this issue is real and exploitable. XSS confirmed on /user/profile via displayName parameter — payload executes without any encoding or sanitisation.' },
-      { type:'scanner-first', date:'15 March 2026',  scan:'#50305', status:'new',
-        desc:'Cross-site scripting on /user/profile. The application reflects user input without encoding, allowing script injection via the profile update form.' }
-    ],
-    [ // 2 — Information Disclosure | Nova Solutions | /api/data
-      { type:'scanner-first', date:'10 April 2026',  scan:'#50330', status:'new',
-        desc:'Information disclosure via error on /api/data. Verbose error messages expose internal stack traces, database query details, and file paths that could aid an attacker in targeted exploitation.' }
-    ],
-    [ // 3 — Improper Input Validation | CyberGuard Inc. | /user/profile
-      { type:'scanner-seen',  date:'15 May 2026',  scan:'#50348', status:'present' },
-      { type:'assignees',     date:'07 May 2026',  author:'Chris Wood', names:'Chris Wood',
-        desc:'Assigned to me — input validation failure on the user profile endpoint. Working with the dev team to add server-side validation before the next sprint.' },
-      { type:'scanner-first', date:'05 May 2026',  scan:'#50342', status:'new',
-        desc:'Improper input validation on /user/profile. User-supplied data is not validated against expected formats or ranges, allowing malformed input to reach the application backend.' }
-    ],
-    [ // 4 — SQL Injection | SecureNet | /login
-      { type:'scanner-seen',  date:'10 April 2026', scan:'#50331', status:'present' },
-      { type:'gitlab',        date:'25 March 2026', author:'Ric Corbally', fields:[
-          {label:'Project',   value:'security/backend'},
-          {label:'Milestone', value:'Sprint 22'},
-          {label:'Assignee',  value:'Chris Watson'},
-          {label:'Priority',  value:'Critical'}
-        ]},
-      { type:'comment',       date:'23 March 2026', author:'Ric Corbally',
-        text:'Confirmed time-based blind injection with 5-second delay payload. Database is running as root — blast radius is very high. Needs immediate parameterisation fix.' },
-      { type:'tags',          date:'22 March 2026', author:'Ric Corbally', tags:[{name:'Sprint21', bg:'#000B4F', color:'#ffffff'}] },
-      { type:'ai',            date:'21 March 2026',
-        desc:'Burp AI has independently verified this issue is real and exploitable. Time-based blind SQL injection confirmed on /login — 5-second delay reproducible with SLEEP() payload, database running as root.' },
-      { type:'scanner-first', date:'20 March 2026', scan:'#50308', status:'new',
-        desc:'SQL injection on /login. The username parameter is incorporated into a SQL query without parameterisation, allowing boolean-based and time-based blind injection attacks against the authentication endpoint.' }
-    ],
-    [ // 5 — XSS | DataShield | /comments
-      { type:'scanner-seen',  date:'08 April 2026', scan:'#50333', status:'present' },
-      { type:'retest',        date:'07 April 2026', author:'Chris Watson', from:'present', to:'fixed' },
-      { type:'comment',       date:'03 April 2026', author:'Ric Corbally',
-        text:'Escalated to the DataShield dev team — stored XSS with no server-side sanitisation at all. This affects all users viewing the comments page. Blocking the next release until fixed.' },
-      { type:'ai',            date:'02 April 2026',
-        desc:'Burp AI has independently verified this issue is real and exploitable. Stored XSS confirmed on /comments — injected payload persists and executes in a separate test account session without any user interaction.' },
-      { type:'scanner-first', date:'01 April 2026', scan:'#50328', status:'new',
-        desc:'Stored cross-site scripting on /comments. User-submitted comments are stored and rendered without output encoding, allowing an attacker to execute scripts in the browser of any user who views the affected page.' }
-    ],
-    [ // 6 — Directory Traversal | BlockSec | /files/download
-      { type:'scanner-seen',  date:'01 April 2026',   scan:'#50327', status:'verified' },
-      { type:'jira',          date:'25 January 2026', author:'Ric Corbally', fields:[
-          {label:'Project',    value:'SEC'},
-          {label:'Issue type', value:'Bug'},
-          {label:'Priority',   value:'High'},
-          {label:'Status',     value:'In Progress'}
-        ]},
-      { type:'ai',            date:'22 January 2026',
-        desc:'Burp AI was unable to independently verify this issue. The target endpoint requires a specific authentication context that was not available during testing — manual verification is recommended.' },
-      { type:'assignees',     date:'20 January 2026', author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Assigned for investigation — directory traversal on /files/download. Reviewing file path handling and access controls.' },
-      { type:'scanner-first', date:'16 January 2026', scan:'#50260', status:'new',
-        desc:'Directory traversal on /files/download. Path traversal sequences are not sanitised, allowing access to files outside the intended directory.' }
-    ],
-    [ // 7 — Insecure Deserialization | TechVault | /api/import
-      { type:'scanner-seen',  date:'25 March 2026', scan:'#50320', status:'present' },
-      { type:'comment',       date:'10 March 2026', author:'Chris Wood',
-        text:'Deserialization gadget chain analysis in progress. Initial testing suggests the endpoint deserialises Java objects — need to confirm which libraries are in the classpath before we can assess exploitability.' },
-      { type:'ai',            date:'07 March 2026',
-        desc:'Burp AI investigation was inconclusive. The endpoint requires a valid serialised object with the correct class structure — full exploitation could not be confirmed without deeper application context.' },
-      { type:'tags',          date:'05 March 2026', author:'Ric Corbally', tags:[{name:'Sprint21', bg:'#000B4F', color:'#ffffff'}] },
-      { type:'scanner-first', date:'01 March 2026', scan:'#50302', status:'new',
-        desc:'Insecure deserialisation on /api/import. User-controlled serialised objects are processed without integrity validation, potentially enabling remote code execution.' }
-    ],
-    [ // 8 — Server-Side Template Injection | Apex Digital | /render
-      { type:'scanner-seen',  date:'02 April 2026',  scan:'#50329', status:'present' },
-      { type:'gitlab',        date:'30 March 2026', author:'Chris Wood', fields:[
-          {label:'Project',   value:'security/web'},
-          {label:'Milestone', value:'Sprint 22'},
-          {label:'Assignee',  value:'Chris Wood'},
-          {label:'Priority',  value:'Critical'}
-        ]},
-      { type:'ai',            date:'29 March 2026',
-        desc:'Burp AI has independently verified this issue is real and exploitable. SSTI confirmed on /render — template directives injected via the name parameter achieve arbitrary expression evaluation on the server.' },
-      { type:'assignees',     date:'27 March 2026',  author:'Chris Wood', names:'Chris Wood',
-        desc:'Assigned — SSTI on /render endpoint. Investigating template context to confirm exploitability and assess impact.' },
-      { type:'scanner-first', date:'25 March 2026',  scan:'#50318', status:'new',
-        desc:'Server-side template injection on /render. User input is embedded directly into the template without sanitisation, allowing injection of template directives.' }
-    ],
-    [ // 9 — XXE | SecureNet | /api/xml
-      { type:'scanner-seen',  date:'28 March 2026', scan:'#50322', status:'accepted' },
-      { type:'comment',       date:'16 March 2026', author:'Alun Worrall',
-        text:'Security team has reviewed and accepted this risk for now. The XML endpoint is internal-only behind VPN — external exploitation is not currently possible. Logging for future remediation.' },
-      { type:'status',        date:'15 March 2026', author:'Alun Worrall', from:'present', to:'accepted',
-        quote:'Accepting risk — endpoint is internal-only. Will revisit if the network perimeter changes.' },
-      { type:'ai',            date:'07 March 2026',
-        desc:'Burp AI has independently verified this issue is real and exploitable. XXE confirmed on /api/xml — external entity declarations are processed, enabling local file read via file:// URI.' },
-      { type:'scanner-first', date:'05 March 2026', scan:'#50303', status:'new',
-        desc:'XML external entity injection on /api/xml. The XML parser processes external entity declarations, enabling file disclosure and potential SSRF.' }
-    ],
-    [ // 10 — Remote Code Execution | DataShield | /upload/process
-      { type:'scanner-seen',  date:'15 February 2026', scan:'#50280', status:'false-positive' },
-      { type:'assignees',     date:'12 January 2026',  author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Assigned — possible RCE on /upload/process. Need to verify whether uploaded files are actually executed or just stored.' },
-      { type:'scanner-first', date:'09 January 2026',  scan:'#50255', status:'new',
-        desc:'Potential remote code execution on /upload/process. Uploaded files with executable extensions may be processed by the server runtime.' }
-    ],
-    [ // 11 — CSRF Token Bypass | CloudFirst | /settings/account
-      { type:'scanner-seen',  date:'01 April 2026',  scan:'#50326', status:'present' },
-      { type:'assignees',     date:'12 March 2026',  author:'Ric Corbally', names:'Alun Worrall',
-        desc:'Assigned to Alun — CSRF token not validated on /settings/account. Needs a fix in the form submission handler.' },
-      { type:'scanner-first', date:'10 March 2026',  scan:'#50307', status:'new',
-        desc:'CSRF token bypass on /settings/account. State-changing requests are accepted without verifying the anti-CSRF token, allowing cross-origin requests to modify account settings.' }
-    ],
-    [ // 12 — Open Redirect | Zenith Corp | /redirect
-      { type:'scanner-seen',  date:'01 April 2026',  scan:'#50325', status:'new' },
-      { type:'assignees',     date:'28 March 2026',  author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Assigned for triage — open redirect on /redirect. Verifying whether the destination parameter can be used in a phishing scenario.' },
-      { type:'scanner-first', date:'26 March 2026',  scan:'#50317', status:'new',
-        desc:'Open redirect on /redirect. The destination URL parameter is not validated, allowing an attacker to redirect users to arbitrary external sites.' }
-    ],
-    [ // 13 — Broken Access Control | DataShield | /admin/users
-      { type:'scanner-seen',  date:'25 March 2026', scan:'#50315', status:'verified' },
-      { type:'scanner-first', date:'10 March 2026', scan:'#50306', status:'new',
-        desc:'Broken access control on /admin/users. Non-administrator users can enumerate and access account details for all users by modifying the user ID parameter.' }
-    ],
-    [ // 14 — Path Traversal via Upload | Feil LLC | /uploads/view
-      { type:'scanner-seen',  date:'20 March 2026',  scan:'#50310', status:'present' },
-      { type:'assignees',     date:'18 February 2026', author:'Ric Corbally', names:'Chris Wood',
-        desc:'Assigned to Chris — path traversal via filename on /uploads/view. Checking whether file path normalisation is applied before resolving the request.' },
-      { type:'scanner-first', date:'15 February 2026', scan:'#50285', status:'new',
-        desc:'Path traversal via upload on /uploads/view. The filename parameter accepts traversal sequences that resolve outside the intended upload directory.' }
-    ],
-    [ // 15 — Insecure Direct Object Reference | Nova Solutions | /orders/view
-      { type:'scanner-seen',  date:'02 April 2026',  scan:'#50330', status:'new' },
-      { type:'assignees',     date:'22 March 2026',  author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Assigned for triage — IDOR on /orders/view. Any authenticated user can access any order by incrementing the order ID.' },
-      { type:'scanner-first', date:'20 March 2026',  scan:'#50309', status:'new',
-        desc:'Insecure direct object reference on /orders/view. Order records are accessible to any authenticated user by manipulating the order ID parameter without ownership checks.' }
-    ],
-    [ // 16 — CORS Misconfiguration | CyberGuard Inc. | /api/cors
-      { type:'scanner-seen',  date:'10 March 2026',  scan:'#50304', status:'scanning' },
-      { type:'scanner-first', date:'27 January 2026', scan:'#50265', status:'new',
-        desc:'CORS misconfiguration on /api/cors. The endpoint reflects arbitrary origins with Access-Control-Allow-Credentials: true, allowing any site to make authenticated cross-origin requests and read responses.' }
-    ],
-    [ // 17 — Weak Password Policy | CloudFirst | /auth/register
-      { type:'scanner-first', date:'01 April 2026', scan:'#50328', status:'new',
-        desc:'Weak password policy on /auth/register. Passwords as short as four characters are accepted with no complexity requirements, significantly increasing the risk of brute-force and credential-stuffing attacks.' }
-    ],
-    [ // 18 — Missing Security Headers | TechVault | /api/health
-      { type:'scanner-seen',  date:'01 April 2026',  scan:'#50327', status:'new' },
-      { type:'scanner-first', date:'30 March 2026',  scan:'#50324', status:'new',
-        desc:'Missing security headers on /api/health. Responses lack Content-Security-Policy, X-Frame-Options, X-Content-Type-Options, and Referrer-Policy headers.' }
-    ],
-    [ // 19 — Clickjacking | BlockSec | /dashboard
-      { type:'scanner-seen',  date:'01 April 2026',  scan:'#50326', status:'new' },
-      { type:'scanner-first', date:'05 March 2026',  scan:'#50301', status:'new',
-        desc:'Clickjacking vulnerability on /dashboard. The page can be embedded in a cross-origin iframe as no X-Frame-Options or frame-ancestors CSP directive is set.' }
-    ],
-    [ // 20 — Unvalidated Redirects | Apex Digital | /login/callback
-      { type:'scanner-seen',  date:'10 January 2026', scan:'#50258', status:'fixed' },
-      { type:'scanner-first', date:'01 January 2026', scan:'#50250', status:'new',
-        desc:'Unvalidated redirects on /login/callback. The redirect_to parameter is not validated against an allowlist, allowing post-authentication redirection to attacker-controlled sites.' }
-    ],
-    [ // 21 — Stored XSS via Comment Field | Zenith Corp | /forum/post
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50371', status:'present' },
-      { type:'gitlab',        date:'01 April 2026', author:'Ric Corbally', fields:[
-          {label:'Project',   value:'security/frontend'},
-          {label:'Milestone', value:'Sprint 22'},
-          {label:'Assignee',  value:'Ric Corbally'}
-        ]},
-      { type:'tags',          date:'28 March 2026',  author:'Ric Corbally', tags:[{name:'Europe', bg:'#2E8802', color:'#ffffff'}] },
-      { type:'scanner-first', date:'22 March 2026',  scan:'#50340', status:'new',
-        desc:'Stored XSS identified in comment submission at /forum/post. User input is persisted and rendered without output encoding, allowing persistent script injection affecting all viewers.' }
-    ],
-    [ // 22 — Command Injection | SecureNet | /tools/ping
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50372', status:'present' },
-      { type:'jira',          date:'03 April 2026', author:'Ric Corbally', fields:[
-          {label:'Project',    value:'SEC'},
-          {label:'Issue type', value:'Bug'},
-          {label:'Priority',   value:'Critical'},
-          {label:'Status',     value:'In Progress'}
-        ]},
-      { type:'comment',       date:'02 April 2026', author:'Ric Corbally',
-        text:'Confirmed OS command injection — pipe character allows full shell access as the web server user. Escalating to P0. DevOps team alerted. Endpoint should be taken offline until patched.' },
-      { type:'assignees',     date:'01 April 2026',  author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Critical — assigned for immediate triage. Command injection on network tools endpoint requires urgent remediation.' },
-      { type:'scanner-first', date:'25 March 2026',  scan:'#50345', status:'new',
-        desc:'Command injection found on /tools/ping. User-supplied host parameter passed unsanitised to OS shell. Shell metacharacters allow arbitrary command execution as the web server process.' }
-    ],
-    [ // 23 — IDOR | BlockSec | /api/accounts/{id}
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50365', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50365', status:'new',
-        desc:'Insecure direct object reference on /api/accounts/{id}. No server-side ownership check — any authenticated user can retrieve account data by substituting a different numeric identifier.' }
-    ],
-    [ // 24 — Verbose Error Messages | TechVault | /api/query
-      { type:'scanner-seen',  date:'03 April 2026',  scan:'#50360', status:'present' },
-      { type:'scanner-first', date:'10 March 2026',  scan:'#50310', status:'new',
-        desc:'Verbose error messages returned on /api/query. Stack traces expose internal file paths, database schema, and framework version. Detailed diagnostics should be suppressed from client-facing responses.' }
-    ],
-    [ // 25 — Authentication Bypass | DataShield | /admin/dashboard
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50373', status:'new' },
-      { type:'assignees',     date:'03 April 2026',  author:'Chris Watson', names:'Chris Watson',
-        desc:'Authentication bypass on admin dashboard — assigned for urgent investigation before next release.' },
-      { type:'scanner-first', date:'03 April 2026',  scan:'#50362', status:'new',
-        desc:'Authentication bypass detected on /admin/dashboard. A code path omits credential verification under specific conditions, allowing unauthenticated access to administrative functionality.' }
-    ],
-    [ // 26 — SSRF | Nova Solutions | /fetch/preview
-      { type:'scanner-seen',  date:'02 April 2026',  scan:'#50355', status:'accepted' },
-      { type:'status-change', date:'20 March 2026',  author:'Ric Corbally', from:'present', to:'accepted',
-        quote:'Risk accepted — internal network is air-gapped from production. SSRF cannot reach sensitive services in current architecture. Will revisit if network topology changes.' },
-      { type:'scanner-first', date:'14 March 2026',  scan:'#50315', status:'new',
-        desc:'SSRF on /fetch/preview. The url parameter is fetched server-side without destination validation, allowing requests to internal RFC 1918 addresses and cloud metadata endpoints.' }
-    ],
-    [ // 27 — Email Address Disclosure | CloudFirst | /api/users/search
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50366', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50366', status:'new',
-        desc:'Email addresses of registered users exposed in unauthenticated /api/users/search responses. PII should not be returned without appropriate authorisation checks.' }
-    ],
-    [ // 28 — Path Traversal | CyberGuard Inc. | /download/file
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50374', status:'present' },
-      { type:'tags',          date:'29 March 2026',  author:'Ric Corbally', tags:[{name:'Priority', bg:'#1353B9', color:'#ffffff'}] },
-      { type:'assignees',     date:'29 March 2026',  author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Path traversal on file download endpoint — priority escalated. Can read arbitrary server files including application config.' },
-      { type:'scanner-first', date:'20 March 2026',  scan:'#50330', status:'new',
-        desc:'Path traversal via filename parameter on /download/file. Directory traversal sequences escape the intended download directory, exposing configuration files and application source.' }
-    ],
-    [ // 29 — Broken Access Control | Feil LLC | /api/admin/users
-      { type:'scanner-seen',  date:'03 April 2026',  scan:'#50361', status:'present' },
-      { type:'scanner-first', date:'12 March 2026',  scan:'#50312', status:'new',
-        desc:'Broken access control on /api/admin/users. Role checks rely on a client-supplied header that can be manipulated, granting ordinary users access to administrative endpoints.' }
-    ],
-    [ // 30 — Cookie Without Secure Flag | Apex Digital | /auth/session
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50367', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50367', status:'new',
-        desc:'Session cookie set without Secure attribute on /auth/session. Cookie will be transmitted over unencrypted HTTP connections, exposing session tokens to network interception.' }
-    ],
-    [ // 31 — User Enumeration | SecureNet | /auth/login
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50368', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50368', status:'new',
-        desc:'User enumeration via distinct login error messages on /auth/login. "Invalid username" vs "Invalid password" responses allow systematic discovery of registered accounts.' }
-    ],
-    [ // 32 — Prototype Pollution | Zenith Corp | /api/config/merge
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50375', status:'scanning' },
-      { type:'scanner-first', date:'30 March 2026',  scan:'#50352', status:'new',
-        desc:'Prototype pollution in JSON merge endpoint at /api/config/merge. Submitted __proto__ properties are merged into the Object prototype, potentially corrupting application state or enabling code execution in Node.js.' }
-    ],
-    [ // 33 — JWT Algorithm Confusion | BlockSec | /api/auth/verify
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50376', status:'present' },
-      { type:'tags',          date:'02 April 2026',  author:'Chris Watson', tags:[{name:'Performance', bg:'#1353B9', color:'#ffffff'}] },
-      { type:'assignees',     date:'02 April 2026',  author:'Chris Watson', names:'Chris Watson',
-        desc:'JWT algorithm confusion — reviewing impact across all token-protected endpoints.' },
-      { type:'scanner-first', date:'28 March 2026',  scan:'#50350', status:'new',
-        desc:'JWT algorithm confusion on /api/auth/verify. Server accepts HS256 tokens signed with the RS256 public key, allowing arbitrary JWT forgery and complete authentication bypass.' }
-    ],
-    [ // 34 — Directory Listing | DataShield | /static/assets/
-      { type:'scanner-seen',  date:'03 April 2026',  scan:'#50363', status:'present' },
-      { type:'scanner-first', date:'11 March 2026',  scan:'#50311', status:'new',
-        desc:'Directory listing enabled on /static/assets/ and /backups/. Web server returns file listings for directories without an index file, exposing backup archives and internal scripts.' }
-    ],
-    [ // 35 — File Upload Without Validation | Nova Solutions | /upload/document
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50377', status:'new' },
-      { type:'scanner-first', date:'05 April 2026',  scan:'#50377', status:'new',
-        desc:'Unrestricted file upload on /upload/document. Content-Type validation is client-controlled and bypassable. Attacker can upload web shells or HTML files for stored XSS.' }
-    ],
-    [ // 36 — Internal IP Disclosure | TechVault | /api/health
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50369', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50369', status:'new',
-        desc:'Internal RFC 1918 IP addresses disclosed in X-Forwarded-For and error response bodies on /api/health. Reveals internal network topology to external clients.' }
-    ],
-    [ // 37 — WebSocket CSWSH | CloudFirst | /ws/notifications
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50378', status:'present' },
-      { type:'tags',          date:'31 March 2026',  author:'Ric Corbally', tags:[{name:'Marketing', bg:'#FF7648', color:'#ffffff'}] },
-      { type:'scanner-first', date:'26 March 2026',  scan:'#50346', status:'new',
-        desc:'Cross-site WebSocket hijacking on /ws/notifications. No Origin header validation or CSRF token on handshake. Malicious sites can establish WebSocket connections as authenticated users.' }
-    ],
-    [ // 38 — Race Condition in Payment | Feil LLC | /api/payment/process
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50379', status:'present' },
-      { type:'assignees',     date:'02 April 2026',  author:'Ric Corbally', names:'Ric Corbally',
-        desc:'Race condition in payment flow — concurrent request testing confirmed double-spend possible. Assigned for urgent fix.' },
-      { type:'scanner-first', date:'27 March 2026',  scan:'#50347', status:'new',
-        desc:'Race condition on /api/payment/process. Non-atomic balance check and deduction allows concurrent requests to spend the same funds multiple times.' }
-    ],
-    [ // 39 — Sensitive Data in URL | CyberGuard Inc. | /auth/redirect
-      { type:'scanner-seen',  date:'03 April 2026',  scan:'#50364', status:'fixed' },
-      { type:'scanner-first', date:'09 March 2026',  scan:'#50309', status:'new',
-        desc:'Session tokens transmitted as URL query parameters on /auth/redirect. Tokens exposed in server logs, browser history, and Referer headers on subsequent navigation.' }
-    ],
-    [ // 40 — Mass Assignment | Apex Digital | /api/users/update
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50380', status:'new' },
-      { type:'scanner-first', date:'05 April 2026',  scan:'#50380', status:'new',
-        desc:'Mass assignment on /api/users/update. All submitted fields are bound to the user model without filtering. Attacker can set role=admin or other privileged attributes not present in the form.' }
-    ],
-    [ // 41 — Server Version Disclosure | SecureNet | (global)
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50370', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50370', status:'new',
-        desc:'Web server version disclosed in Server and X-Powered-By response headers on all responses. Version strings allow targeted lookup of known CVEs for the identified software.' }
-    ],
-    [ // 42 — Subdomain Takeover | Zenith Corp | staging.zenithcorp.io
-      { type:'scanner-seen',  date:'02 April 2026',  scan:'#50356', status:'accepted' },
-      { type:'status-change', date:'25 March 2026',  author:'Chris Watson', from:'present', to:'accepted',
-        quote:'Accepted — subdomain pointed at decommissioned Heroku app. DNS record removal scheduled for next maintenance window. Risk accepted until DNS TTL expires.' },
-      { type:'scanner-first', date:'18 March 2026',  scan:'#50325', status:'new',
-        desc:'Subdomain takeover risk on staging.zenithcorp.io. CNAME points to an unclaimed Heroku endpoint. Attacker can register the target app name and serve content under the subdomain.' }
-    ],
-    [ // 43 — Insecure Cookie Attributes | BlockSec | /auth/session
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50381', status:'present' },
-      { type:'scanner-first', date:'13 March 2026',  scan:'#50313', status:'new',
-        desc:'Authentication cookies missing HttpOnly and SameSite attributes on /auth/session. HttpOnly absence exposes cookies to XSS extraction; missing SameSite enables CSRF attacks.' }
-    ],
-    [ // 44 — GraphQL Introspection | DataShield | /graphql
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50382', status:'present' },
-      { type:'assignees',     date:'03 April 2026',  author:'Chris Watson', names:'Chris Watson',
-        desc:'GraphQL introspection enabled in production — reviewing all exposed types and mutations for undocumented sensitive operations.' },
-      { type:'scanner-first', date:'24 March 2026',  scan:'#50344', status:'new',
-        desc:'GraphQL introspection enabled on /graphql in production. Full schema including all types, mutations, and internal fields accessible to any client without authentication.' }
-    ],
-    [ // 45 — HTTP Parameter Pollution | Nova Solutions | /api/transfer
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50383', status:'new' },
-      { type:'scanner-first', date:'05 April 2026',  scan:'#50383', status:'new',
-        desc:'HTTP parameter pollution on /api/transfer. Duplicate parameter names handled inconsistently between validation layer and business logic, allowing WAF bypass and transfer amount manipulation.' }
-    ],
-    [ // 46 — HTTP TRACE | TechVault | (global)
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50384', status:'new' },
-      { type:'tags',          date:'04 April 2026',  author:'Ric Corbally', tags:[{name:'USA', bg:'#8BCF81', color:'#000023'}] },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50384', status:'new',
-        desc:'HTTP TRACE method enabled on web server. TRACE echoes request headers in response body, enabling cross-site tracing (XST) to extract HttpOnly cookies in some browser configurations.' }
-    ],
-    [ // 47 — Autocomplete on Sensitive Fields | CloudFirst | /auth/login
-      { type:'scanner-seen',  date:'03 April 2026',  scan:'#50357', status:'new' },
-      { type:'scanner-first', date:'03 April 2026',  scan:'#50357', status:'new',
-        desc:'Browser autocomplete not disabled on password and account number fields at /auth/login and /account/payment. Sensitive values may be stored and auto-populated on shared devices.' }
-    ],
-    [ // 48 — BOLA | Feil LLC | /api/orders/{id}
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50385', status:'present' },
-      { type:'tags',          date:'03 April 2026',  author:'Ric Corbally', tags:[{name:'Priority', bg:'#1353B9', color:'#ffffff'}] },
-      { type:'assignees',     date:'03 April 2026',  author:'Ric Corbally', names:'Ric Corbally',
-        desc:'BOLA on orders API — any authenticated user can access any order record. Priority escalated for immediate fix.' },
-      { type:'scanner-first', date:'29 March 2026',  scan:'#50351', status:'new',
-        desc:'Broken object level authorization on /api/orders/{id}. Server returns order data for any ID without verifying the requesting user owns the referenced order.' }
-    ],
-    [ // 49 — XXE via File Upload | CyberGuard Inc. | /import/xml
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50386', status:'present' },
-      { type:'scanner-first', date:'21 March 2026',  scan:'#50335', status:'new',
-        desc:'XXE via XML file upload on /import/xml. External entity resolution enabled in XML parser. Crafted DOCX or SVG files can read local files or trigger SSRF to internal services.' }
-    ],
-    [ // 50 — Referrer Leakage | Apex Digital | (global)
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50387', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50387', status:'new',
-        desc:'No Referrer-Policy header set. Full URLs including query parameters with tokens and user identifiers are transmitted to third-party analytics and CDN providers via the Referer header.' }
-    ],
-    [ // 51 — Insufficient Logging | SecureNet | (global)
-      { type:'scanner-seen',  date:'02 April 2026',  scan:'#50358', status:'accepted' },
-      { type:'status-change', date:'22 March 2026',  author:'Chris Watson', from:'present', to:'accepted',
-        quote:'Accepted with compensating control — SIEM correlation rules in place for anomalous access patterns. Full security event logging will be implemented in Q3 roadmap item.' },
-      { type:'scanner-first', date:'16 March 2026',  scan:'#50320', status:'new',
-        desc:'Insufficient logging of security events. Failed authentication, access control violations, and privilege escalation attempts are not recorded, hindering incident detection and response.' }
-    ],
-    [ // 52 — API Key in JS | Zenith Corp | /static/app.bundle.js
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50388', status:'present' },
-      { type:'scanner-first', date:'23 March 2026',  scan:'#50342', status:'new',
-        desc:'Secret API key hardcoded in client-side JavaScript bundle at /static/app.bundle.js. Key has broad permissions and is directly extractable by any user who inspects the page source.' }
-    ],
-    [ // 53 — security.txt Missing | BlockSec | /.well-known/security.txt
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50389', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50389', status:'new',
-        desc:'No security.txt file present at /.well-known/security.txt. Security researchers have no standardised disclosure channel, increasing risk of public vulnerability disclosure without prior notification.' }
-    ],
-    [ // 54 — Unsafe Deserialization | DataShield | /api/import/data
-      { type:'scanner-seen',  date:'05 April 2026',  scan:'#50390', status:'scanning' },
-      { type:'assignees',     date:'04 April 2026',  author:'Chris Watson', names:'Chris Watson',
-        desc:'Unsafe deserialization under active investigation — scanning additional import endpoints for the same pattern.' },
-      { type:'scanner-first', date:'31 March 2026',  scan:'#50354', status:'new',
-        desc:'Unsafe deserialization on /api/import/data. Native deserialisation with no type restrictions allows crafted payloads to execute arbitrary code during object reconstruction.' }
-    ],
-    [ // 55 — X-Content-Type-Options Missing | Nova Solutions | (global)
-      { type:'scanner-seen',  date:'04 April 2026',  scan:'#50391', status:'new' },
-      { type:'scanner-first', date:'04 April 2026',  scan:'#50391', status:'new',
-        desc:'X-Content-Type-Options: nosniff header absent on all responses. Browsers may MIME-sniff uploaded files and render them as HTML or JavaScript, enabling XSS via file upload functionality.' }
-    ]
+  // Master timeline — comprehensive reference of every event type and status
+  // applied to every issue so developers see all examples wherever they click.
+  // Includes a collapsed group of successive same-status scanner observations.
+  const MASTER_TIMELINE = [
+    // Successive same-status scanner observations — collapse into a group
+    { type:'scanner-seen',  date:'07 May 2026',     scan:'#50420', status:'present' },
+    { type:'scanner-seen',  date:'06 May 2026',     scan:'#50419', status:'present' },
+    { type:'scanner-seen',  date:'05 May 2026',     scan:'#50418', status:'present' },
+
+    // Status change: false-positive → present
+    { type:'status',        date:'03 May 2026',     author:'Ric Corbally', from:'false-positive', to:'present',
+      quote:'Re-classified after additional findings on retest. Issue is real after all.' },
+
+    // Status change: verified → false-positive
+    { type:'status',        date:'30 April 2026',   author:'Chris Watson', from:'verified', to:'false-positive',
+      quote:'Marked as false positive after manual verification — payload reflects only in error response, no exploitation path.' },
+
+    // Status change: accepted → verified
+    { type:'status',        date:'25 April 2026',   author:'Ric Corbally', from:'accepted', to:'verified',
+      quote:'Risk re-evaluated — exploit chain reproducible end-to-end. Escalating to verified.' },
+
+    // Status change: fixed-confirmed → accepted
+    { type:'status',        date:'20 April 2026',   author:'Alun Worrall', from:'fixed-confirmed', to:'accepted',
+      quote:'Accepting risk while a permanent fix is scheduled for next quarter.' },
+
+    // Retest: regressed → fixed-confirmed
+    { type:'retest',        date:'18 April 2026',   author:'Chris Watson', from:'regressed', to:'fixed-confirmed' },
+
+    // Single scanner-seen with a different status
+    { type:'scanner-seen',  date:'16 April 2026',   scan:'#50405', status:'scanning' },
+
+    // Scanner-seen 'regressed'
+    { type:'scanner-seen',  date:'14 April 2026',   scan:'#50402', status:'regressed' },
+
+    // Status change: fixed → regressed
+    { type:'status',        date:'13 April 2026',   author:'Ric Corbally', from:'fixed', to:'regressed',
+      quote:'Issue reappeared in latest deployment — fix was reverted by an upstream merge.' },
+
+    // Status change: present → fixed (unconfirmed)
+    { type:'status',        date:'08 April 2026',   author:'Ric Corbally', from:'present', to:'fixed',
+      quote:'Patch deployed to staging — output encoding applied. Pending re-test to confirm.' },
+
+    // Comment
+    { type:'comment',       date:'05 April 2026',   author:'Chris Wood',
+      text:'Dev team has applied the recommended sanitisation. Ready for re-test once next scan runs.' },
+
+    // Assignees added
+    { type:'assignees',     date:'02 April 2026',   author:'Ric Corbally', names:'Ric Corbally',
+      desc:'Assigned for triage and remediation coordination with the dev team.' },
+
+    // GitLab integration
+    { type:'gitlab',        date:'01 April 2026',   author:'Ric Corbally', fields:[
+        {label:'Project',   value:'security/backend'},
+        {label:'Milestone', value:'Sprint 22'},
+        {label:'Assignee',  value:'Chris Watson'},
+        {label:'Priority',  value:'Critical'}
+      ]},
+
+    // JIRA integration
+    { type:'jira',          date:'31 March 2026',   author:'Ric Corbally', fields:[
+        {label:'Project',    value:'SEC'},
+        {label:'Issue type', value:'Bug'},
+        {label:'Priority',   value:'Critical'},
+        {label:'Assignee',   value:'Ric Corbally'}
+      ]},
+
+    // AI investigation
+    { type:'ai',            date:'30 March 2026',
+      desc:'Burp AI has independently verified this issue is real and exploitable. Payload executes in the target context without user interaction.' },
+
+    // First detection
+    { type:'scanner-first', date:'28 March 2026',   scan:'#50380', status:'new',
+      desc:'Issue first detected on this endpoint. The vulnerable parameter accepts unsanitised input that is reflected back to the user.' }
   ];
+
+  // Use a deep copy per row so mutations (adding a comment, retest) don't leak across rows.
+  const TIMELINE_DATA = Array.from(
+    { length: 56 },
+    () => JSON.parse(JSON.stringify(MASTER_TIMELINE))
+  );
 
   const TL_SCANNER_BADGE = `<div class="tl-scanner-badge"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9.55859 0.124022C9.80173-0.0663387 10.1511-0.0341889 10.3555 0.197265C11.952 2.00852 12.833 4.34041 12.833 6.75488C12.833 9.16941 11.9521 11.5012 10.3555 13.3125C10.1511 13.5441 9.8018 13.5763 9.55859 13.3857L1.68164 7.21387C1.54071 7.10329 1.45801 6.93403 1.45801 6.75488C1.45805 6.57573 1.54067 6.40644 1.68164 6.2959L9.55859 0.124022ZM2.9873 6.75488L9.83105 12.1172C11.0177 10.5871 11.667 8.70151 11.667 6.75488C11.667 4.80827 11.0177 2.92261 9.83105 1.39258L2.9873 6.75488ZM8.61621 5.26562C8.77335 5.2286 8.93885 5.25821 9.07324 5.34766L10.8232 6.51465C11.0912 6.6933 11.1638 7.05521 10.9854 7.32324C10.8067 7.59123 10.4448 7.66387 10.1768 7.48535L8.94629 6.66504L8.08984 8.16406C7.93624 8.43287 7.59918 8.53494 7.32227 8.39648L5.57227 7.52148C5.28434 7.37734 5.16757 7.0273 5.31152 6.73926C5.45556 6.45119 5.80565 6.33464 6.09375 6.47851L7.35059 7.10644L8.24316 5.54394C8.32338 5.40357 8.45886 5.30277 8.61621 5.26562Z" fill="white"/></svg> Scanner</div>`;
   const TL_ARROW = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M3 8h10M9 4l4 4-4 4" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -7873,6 +7587,30 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         <div class="tl-content"><span class="tl-title">Added assignees: ${ev.names}</span></div>
         ${ev.desc ? `<p class="tl-desc">${ev.desc}</p>` : ''}
       </div>`;
+    } else if (ev.type === 'scanner-seen-group') {
+      wrap.className = 'tl-card-wrap';
+      wrap.dataset.tlType = 'scanner-seen';
+      wrap.dataset.count = ev.count;
+      const rows = ev.observations.map(o =>
+        `<div class="tl-group-row"><span class="tl-group-row-date">${o.date}</span><a class="tl-group-row-scan" href="burp-dast-scan-detail.html">${o.scan}</a></div>`
+      ).join('');
+      wrap.innerHTML = `<div class="tl-card tl-card-scanner tl-card-scanner-group">
+        <div class="tl-card-header">
+          <div class="tl-date-col"><span class="tl-date">${ev.date}</span></div>
+          ${TL_SCANNER_BADGE}
+        </div>
+        <div class="tl-content">${tlStatusPill(ev.status)}<span class="tl-title">Observed in ${ev.count} scans</span></div>
+        <div class="tl-group-meta">
+          <span>Most recent: <strong>${ev.latestScan}</strong></span>
+          <span>First in run: <strong>${ev.earliestDate}</strong></span>
+        </div>
+        <button class="tl-group-toggle" type="button">
+          <span class="tl-group-toggle-label">Show all ${ev.count} scans</span>
+          <svg class="tl-group-toggle-chev" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="tl-group-list">${rows}</div>
+      </div>`;
+
     } else if (ev.type === 'comment') {
       wrap.className = 'tl-card';
       wrap.innerHTML = `
@@ -7927,8 +7665,61 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     if (bar) bar.style.display = types.size <= 1 ? 'none' : '';
   }
 
+  function groupScannerObservations(events) {
+    const result = [];
+    let i = 0;
+    while (i < events.length) {
+      const ev = events[i];
+      if (ev.type === 'scanner-seen') {
+        let j = i + 1;
+        while (j < events.length && events[j].type === 'scanner-seen' && events[j].status === ev.status) {
+          j++;
+        }
+        const runLength = j - i;
+        if (runLength >= 2) {
+          const observations = events.slice(i, j);
+          result.push({
+            type: 'scanner-seen-group',
+            status: ev.status,
+            observations,
+            count: runLength,
+            date: observations[0].date,
+            latestScan: observations[0].scan,
+            earliestDate: observations[runLength - 1].date,
+            earliestScan: observations[runLength - 1].scan
+          });
+          i = j;
+          continue;
+        }
+      }
+      result.push(ev);
+      i++;
+    }
+    return result;
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var tlCardsEl = document.getElementById('tlCards');
+    if (!tlCardsEl) return;
+    tlCardsEl.addEventListener('click', function(e) {
+      var toggle = e.target.closest('.tl-group-toggle');
+      if (!toggle) return;
+      var card = toggle.closest('.tl-card-scanner-group');
+      if (!card) return;
+      var wrap = card.parentElement;
+      var count = wrap && wrap.dataset.count ? wrap.dataset.count : '';
+      var expanded = card.classList.toggle('is-expanded');
+      var label = toggle.querySelector('.tl-group-toggle-label');
+      if (label) label.textContent = expanded ? 'Hide all ' + count + ' scans' : 'Show all ' + count + ' scans';
+      if (typeof positionTimelineDots === 'function') {
+        requestAnimationFrame(positionTimelineDots);
+      }
+    });
+  });
+
   function renderTimeline(rowIndex) {
-    const events   = TIMELINE_DATA[rowIndex];
+    const raw = TIMELINE_DATA[rowIndex];
+    const events  = raw ? groupScannerObservations(raw) : null;
     const tlCards  = document.getElementById('tlCards');
     const tlDotCol = document.getElementById('tlDotCol');
     if (!tlCards || !tlDotCol || !events) return;
