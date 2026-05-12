@@ -650,6 +650,61 @@
     }
     .btn-quat:hover { color: #FF6633; }
 
+    /* Re-test failures banner — DAST DS "Information bar / Error" variant.
+       Always-on between filter bar and table; auto-hides when no rows have
+       unresolved re-test failures. Matches Figma node 11059:397 exactly. */
+    .retest-banner {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      min-height: 60px;
+      padding: 10px 20px;
+      margin: 0 0 12px;
+      background: #F32A4C;            /* Backgrounds/Information/Error */
+      border-radius: 8px;
+      font-family: var(--font);
+      color: #FFFFFF;                  /* Text/White */
+    }
+    .retest-banner.visible { display: flex; }
+    .retest-banner-icon { display: flex; flex-shrink: 0; color: #FFFFFF; }
+    .retest-banner-text {
+      flex: 1; min-width: 0;
+      font-size: 14px;
+      font-weight: 500;                /* DS Body/Bold */
+      line-height: 1.4;
+      letter-spacing: 0.5px;
+      color: #FFFFFF;
+    }
+    /* No special weight/colour for the count — Figma uses uniform body text */
+    .retest-banner-text .rb-count { font-weight: 500; color: #FFFFFF; }
+    .retest-banner-action {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px;
+      min-width: 200px; height: 40px; padding: 0 32px;
+      background: transparent;
+      border: 1.5px solid #FFFFFF;
+      border-radius: 999px;            /* pill */
+      cursor: pointer;
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 500;                /* DS Button/Regular/Bold */
+      line-height: 1.2;
+      letter-spacing: 1px;
+      color: #FFFFFF;
+      flex-shrink: 0;
+      transition: background-color 120ms ease;
+    }
+    .retest-banner-action:hover { background: rgba(255,255,255,0.12); }
+    .retest-banner-action:active { background: rgba(255,255,255,0.18); }
+    .retest-banner-close {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px;
+      background: none; border: none; padding: 0;
+      cursor: pointer; color: #FFFFFF; flex-shrink: 0;
+      margin-left: 8px;
+    }
+    .retest-banner-close:hover { opacity: 0.7; }
+
     /* Filter bar row (chips + search) */
     .filter-bar {
       display: flex;
@@ -1442,6 +1497,37 @@
     .s-fixed     { color: #0094FF; }
     .s-accepted  { color: #333332; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Row-level "re-test failed" indicator — DS red alert-triangle inside
+       the status pill (Figma 11059:1719). Hovering the icon shows a DS
+       popover (Figma 11059:2301). */
+    .pill-retest-fail-icon {
+      display: inline-flex; align-items: center; line-height: 0;
+    }
+
+    /* DS Popover (Figma 11059:2301) — shared, body-level element */
+    .retest-fail-popover {
+      position: fixed; z-index: 9999; pointer-events: none;
+      display: inline-flex; flex-direction: column; align-items: flex-start;
+      filter: drop-shadow(0 0 10px rgba(0,0,35,0.10));
+      opacity: 0; transition: opacity 0.12s ease;
+    }
+    .retest-fail-popover.is-visible { opacity: 1; }
+    .retest-fail-popover-card {
+      background: #FFFFFF; border-radius: 8px; padding: 20px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .retest-fail-popover-title {
+      font-family: var(--font); font-size: 16px; font-weight: 500;
+      color: #000023; line-height: 1.4; letter-spacing: 0.16px;
+      width: 300px;
+    }
+    .retest-fail-popover-body {
+      font-family: var(--font); font-size: 14px; font-weight: 400;
+      color: #333332; line-height: 1.4; letter-spacing: 0.07px;
+      width: 300px; margin: 0;
+    }
+    .retest-fail-popover-arrow { width: 34px; height: 16px; flex-shrink: 0; line-height: 0; }
 
     /* Status dropdown menu */
     .status-menu {
@@ -2317,15 +2403,71 @@
     .sp-qbtn.sp-btn-scanning { color: #CBD0D1; cursor: default; pointer-events: none; }
     .sp-field-group { display: flex; flex-direction: column; gap: 5px; }
     .sp-label { font-family: var(--font); font-size: 12px; font-weight: 400; color: #333332; line-height: 1.2; letter-spacing: 0.12px; }
-    .sp-retest-bar { display: none; border-radius: 8px; padding: 10px 20px; gap: 20px; align-items: center; }
+    .sp-retest-bar { display: none; border-radius: 8px; padding: 10px 20px; gap: 20px; align-items: flex-start; }
     .sp-retest-bar.visible { display: flex; }
-    .sp-retest-bar.bar-fixed { background: #D0EBFF; }
-    .sp-retest-bar.bar-regressed { background: #FFD9CC; }
-    .sp-retest-bar.bar-present { background: #F7F9FD; }
-    .sp-retest-bar-content { flex: 1; display: flex; align-items: center; gap: 15px; min-width: 0; }
+    .sp-retest-bar.bar-fixed { background: #D0EBFF; align-items: center; }
+    .sp-retest-bar.bar-regressed { background: #FFD9CC; align-items: center; }
+    .sp-retest-bar.bar-present { background: #F7F9FD; align-items: center; }
+
+    /* Error variant — DAST DS "Info bar — Stacked / Error" (Figma 11059:445).
+       Solid red bg, white icon/text/close, white-outlined pill action. */
+    .sp-retest-bar.bar-error {
+      background: #F32A4C;             /* Backgrounds/Information/Error */
+      align-items: flex-start;
+      padding: 15px 20px;
+      gap: 20px;
+    }
+    .sp-retest-bar-content { flex: 1; display: flex; align-items: flex-start; gap: 15px; min-width: 0; }
+    .sp-retest-bar.bar-fixed .sp-retest-bar-content,
+    .sp-retest-bar.bar-regressed .sp-retest-bar-content,
+    .sp-retest-bar.bar-present .sp-retest-bar-content { align-items: center; }
+    .sp-retest-bar-body { display: flex; flex-direction: column; gap: 10px; min-width: 0; flex: 1; }
     .sp-retest-bar-text { font-family: var(--font); font-size: 14px; font-weight: 500; color: #000023; line-height: 1.4; letter-spacing: 0.07px; }
-    .sp-retest-bar-close { background: none; border: none; cursor: pointer; padding: 0; flex-shrink: 0; display: flex; align-items: center; color: #333332; }
+    .sp-retest-bar-reason { font-family: var(--font); font-size: 14px; font-weight: 400; color: #333332; line-height: 1.4; letter-spacing: 0.07px; }
+    .sp-retest-bar-action {
+      align-self: flex-start; margin-top: 0;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 10px;
+      background: none; border: none; padding: 0; cursor: pointer;
+      font-family: var(--font); font-size: 13px; font-weight: 500;
+      color: #D6213F; letter-spacing: 0.06px; line-height: 1.2;
+      text-decoration: underline; text-underline-offset: 3px;
+    }
+    .sp-retest-bar-action:hover { opacity: 0.75; }
+    .sp-retest-bar-close { background: none; border: none; cursor: pointer; padding: 0; flex-shrink: 0; display: flex; align-items: center; color: #333332; margin-top: 2px; }
     .sp-retest-bar-close:hover { opacity: 0.6; }
+    .sp-qbtn.sp-btn-retry { color: #D6213F; }
+    .sp-qbtn.sp-btn-retry:hover { color: #B11A33; opacity: 1; }
+
+    /* Error variant — child overrides (white text/icon/close, pill button) */
+    .sp-retest-bar.bar-error .sp-retest-bar-text   { color: #FFFFFF; }
+    .sp-retest-bar.bar-error .sp-retest-bar-reason { color: #FFFFFF; }
+    .sp-retest-bar.bar-error .sp-retest-bar-close { color: #FFFFFF; margin-top: 0; }
+    .sp-retest-bar.bar-error .sp-retest-bar-action {
+      /* "Secondary Dark" pill button on red bg */
+      align-self: flex-start;
+      height: 40px;
+      min-width: 170px;
+      padding: 0 30px;
+      background: transparent;
+      border: 1px solid #FFFFFF;
+      border-radius: 999px;
+      color: #FFFFFF;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: 0.16px;
+      text-decoration: none;
+      gap: 10px;
+      transition: background-color 120ms ease;
+    }
+    .sp-retest-bar.bar-error .sp-retest-bar-action:hover {
+      background: rgba(255,255,255,0.12);
+      opacity: 1;
+    }
+    .sp-retest-bar.bar-error .sp-retest-bar-action:active {
+      background: rgba(255,255,255,0.18);
+    }
     .sp-sev-drop {
       display: inline-flex; align-items: center; gap: 10px; padding: 5px 15px;
       border: 1px solid #CBD0D1; border-radius: 4px; background: #fff; cursor: pointer;
@@ -3424,6 +3566,26 @@
     <div class="filter-bar">
       <div class="filter-chips" id="filterChips"></div>
       <button class="filter-clear-all" id="filterClearAll">Clear all</button>
+    </div>
+
+    <!-- Re-test failures banner — DAST DS Info bar / Error.
+         Always-on safety net for a returning user. Auto-shows whenever
+         ≥1 row has data-retest-failed. Figma node 11059:397. -->
+    <div class="retest-banner" id="retestFailureBanner" role="status">
+      <span class="retest-banner-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M8.71 3.3a1.5 1.5 0 0 1 2.58 0l6.77 11.74A1.5 1.5 0 0 1 16.77 17.3H3.23a1.5 1.5 0 0 1-1.3-2.26L8.71 3.3Z" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M10 8.5v3.75" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="10" cy="14.25" r="0.9" fill="#FFFFFF"/>
+        </svg>
+      </span>
+      <span class="retest-banner-text"><span class="rb-count" id="retestFailureBannerCount">0</span> <span id="retestFailureBannerLabel">issues have unresolved re-test failures</span></span>
+      <button type="button" class="retest-banner-action" id="retestFailureBannerToggle">
+        <span id="retestFailureBannerToggleText">Show me</span>
+      </button>
+      <button type="button" class="retest-banner-close" id="retestFailureBannerClose" aria-label="Dismiss">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
     </div>
 
     <!-- Sticky table header (outside scroll wrap so overflow:hidden doesn't clip it) -->
@@ -5784,15 +5946,27 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   const SVG_CHECK    = `<svg class="item-check" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg>`;
   const SVG_CHECK_CIRCLE = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><svg x="0.667" y="0.667" width="14.667" height="14.667" viewBox="0 0 14.667 14.667"><path d="M7.33301 0C11.383 0 14.6668 3.28307 14.667 7.33301C14.667 11.3831 11.3831 14.667 7.33301 14.667C3.28307 14.6668 0 11.383 0 7.33301C0.000175871 3.28318 3.28318 0.000175875 7.33301 0Z" fill="#0094FF"/></svg><svg x="4.667" y="5.33" width="6.697" height="5.667" viewBox="0 0 6.69697 5.66666"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.42988 0.188427C6.75259 0.467691 6.7878 0.955685 6.50854 1.27839L2.94211 5.39959C2.80415 5.55902 2.60703 5.65515 2.39645 5.6657C2.18588 5.67624 1.98014 5.60028 1.82693 5.45544L0.241856 3.95682C-0.0682508 3.66363 -0.081963 3.17456 0.211229 2.86445C0.504421 2.55434 0.993491 2.54063 1.3036 2.83382L2.30191 3.77768L5.33992 0.267084C5.61918 -0.0556217 6.10718 -0.0908377 6.42988 0.188427Z" fill="white"/></svg></svg>`;
 
+  // DS Icons/Alert Triangle, red (Icons/Red-2 #D6213F), 16px — for the
+  // "last re-test failed" indicator inside a row's status pill (Figma 11059:1719)
+  const SVG_ALERT_TRIANGLE_RED = `<svg width="16" height="16" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M7.84 2.97a1.35 1.35 0 0 1 2.32 0l6.09 10.56A1.35 1.35 0 0 1 15.09 15.6H2.91a1.35 1.35 0 0 1-1.16-2.07L7.84 2.97Z" stroke="#D6213F" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 7.5v3.5" stroke="#D6213F" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12.75" r="0.85" fill="#D6213F"/></svg>`;
+
   function renderPill(el, statusId) {
     const cfg = STATUS_CFG[statusId] || STATUS_CFG['present'];
     el.className = 'status-drop ' + cfg.cls;
     el.dataset.status = statusId;
     let iconSvg = '';
-    if (cfg.icon === 'info16')       iconSvg = SVG_INFO_16;
-    if (cfg.icon === 'spinner')      iconSvg = SVG_SPINNER;
-    if (cfg.icon === 'refresh')      iconSvg = SVG_REFRESH;
-    if (cfg.icon === 'check-circle') iconSvg = SVG_CHECK_CIRCLE;
+    // If this row's last re-test failed, the alert-triangle overrides the
+    // status's normal leading icon — strong visual signal that the status
+    // is unverified. Wrapped in a span so we can detect hover for the
+    // popover (Figma 11059:2301).
+    if (el.dataset.retestFailed) {
+      iconSvg = `<span class="pill-retest-fail-icon" data-popover-trigger>${SVG_ALERT_TRIANGLE_RED}</span>`;
+    } else {
+      if (cfg.icon === 'info16')       iconSvg = SVG_INFO_16;
+      if (cfg.icon === 'spinner')      iconSvg = SVG_SPINNER;
+      if (cfg.icon === 'refresh')      iconSvg = SVG_REFRESH;
+      if (cfg.icon === 'check-circle') iconSvg = SVG_CHECK_CIRCLE;
+    }
     el.innerHTML = `<span class="pill-content">${iconSvg}${cfg.label}</span>${cfg.caret ? SVG_CARET : ''}`;
   }
 
@@ -5805,13 +5979,25 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     }
   });
   (function sizePills() {
-    // Measure the widest possible label using a temporary off-screen probe pill
-    const probe = document.createElement('div');
-    renderPill(probe, 'fixed'); // 'Fixed (unconfirmed)' is the longest label
-    probe.style.cssText = 'position:fixed;visibility:hidden;top:-9999px;left:-9999px';
-    document.body.appendChild(probe);
-    let maxW = probe.getBoundingClientRect().width;
-    document.body.removeChild(probe);
+    // Measure the widest possible pill content. Two candidates:
+    //   1. The longest label with its normal leading icon (Fixed unconfirmed + check)
+    //   2. Any label with the alert-triangle prepended (re-test failed indicator)
+    // Take the larger so the pill never clips when the alert-triangle is shown.
+    const measure = (statusId, withFailIcon) => {
+      const probe = document.createElement('div');
+      if (withFailIcon) probe.dataset.retestFailed = 'auth-failed';
+      renderPill(probe, statusId);
+      probe.style.cssText = 'position:fixed;visibility:hidden;top:-9999px;left:-9999px';
+      document.body.appendChild(probe);
+      const w = probe.getBoundingClientRect().width;
+      document.body.removeChild(probe);
+      return w;
+    };
+    let maxW = Math.max(
+      measure('fixed', false),          // 'Fixed (unconfirmed)' + check-circle
+      measure('fixed', true),           // same with alert-triangle override
+      measure('needs-retest', true)     // 'Needs re-test' + alert-triangle
+    );
 
     if (maxW <= 0) return;
     document.querySelectorAll('.status-drop').forEach(p => { p.style.width = maxW + 'px'; });
@@ -6112,27 +6298,67 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         }
 
       } else if (action === 'retest') {
-        const fromMap = new Map();
-        rows.forEach(row => {
-          const pill = row.querySelector('.status-drop');
-          if (pill) {
-            fromMap.set(row, pill.dataset.status);
-            renderPill(pill, 'scanning');
-          }
-        });
-        const OUTCOMES = ['fixed', 'present', 'regressed'];
-        rows.forEach((row, i) => {
-          setTimeout(() => {
-            const pill = row.querySelector('.status-drop');
-            const newStatus = OUTCOMES[Math.floor(Math.random() * OUTCOMES.length)];
-            if (pill) renderPill(pill, newStatus);
-            addRetestEntryToRow(row, fromMap.get(row), newStatus);
-          }, 2000 + i * 700);
-        });
-        setTimeout(deselectAll, 2000 + rows.length * 700 + 200);
+        runBulkRetest(rows);
       }
     });
   });
+
+  // ── Bulk re-test orchestration ──────────────────────────────────────
+  // Per row, decide success vs. failure (row 1 deterministically fails
+  // with auth-failed for demo purposes; everything else picks a random
+  // success outcome). Each row's pill flips to "scanning" then resolves
+  // staggered. Failure surfaces: row icon + popover, panel error bar, and
+  // the always-on top-of-table banner — no completion sheet.
+  const BULK_SUCCESS_OUTCOMES = ['fixed-confirmed', 'present', 'regressed'];
+
+  function decideBulkOutcome(rowEl, allRows) {
+    const allRowsInDom = Array.from(document.querySelectorAll('[data-row]'));
+    if (allRowsInDom.indexOf(rowEl) === 0) {
+      return { kind: 'failure', reasonId: 'auth-failed' };
+    }
+    const status = BULK_SUCCESS_OUTCOMES[Math.floor(Math.random() * BULK_SUCCESS_OUTCOMES.length)];
+    return { kind: 'success', status: status };
+  }
+
+  function runBulkRetest(rows) {
+    if (!rows.length) return;
+    const fromMap = new Map();
+    rows.forEach(row => {
+      const pill = row.querySelector('.status-drop');
+      if (pill) {
+        fromMap.set(row, pill.dataset.status);
+        renderPill(pill, 'scanning');
+      }
+    });
+    let remaining = rows.length;
+    rows.forEach((row, i) => {
+      setTimeout(() => {
+        const fromStatus = fromMap.get(row);
+        const decision = decideBulkOutcome(row, rows);
+        const pill = row.querySelector('.status-drop');
+        if (decision.kind === 'failure') {
+          // Status stays put — failed re-test produced no evidence
+          if (pill && fromStatus) renderPill(pill, fromStatus);
+          markRowRetestFailed(row, decision.reasonId);
+          addRetestFailedEntryToRow(row, fromStatus, decision.reasonId);
+        } else {
+          if (pill) renderPill(pill, decision.status);
+          clearRowRetestFailed(row);
+          addRetestEntryToRow(row, fromStatus, decision.status);
+        }
+        if (--remaining === 0) {
+          // If the side panel is currently open on one of these rows, re-sync
+          if (typeof window.__refreshRetestUIForActiveRow === 'function') {
+            window.__refreshRetestUIForActiveRow();
+          }
+          // Per-row state (row icon + popover, panel error bar) plus the
+          // always-on top-of-table banner are the surfaces that signal the
+          // failure — no extra completion sheet is needed.
+          deselectAll();
+        }
+      }, 1500 + i * 600);
+    });
+  }
 
   /* ── Actions kebab menu ── */
   const KEBAB_ICON_EDIT   = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M13.5 3.5l3 3L7 16H4v-3L13.5 3.5z" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11.5 5.5l3 3" stroke="#333332" stroke-width="1.5" stroke-linecap="round"/></svg>`;
@@ -7417,6 +7643,23 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
           <span class="tl-title">Issue re-tested</span>
         </div>`;
 
+    } else if (ev.type === 'retest-failed') {
+      wrap.className = 'tl-card';
+      wrap.dataset.tlType = 'retest';
+      const reason = RETEST_FAIL_REASONS[ev.reasonId] || RETEST_FAIL_REASONS['engine-error'];
+      const TL_ALERT = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink:0"><path d="M7.84 2.97a1.35 1.35 0 0 1 2.32 0l6.09 10.56A1.35 1.35 0 0 1 15.09 15.6H2.91a1.35 1.35 0 0 1-1.16-2.07L7.84 2.97Z" fill="#FCEAEB" stroke="#D6213F" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 7.5v3.5" stroke="#D6213F" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12.75" r="0.85" fill="#D6213F"/></svg>`;
+      wrap.innerHTML = `
+        <div class="tl-card-header">
+          <div class="tl-date-col"><span class="tl-date">${ev.date}</span></div>
+          <span class="tl-author">${ev.author}</span>
+        </div>
+        <div class="tl-content">${TL_ALERT}<span class="tl-title">Re-test failed</span></div>
+        <p class="tl-desc"><strong style="color:#000023;font-weight:500">${reason.short}.</strong> ${reason.detail} The issue status remains <em>${(STATUS_CFG[ev.from]?.label || ev.from)}</em>.</p>
+        <button type="button" class="tl-retry-btn" style="margin-top:8px;display:inline-flex;align-items:center;gap:6px;background:none;border:1px solid #CBD0D1;border-radius:4px;padding:5px 12px;cursor:pointer;font-family:var(--font);font-size:13px;font-weight:500;color:#333332;line-height:1.2;">
+          <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M17 10A7 7 0 1 1 10 3h4.5M14.5 1v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Retry re-test
+        </button>`;
+
     } else if (ev.type === 'gitlab') {
       wrap.className = 'tl-card';
       const glFields = (ev.fields || []).map(f =>
@@ -7606,6 +7849,310 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     refreshTlFilterBar();
   }
 
+  // ── Re-test failure taxonomy — single source of truth used by ──────
+  // the side-panel error bar, the row chip + tooltip, the timeline card,
+  // and the bulk completion summary sheet.
+  const RETEST_FAIL_REASONS = {
+    'auth-failed': {
+      short:        'Authentication error',
+      title:        'Re-test failed — authentication error',
+      detail:       'The saved credentials for app.zenithcorp.com returned 401 Unauthorized. Update credentials in scan settings, then retry.',
+      tooltipBody:  'Saved credentials returned 401. Update credentials in scan settings.',
+      action:       'Scan settings',
+      actionHref:   'burp-dast-settings-issue-management.html',
+      groupLabel:   'Authentication failed',
+      groupHint:    'app.zenithcorp.com returned 401 Unauthorized'
+    },
+    'target-unreachable': {
+      short:        'Target unreachable',
+      title:        'Re-test failed — target unreachable',
+      detail:       'No response from the target host (DNS or connection refused). Confirm the host is online, then retry.',
+      tooltipBody:  'No response from the target host.',
+      action:       'View scan log',
+      actionHref:   '#',
+      groupLabel:   'Target unreachable',
+      groupHint:    'Target host did not respond'
+    },
+    'out-of-scope': {
+      short:        'Out of scope',
+      title:        'Re-test failed — out of scope',
+      detail:       'The issue URL is excluded from this site’s current scan scope. Adjust scope, then retry.',
+      tooltipBody:  'Issue URL is excluded from this site’s scan scope.',
+      action:       'Edit scan scope',
+      actionHref:   'burp-dast-settings-issue-management.html',
+      groupLabel:   'Out of scope',
+      groupHint:    'Issue URL excluded from current scope'
+    },
+    'agent-offline': {
+      short:        'No agent available',
+      title:        'Re-test failed — no scanning agent available',
+      detail:       'No agent is online to run this re-test. It will resume automatically once an agent comes online.',
+      tooltipBody:  'No scanning agent is currently online.',
+      action:       'View agents',
+      actionHref:   '#',
+      groupLabel:   'No scanning agent available',
+      groupHint:    'Re-test will resume when an agent comes online'
+    },
+    'engine-error': {
+      short:        'Scan engine error',
+      title:        'Re-test failed — scan engine error',
+      detail:       'An unexpected error occurred during re-test. The engineering team has been notified. Please retry, or contact support if the issue persists.',
+      tooltipBody:  'Unexpected error during re-test.',
+      action:       'View scan log',
+      actionHref:   '#',
+      groupLabel:   'Scan engine error',
+      groupHint:    'Unexpected error during re-test'
+    }
+  };
+
+  function markRowRetestFailed(rowEl, reasonId) {
+    if (!rowEl) return;
+    const cell = rowEl.querySelector('.td.col-status');
+    if (!cell) return;
+    rowEl.dataset.retestFailed = reasonId;
+    // Fresh failure overrides a previous "I've read it" dismissal
+    delete rowEl.dataset.retestFailedDismissed;
+
+    const reason = RETEST_FAIL_REASONS[reasonId] || RETEST_FAIL_REASONS['engine-error'];
+
+    // Flag the pill so renderPill swaps in the red alert-triangle, then
+    // re-render so the icon appears immediately. The status itself is
+    // unchanged (status pill must NOT change on a failed re-test).
+    const pill = cell.querySelector('.status-drop');
+    if (pill) {
+      pill.dataset.retestFailed = reasonId;
+      pill.setAttribute('aria-label', 'Last re-test failed: ' + reason.short);
+      renderPill(pill, pill.dataset.status);
+    }
+
+    // The popover content comes from RETEST_FAIL_REASONS at hover time —
+    // no per-row tooltip DOM needed any more.
+
+    // A fresh failure should override any previous banner dismissal so the
+    // user sees it again.
+    if (typeof window.__clearRetestFailureBannerDismissal === 'function') {
+      window.__clearRetestFailureBannerDismissal();
+    }
+    if (typeof window.__refreshRetestFailureBanner === 'function') {
+      window.__refreshRetestFailureBanner();
+    }
+  }
+
+  function clearRowRetestFailed(rowEl) {
+    if (!rowEl) return;
+    delete rowEl.dataset.retestFailed;
+    delete rowEl.dataset.retestFailedDismissed;
+    const cell = rowEl.querySelector('.td.col-status');
+    if (cell) {
+      const pill = cell.querySelector('.status-drop');
+      if (pill) {
+        delete pill.dataset.retestFailed;
+        pill.removeAttribute('aria-label');
+        // Re-render so the normal status icon is restored
+        renderPill(pill, pill.dataset.status);
+      }
+    }
+    if (typeof window.__refreshRetestFailureBanner === 'function') {
+      window.__refreshRetestFailureBanner();
+    }
+  }
+
+  // ── Re-test failure popover (Figma 11059:2301) ──────────────────────
+  // Hovering the red alert-triangle inside a row's status pill reveals a
+  // DS popover with the failure reason. Shared body-level element, shown
+  // and positioned on mouseover via event delegation.
+  (function () {
+    const pop = document.createElement('div');
+    pop.className = 'retest-fail-popover';
+    pop.innerHTML = [
+      '<div class="retest-fail-popover-card">',
+        '<span class="retest-fail-popover-title"></span>',
+        '<p class="retest-fail-popover-body"></p>',
+      '</div>',
+      '<div class="retest-fail-popover-arrow">',
+        '<svg width="34" height="16" viewBox="0 0 34 16" fill="none">',
+          '<path d="M0 0H34L17 16L0 0Z" fill="#FFFFFF"/>',
+        '</svg>',
+      '</div>'
+    ].join('');
+    const popTitle = pop.querySelector('.retest-fail-popover-title');
+    const popBody  = pop.querySelector('.retest-fail-popover-body');
+    const popArrow = pop.querySelector('.retest-fail-popover-arrow');
+
+    document.addEventListener('DOMContentLoaded', () => document.body.appendChild(pop));
+
+    let hideTimer;
+
+    function show(trigger) {
+      clearTimeout(hideTimer);
+      const pill = trigger.closest('.status-drop');
+      const reasonId = pill?.dataset.retestFailed;
+      if (!reasonId) return;
+      const reason = RETEST_FAIL_REASONS[reasonId] || RETEST_FAIL_REASONS['engine-error'];
+      popTitle.textContent = 'Re-test failed';
+      popBody.textContent  = reason.tooltipBody;
+
+      pop.classList.add('is-visible');
+
+      const r = trigger.getBoundingClientRect();
+      const popW = pop.offsetWidth;
+      const popH = pop.offsetHeight;
+      const arrowW = 34;
+      // Centre the arrow under the alert-triangle icon
+      const arrowCenterX = r.left + r.width / 2;
+      let left = arrowCenterX - popW / 2;
+      let top  = r.top - popH - 2;
+      // Clamp horizontally to viewport
+      left = Math.max(8, Math.min(left, window.innerWidth - popW - 8));
+      // If we'd clip off the top, flip below the icon
+      if (top < 8) top = r.bottom + 2;
+      pop.style.left = left + 'px';
+      pop.style.top  = top  + 'px';
+      // Slide the arrow inside the popover to stay under the icon centre
+      const arrowLeft = Math.max(8, Math.min(arrowCenterX - left - arrowW / 2, popW - arrowW - 8));
+      popArrow.style.marginLeft = arrowLeft + 'px';
+    }
+
+    function hide() {
+      hideTimer = setTimeout(() => pop.classList.remove('is-visible'), 80);
+    }
+
+    // Delegate on document so it works regardless of which row/table-body is active
+    document.addEventListener('mouseover', (e) => {
+      const trigger = e.target.closest('.pill-retest-fail-icon');
+      if (trigger) show(trigger);
+    });
+    document.addEventListener('mouseout', (e) => {
+      if (e.target.closest('.pill-retest-fail-icon')) hide();
+    });
+  })();
+
+  // ── Top-of-table failures banner ────────────────────────────────────
+  // State-driven: visible whenever ≥1 row has data-retest-failed. The toggle
+  // scopes the visible table to failed rows only (Show me) and restores the
+  // normal filter state (Show all). Close button dismisses the banner for
+  // the session; fresh failures clear the dismissal so it re-shows.
+  (function () {
+    let scopedToFailed = false;
+    let dismissed = false;
+
+    function setBannerVisible(count) {
+      const banner = document.getElementById('retestFailureBanner');
+      const countEl = document.getElementById('retestFailureBannerCount');
+      const labelEl = document.getElementById('retestFailureBannerLabel');
+      if (!banner) return;
+      if (count > 0 && !dismissed) {
+        countEl.textContent = count;
+        labelEl.textContent = (count === 1 ? 'issue has' : 'issues have') + ' unresolved re-test failures';
+        banner.classList.add('visible');
+      } else {
+        banner.classList.remove('visible');
+        if (scopedToFailed) {
+          // Failures cleared (or banner dismissed) while we were scoped —
+          // exit scope back to normal filter state
+          scopedToFailed = false;
+          setToggleLabel(false);
+          if (window._applyTableFilters) window._applyTableFilters();
+        }
+      }
+    }
+
+    // Exposed so markRowRetestFailed can clear dismissal when a new failure
+    // arrives, ensuring the banner re-pops for fresh problems.
+    window.__clearRetestFailureBannerDismissal = function () { dismissed = false; };
+
+    function setToggleLabel(scoped) {
+      const t = document.getElementById('retestFailureBannerToggleText');
+      if (t) t.textContent = scoped ? 'Show all' : 'Show me';
+    }
+
+    function scopeToFailedRows() {
+      document.querySelectorAll('[data-row]').forEach(row => {
+        if (!row.dataset.retestFailed) {
+          row.dataset.retestBannerHidden = '1';
+          row.style.display = 'none';
+        } else {
+          row.dataset.retestBannerHidden = '0';
+          // Only show if not also hidden by an active filter
+          if (row.dataset.filterHidden !== '1') row.style.display = '';
+        }
+      });
+    }
+
+    function restoreFromScope() {
+      document.querySelectorAll('[data-row]').forEach(row => {
+        delete row.dataset.retestBannerHidden;
+      });
+      // Let the existing filter system put things back where they belong
+      if (window._applyTableFilters) window._applyTableFilters();
+    }
+
+    function refresh() {
+      const count = document.querySelectorAll('[data-row][data-retest-failed]').length;
+      setBannerVisible(count);
+    }
+
+    window.__refreshRetestFailureBanner = refresh;
+    window.__retestBannerIsScoped = () => scopedToFailed;
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const btn = document.getElementById('retestFailureBannerToggle');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          scopedToFailed = !scopedToFailed;
+          setToggleLabel(scopedToFailed);
+          if (scopedToFailed) {
+            scopeToFailedRows();
+          } else {
+            restoreFromScope();
+          }
+        });
+      }
+      const closeBtn = document.getElementById('retestFailureBannerClose');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          dismissed = true;
+          refresh();
+        });
+      }
+      refresh();
+    });
+  })();
+
+  function addRetestFailedEntryToRow(rowEl, fromStatus, reasonId) {
+    if (!rowEl) return;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    const ev = { type: 'retest-failed', date: dateStr, author: 'Ric Corbally', from: fromStatus, reasonId: reasonId };
+    const rows = Array.from(document.querySelectorAll('[data-row]'));
+    const rowIdx = rows.indexOf(rowEl);
+    if (rowIdx >= 0 && TIMELINE_DATA[rowIdx]) {
+      TIMELINE_DATA[rowIdx].unshift(ev);
+    }
+    if (activeRow === rowEl) {
+      const tlCards  = document.getElementById('tlCards');
+      const tlDotCol = document.getElementById('tlDotCol');
+      if (!tlCards || !tlDotCol) return;
+      const card = buildTlCard(ev);
+      const dot  = document.createElement('div');
+      dot.className = 'tl-dot';
+      tlCards.insertBefore(card, tlCards.firstChild);
+      tlDotCol.insertBefore(dot, tlDotCol.firstChild);
+      card.classList.add('tl-card-new');
+      setTimeout(() => {
+        card.classList.add('tl-card-new-fade');
+        setTimeout(() => card.classList.remove('tl-card-new', 'tl-card-new-fade'), 300);
+      }, 1000);
+      refreshTlFilterBar();
+      const activeFilter = document.querySelector('.tl-filter-btn.active')?.dataset.filter;
+      if (activeFilter && activeFilter !== 'all' && activeFilter !== 'retest') {
+        card.style.display = 'none';
+        dot.style.display  = 'none';
+      }
+      requestAnimationFrame(positionTimelineDots);
+    }
+  }
+
   function addRetestEntryToRow(rowEl, fromStatus, toStatus) {
     if (!rowEl) return;
     const now = new Date();
@@ -7769,7 +8316,9 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   // activeRow declared at script top-level so severity modal can also access it
 
   function openSidePanel(row) {
-    document.getElementById('spRetestBar').classList.remove('visible');
+    // Note: error bar is restored further below via __refreshRetestUIForActiveRow
+    // (state-driven), not cleared blindly here — a returning user should still
+    // see why a previous re-test failed and what to do about it.
 
     const sevLabel  = row.querySelector('.severity-label')?.textContent.trim() || 'High';
     const confText  = row.querySelector('.td.col-confidence')?.textContent.trim() || 'High';
@@ -7787,11 +8336,12 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     spTitle.textContent = issueName;
     renderPill(spStatusPill, statusId);
 
-    // Lock status pill to widest option — re-probe every open so width is always correct
+    // Lock status pill to widest option — re-probe every open so width is always correct.
+    // Apply the panel pill's font styling on the probe so the measured width matches.
     requestAnimationFrame(() => {
       const sp = document.createElement('div');
       renderPill(sp, 'fixed');
-      sp.style.cssText = 'position:fixed;visibility:hidden;top:-9999px;left:-9999px';
+      sp.style.cssText = 'position:fixed;visibility:hidden;top:-9999px;left:-9999px;font-size:14px;font-weight:500;line-height:1.4;letter-spacing:0.07px';
       document.body.appendChild(sp);
       const sw = Math.ceil(sp.getBoundingClientRect().width);
       document.body.removeChild(sp);
@@ -7895,6 +8445,10 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     if (activeRow) activeRow.classList.remove('row-panel-active');
     activeRow = row;
     row.classList.add('row-panel-active');
+    // Sync re-test button + error bar to the active row's failure state
+    if (typeof window.__refreshRetestUIForActiveRow === 'function') {
+      window.__refreshRetestUIForActiveRow();
+    }
 
     // Persist active tab when switching issues; default to Advisory on first open
     const _activeTab = sidePanel.classList.contains('open')
@@ -7960,6 +8514,11 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   sidePanel.addEventListener('click', e => {
     const header = e.target.closest('.sp-acc-header');
     if (header) header.closest('.sp-accordion').classList.toggle('open');
+
+    // Retry button inside a "Re-test failed" timeline card
+    if (e.target.closest('.tl-retry-btn')) {
+      document.getElementById('spRetestBtn')?.click();
+    }
   });
 
   // Re-test button
@@ -7973,34 +8532,139 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     const ICON_SCANNING = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="animation:spin 1.2s linear infinite;flex-shrink:0"><path d="M17 10A7 7 0 1 1 10 3h4.5M14.5 1v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const ICON_INFO     = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8.25" stroke="#0094FF" stroke-width="1.5"/><path d="M9 8v4.5" stroke="#0094FF" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="5.75" r="0.85" fill="#0094FF"/></svg>`;
     const ICON_TRIANGLE = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M7.84 2.97a1.35 1.35 0 0 1 2.32 0l6.09 10.56A1.35 1.35 0 0 1 15.09 15.6H2.91a1.35 1.35 0 0 1-1.16-2.07L7.84 2.97Z" stroke="#B86633" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 7.5v3.5" stroke="#B86633" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12.75" r="0.85" fill="#B86633"/></svg>`;
+    // DS Icons/Alert Triangle — white outlined for the Error info bar (Figma 11059:445)
+    const ICON_ERROR    = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M7.84 2.97a1.35 1.35 0 0 1 2.32 0l6.09 10.56A1.35 1.35 0 0 1 15.09 15.6H2.91a1.35 1.35 0 0 1-1.16-2.07L7.84 2.97Z" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 7.5v3.5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12.75" r="0.85" fill="#FFFFFF"/></svg>`;
+    const ICON_RETRY_PREFIX = `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7.84 3.97a1.35 1.35 0 0 1 2.32 0l6.09 10.56A1.35 1.35 0 0 1 15.09 16.6H4.91a1.35 1.35 0 0 1-1.16-2.07L7.84 3.97Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M10 8.25v3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="10" cy="13.5" r="0.85" fill="currentColor"/></svg>`;
 
-    const OUTCOMES = [
+    const SUCCESS_OUTCOMES = [
       { status:'fixed-confirmed', barClass:'bar-fixed',     icon:ICON_INFO,     message:'The issue could not be reproduced during re-testing and has been marked as fixed.' },
       { status:'present',         barClass:'bar-present',   icon:ICON_INFO,     message:'The issue was confirmed as still present during re-testing. No status change has been made.' },
       { status:'regressed',       barClass:'bar-regressed', icon:ICON_TRIANGLE, message:'The issue has re-appeared and has been flagged as regressed.' }
     ];
 
-    retestBtn.addEventListener('click', () => {
+    // Reuse the module-scope taxonomy declared earlier in the file
+    const FAILURE_REASONS = RETEST_FAIL_REASONS;
+
+    // Decide what should happen on click. Row 1 is the deterministic failure
+    // demo row (auth-failed) — every other row keeps the random success path.
+    function pickOutcome(rowEl) {
+      const rows = Array.from(document.querySelectorAll('[data-row]'));
+      const rowIdx = rows.indexOf(rowEl);
+      if (rowIdx === 0) {
+        return { kind: 'failure', reasonId: 'auth-failed' };
+      }
+      const o = SUCCESS_OUTCOMES[Math.floor(Math.random() * SUCCESS_OUTCOMES.length)];
+      return { kind: 'success', outcome: o };
+    }
+
+    function resetRetestButton() {
+      retestBtn.classList.remove('sp-btn-scanning', 'sp-btn-retry');
+      retestBtn.innerHTML = ICON_RETEST + ' Re-test issue';
+    }
+
+    function setRetryButton() {
+      retestBtn.classList.remove('sp-btn-scanning');
+      retestBtn.classList.add('sp-btn-retry');
+      retestBtn.innerHTML = ICON_RETRY_PREFIX + ' Retry re-test';
+    }
+
+    function showFailureBar(reasonId) {
+      const r = FAILURE_REASONS[reasonId] || FAILURE_REASONS['engine-error'];
+      retestBar.classList.remove('bar-fixed','bar-regressed','bar-present');
+      retestBar.classList.add('bar-error');
+      document.getElementById('spRetestBarIcon').innerHTML = ICON_ERROR;
+      document.getElementById('spRetestBarText').textContent = r.title;
+      const reasonEl = document.getElementById('spRetestBarReason');
+      reasonEl.textContent = r.detail;
+      reasonEl.style.display = 'block';
+      const actionEl = document.getElementById('spRetestBarAction');
+      // DS Secondary Dark pill — text only, no trailing icon (Figma 11059:445)
+      actionEl.textContent = r.action;
+      actionEl.style.display = 'inline-flex';
+      actionEl.dataset.href = r.actionHref;
+      retestBar.classList.add('visible');
+    }
+
+    function showSuccessBar(o) {
+      retestBar.classList.remove('bar-fixed','bar-regressed','bar-present','bar-error');
+      retestBar.classList.add(o.barClass);
+      document.getElementById('spRetestBarIcon').innerHTML = o.icon;
+      document.getElementById('spRetestBarText').textContent = o.message;
+      const reasonEl = document.getElementById('spRetestBarReason');
+      reasonEl.textContent = '';
+      reasonEl.style.display = 'none';
+      const actionEl = document.getElementById('spRetestBarAction');
+      actionEl.innerHTML = '';
+      actionEl.style.display = 'none';
+      retestBar.classList.add('visible');
+    }
+
+    function runRetest() {
       const fromStatus = spStatusPill.dataset.status;
       const targetRow  = activeRow;
+      const decision   = pickOutcome(targetRow);
       retestBar.classList.remove('visible');
+      retestBtn.classList.remove('sp-btn-retry');
       retestBtn.classList.add('sp-btn-scanning');
       retestBtn.innerHTML = ICON_SCANNING + ' Scanning';
       setTimeout(() => {
-        const outcome = OUTCOMES[Math.floor(Math.random() * OUTCOMES.length)];
-        retestBtn.classList.remove('sp-btn-scanning');
-        retestBtn.innerHTML = ICON_RETEST + ' Re-test issue';
-        renderPill(spStatusPill, outcome.status);
-        retestBar.classList.remove('bar-fixed','bar-regressed','bar-present');
-        retestBar.classList.add(outcome.barClass);
-        document.getElementById('spRetestBarIcon').innerHTML = outcome.icon;
-        document.getElementById('spRetestBarText').textContent = outcome.message;
-        retestBar.classList.add('visible');
-        addRetestEntryToRow(targetRow, fromStatus, outcome.status);
+        if (decision.kind === 'failure') {
+          // Status stays unchanged — failed re-test produced no evidence.
+          setRetryButton();
+          showFailureBar(decision.reasonId);
+          markRowRetestFailed(targetRow, decision.reasonId);
+          addRetestFailedEntryToRow(targetRow, fromStatus, decision.reasonId);
+        } else {
+          resetRetestButton();
+          renderPill(spStatusPill, decision.outcome.status);
+          showSuccessBar(decision.outcome);
+          clearRowRetestFailed(targetRow);
+          addRetestEntryToRow(targetRow, fromStatus, decision.outcome.status);
+        }
       }, 3000);
+    }
+
+    retestBtn.addEventListener('click', runRetest);
+
+    // Bar action link (e.g. "Open scan settings")
+    document.getElementById('spRetestBarAction').addEventListener('click', function () {
+      const href = this.dataset.href;
+      if (href && href !== '#') window.location.href = href;
     });
 
-    retestBarClose.addEventListener('click', () => retestBar.classList.remove('visible'));
+    retestBarClose.addEventListener('click', () => {
+      retestBar.classList.remove('visible');
+      // Remember dismissal for the active row so we don't re-pop the bar every
+      // time the panel is reopened. The row-level chip + the top-of-table
+      // banner still signal the failure state.
+      if (activeRow) activeRow.dataset.retestFailedDismissed = '1';
+    });
+
+    // Re-evaluate button + bar state when the side panel opens for a different
+    // row — if that row already has a failure flagged, show the retry button
+    // treatment AND restore the error bar so a returning user sees the reason
+    // and the contextual action without having to dig into the timeline.
+    window.__refreshRetestUIForActiveRow = function () {
+      if (!activeRow) {
+        resetRetestButton();
+        retestBar.classList.remove('visible');
+        return;
+      }
+      const reasonId = activeRow.dataset.retestFailed;
+      if (reasonId) {
+        setRetryButton();
+        if (!activeRow.dataset.retestFailedDismissed) {
+          showFailureBar(reasonId);
+        } else {
+          retestBar.classList.remove('visible');
+        }
+      } else {
+        resetRetestButton();
+        retestBar.classList.remove('visible');
+      }
+    };
+    // Back-compat alias for the earlier name
+    window.__refreshRetestButtonForActiveRow = window.__refreshRetestUIForActiveRow;
   })();
 
   // ── Investigate issue button — scroll to AI section ──────────────
@@ -9016,11 +9680,15 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       <!-- Re-test result notification bar -->
       <div class="sp-retest-bar" id="spRetestBar">
         <div class="sp-retest-bar-content">
-          <span id="spRetestBarIcon" style="flex-shrink:0;display:flex"></span>
-          <span class="sp-retest-bar-text" id="spRetestBarText"></span>
+          <span id="spRetestBarIcon" style="flex-shrink:0;display:flex;margin-top:1px"></span>
+          <div class="sp-retest-bar-body">
+            <span class="sp-retest-bar-text" id="spRetestBarText"></span>
+            <span class="sp-retest-bar-reason" id="spRetestBarReason" style="display:none"></span>
+            <button type="button" class="sp-retest-bar-action" id="spRetestBarAction" style="display:none"></button>
+          </div>
         </div>
         <button class="sp-retest-bar-close" id="spRetestBarClose" aria-label="Dismiss">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke="#333332" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         </button>
       </div>
 

@@ -691,7 +691,126 @@
     }
     .scan-search-input::placeholder { color: #676667; }
 
-    /* Scan list table — DS .th/.tc components */
+    /* Filter-by popover anchored beneath the sidebar's Filter control */
+    .issue-side-filter-row { position: relative; padding: 10px; display: flex; gap: 10px; }
+    .issue-side-filter-ctrl.is-open { border-color: #000023; }
+    .issue-side-filter-popover {
+      display: none;
+      position: absolute; left: 10px; right: 10px; top: calc(100% - 2px);
+      background: #fff; border: 1px solid #CBD0D1; border-radius: 4px;
+      box-shadow: 0 4px 16px rgba(0,0,35,0.12);
+      z-index: 50;
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+    }
+    .issue-side-filter-popover.is-open { display: block; }
+    .issue-side-filter-section { padding: 12px 14px; border-bottom: 1px solid #EBF0F2; }
+    .issue-side-filter-section:last-child { border-bottom: none; }
+    .issue-side-filter-section-title {
+      font-family: var(--font); font-size: 12px; font-weight: 500;
+      color: #676667; line-height: 1.2; letter-spacing: 0.06px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .issue-side-filter-options { display: flex; flex-direction: column; gap: 4px; }
+    .issue-side-filter-opt {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 0;
+      cursor: pointer;
+      font-family: var(--font); font-size: 14px; font-weight: 400;
+      color: #333332; line-height: 1.4; letter-spacing: 0.07px;
+    }
+    /* DS checkbox (.cb-custom) — Enterprise 1 (#0094FF) when checked,
+       with white SVG tick. Matches burp-dast-design-system.html spec. */
+    .issue-side-filter-opt input[type="checkbox"] {
+      width: 18px; height: 18px; margin: 0;
+      border: 1.5px solid #676667; border-radius: 4px;
+      appearance: none; -webkit-appearance: none;
+      background: #fff; cursor: pointer; flex-shrink: 0;
+      transition: border-color 0.1s, background 0.1s;
+    }
+    .issue-side-filter-opt input[type="checkbox"]:hover { border-color: #333332; }
+    .issue-side-filter-opt input[type="checkbox"]:checked {
+      background: #0094FF; border-color: #0094FF;
+      background-image: url("data:image/svg+xml,%3Csvg width='11' height='9' viewBox='0 0 11 9' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4.5l3.5 3.5 5.5-7' stroke='%23fff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: center; background-size: 11px 9px;
+    }
+    .issue-side-filter-opt-icon { display: inline-flex; flex-shrink: 0; }
+    .issue-side-filter-opt-label { flex: 1; }
+    /* counts use the DS .scan-tab-badge pattern for consistency */
+    .issue-side-filter-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px;
+      border-top: 1px solid #EBF0F2;
+      position: sticky; bottom: 0; background: #fff;
+    }
+    /* DS text-link styling — same pattern as .filter-clear-all */
+    .issue-side-filter-clear {
+      background: none; border: none; padding: 0; cursor: pointer;
+      font-family: var(--font); font-size: 13px; font-weight: 400;
+      color: #676667;
+      text-decoration: underline; text-decoration-color: transparent;
+      transition: color 0.15s, text-decoration-color 0.15s;
+    }
+    .issue-side-filter-clear:hover { color: #000023; text-decoration-color: #000023; }
+    .issue-side-filter-clear:disabled {
+      color: #CBD0D1; cursor: default;
+      text-decoration-color: transparent;
+    }
+    .issue-side-filter-clear:disabled:hover {
+      color: #CBD0D1; text-decoration-color: transparent;
+    }
+    .issue-side-filter-empty {
+      padding: 20px; text-align: center;
+      font-family: var(--font); font-size: 13px; color: #8C8D8E;
+    }
+
+    /* Issues sidebar — list of issues from the current scan */
+    .issue-side-filter-ctrl {
+      display: flex; align-items: center; gap: 8px;
+      height: 32px; padding: 0 10px;
+      background: #fff; border: 1px solid #CBD0D1; border-radius: 4px;
+      cursor: pointer; flex: 1;
+    }
+    .issue-side-filter-ctrl:hover { border-color: #8C8D8E; }
+    .issue-side-filter-ctrl .scan-filter-icon { display: flex; width: 16px; height: 16px; color: #333332; flex-shrink: 0; }
+    .issue-side-filter-ctrl .scan-filter-icon svg { width: 16px; height: 16px; }
+    .issue-side-filter-ctrl .scan-filter-label { flex: 1; font-size: 14px; font-weight: 500; color: #333332; letter-spacing: 0.07px; }
+    .issue-side-filter-count { font-weight: 400; color: #8C8D8E; margin-left: 2px; }
+    .issue-side-filter-ctrl .scan-filter-chevron { display: flex; width: 16px; height: 16px; flex-shrink: 0; }
+    .issue-side-filter-ctrl .scan-filter-chevron svg { width: 16px; height: 16px; }
+
+    .issue-side-list { flex: 1; overflow-y: auto; min-height: 0; padding: 0 0 20px; }
+    .issue-side-item {
+      position: relative;
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-bottom: 1px solid #EBF0F2;
+    }
+    .issue-side-item:hover { background: #F0F8FB; }
+    .issue-side-item.is-active { background: #F0F8FB; }
+    .issue-side-item.is-active::after {
+      content: "";
+      position: absolute; top: 0; right: 0;
+      width: 3px; height: 100%;
+      background: #0094FF; /* Enterprise 1 */
+    }
+    .issue-side-item-icon { display: flex; flex-shrink: 0; }
+    .issue-side-item-name {
+      font-family: var(--font); font-size: 14px; font-weight: 400; color: #333332;
+      line-height: 1.4; letter-spacing: 0.07px;
+      flex: 1; min-width: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .issue-side-item.is-active .issue-side-item-name { font-weight: 500; color: #000023; }
+    .issue-side-item-badge {
+      font-family: var(--font); font-size: 11px; font-weight: 500;
+      color: #676667; flex-shrink: 0;
+      padding: 2px 6px; border-radius: 100px; background: #EBF0F2;
+    }
+
+    /* Scan list table — DS .th/.tc components (hidden in this view) */
     .scan-mini-table { flex: 1; overflow-y: auto; min-height: 0; }
     .scan-mini-thead { display: flex; position: sticky; top: 0; z-index: 1; }
     .scan-mini-thead .th {
@@ -2928,20 +3047,137 @@
     .td.col-severity, .td.col-confidence, .td.col-issue, .td.col-ai,
     .td.col-site, .td.col-first, .td.col-last, .td.col-age { cursor: pointer; }
 
+    /* In the new issue-detail page, the side-panel layout is *inline* —
+       it doesn't slide in from the right. We keep all the sp-* descendant
+       styles but neuter the panel positioning. */
     .side-panel {
-      position: fixed; top: 0; right: 0;
-      width: 900px; height: 100vh;
-      display: none; flex-direction: column;
+      position: static; width: auto; height: auto;
+      display: flex; flex-direction: column;
       background: #fff;
-      border-radius: 8px 0 0 8px;
-      box-shadow: -7px 0 10px 0 rgba(0,0,35,0.1);
-      overflow-y: auto; overflow-x: hidden;
-      z-index: 200;
+      border-radius: 0; box-shadow: none;
+      overflow: visible; z-index: auto;
     }
-    .side-panel.open {
-      display: flex;
-      animation: sp-slide-in 200ms cubic-bezier(0.25,0,0.25,1) both;
+    .side-panel.open { animation: none; }
+
+    /* Issue detail layout — replaces the scan-detail main pane */
+    .issue-detail-hdr {
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      padding: 20px 30px 15px;
+      flex-shrink: 0;
+      background: #ffffff;
     }
+    .issue-detail-hdr-left { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
+    .issue-detail-back {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; background: none; border: none; padding: 0;
+      cursor: pointer; flex-shrink: 0;
+    }
+    .issue-detail-back:hover { opacity: 0.75; }
+    .issue-detail-title {
+      font-family: var(--font); font-size: 22px; font-weight: 500;
+      color: #000023; line-height: 1.3; letter-spacing: 0.11px;
+      margin: 0; min-width: 0;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .issue-detail-hdr-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .issue-detail-manage-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      height: 40px; padding: 0 20px;
+      background: #fff; border: 1px solid #CBD0D1; border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--font); font-size: 14px; font-weight: 500;
+      color: #333332; line-height: 1.4; letter-spacing: 0.07px;
+    }
+    .issue-detail-manage-btn:hover { border-color: #8C8D8E; }
+    .issue-detail-manage-btn[aria-expanded="true"] { border-color: #000023; color: #000023; }
+    .issue-detail-manage-btn[aria-expanded="true"] svg { transform: rotate(180deg); }
+    .issue-detail-manage-btn svg { transition: transform 120ms ease; }
+    .issue-detail-raise-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 40px; padding: 0 24px;
+      background: #ff6633; border: none; border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--font); font-size: 14px; font-weight: 700;
+      color: #fff; line-height: 1.2; letter-spacing: 0.07px;
+    }
+    .issue-detail-raise-btn:hover { background: #E5582B; }
+
+    /* Manage issue collapsible panel */
+    .issue-detail-manage-panel {
+      margin: 0 30px 20px;
+      padding: 20px;
+      background: #F0F8FB;
+      border: 1px solid #CBD0D1;
+      border-radius: 8px;
+    }
+    .issue-detail-manage-panel[hidden] { display: none; }
+    .issue-mgmt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px 24px;
+    }
+    .issue-mgmt-block { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .issue-mgmt-actions-block { align-items: flex-start; justify-content: flex-end; }
+    .issue-mgmt-label {
+      font-family: var(--font); font-size: 12px; font-weight: 500;
+      color: #676667; line-height: 1.2; letter-spacing: 0.06px;
+      text-transform: uppercase;
+    }
+    .issue-mgmt-assignee-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      height: 32px; padding: 0 10px;
+      background: #fff; border: 1px solid #CBD0D1; border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--font); font-size: 14px; font-weight: 500;
+      color: #333332; line-height: 1.4; letter-spacing: 0.07px;
+    }
+    .issue-mgmt-assignee-btn:hover { border-color: #8C8D8E; }
+    .issue-mgmt-assignee-avatar {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: #5B4FFF; color: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+    }
+    .issue-mgmt-tags { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .issue-mgmt-tag {
+      display: inline-flex; align-items: center; height: 26px; padding: 0 10px;
+      background: #fff; border: 1px solid #CBD0D1; border-radius: 4px;
+      font-family: var(--font); font-size: 12px; font-weight: 500;
+      color: #333332; letter-spacing: 0.06px;
+    }
+    .issue-mgmt-tag-add, .issue-mgmt-ticket-add {
+      display: inline-flex; align-items: center; gap: 6px;
+      height: 26px; padding: 0 10px;
+      background: #fff; border: 1px dashed #CBD0D1; border-radius: 4px;
+      cursor: pointer;
+      font-family: var(--font); font-size: 12px; font-weight: 500;
+      color: #676667; letter-spacing: 0.06px;
+    }
+    .issue-mgmt-tag-add:hover, .issue-mgmt-ticket-add:hover { border-color: #8C8D8E; color: #333332; }
+
+    /* Issue detail body — gives the (inlined) sp-* content padding */
+    .issue-detail-body { flex: 1; min-height: 0; overflow-y: auto; }
+    .issue-detail-body .sp-body { padding: 0 30px 30px; }
+    /* Issue tabs row should stretch the full width of the pane */
+    .issue-detail-body .sp-tabbar { background: transparent; padding-top: 0; }
+
+    /* Burp AI output row should line up under the Severity / Confidence
+       values above — they use sp-field-row with gap: 36px between
+       label and value. */
+    .issue-detail-body .sp-ai-output-row { gap: 36px; }
+
+    /* sp-manage card — full width, with the four primary blocks (dates,
+       status, severity, actions) sharing equal 25% of the row. Dates
+       sit left, status + severity sit centred, actions sit right. */
+    .issue-detail-body .sp-manage-row > .sp-manage-dates,
+    .issue-detail-body .sp-manage-row > .sp-manage-col,
+    .issue-detail-body .sp-manage-row > .sp-manage-actions {
+      flex: 1 1 0; min-width: 0;
+    }
+    .issue-detail-body .sp-manage-row > .sp-manage-dates    { align-items: flex-start; }
+    .issue-detail-body .sp-manage-row > .sp-manage-col      { align-items: flex-start; padding-left: 30px; }
+    .issue-detail-body .sp-manage-row > .sp-manage-actions  { align-items: flex-start; padding-left: 30px; }
+    .issue-detail-body .sp-manage-row > .sp-vdivider        { flex: 0 0 auto; }
     .sp-head {
       padding: 30px 30px 0; flex-shrink: 0;
       display: flex; justify-content: space-between; align-items: center; gap: 20px;
@@ -4065,41 +4301,40 @@
   <!-- Scan detail layout -->
   <div class="scan-layout">
 
-    <!-- ── Left sidebar ── -->
+    <!-- ── Issues sidebar — list of all issues in this scan ── -->
     <div class="scan-sidebar" id="scan-sidebar">
       <div class="scan-sidebar-inner">
 
-        <!-- Header: circle-left arrow + title + count (Figma: px-10px, no fixed height) -->
+        <!-- Header: back arrow + scan title -->
         <div class="scan-sidebar-hdr">
-          <a href="burp-dast-scans.html" class="scan-sidebar-back">
+          <a href="burp-dast-scan-detail.html" class="scan-sidebar-back">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;color:#B86633;"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5"/><path d="M13 8l-4 4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span class="scan-sidebar-title">Scans</span>
-            <span class="scan-sidebar-count">54</span>
+            <span class="scan-sidebar-title">Gin and Juice Shop</span>
           </a>
         </div>
 
         <!-- Divider -->
         <div class="scan-sidebar-divider"></div>
 
-        <!-- Content section: filter + table -->
+        <!-- Content section: filter + issues list -->
         <div class="scan-sidebar-content">
 
-        <!-- Filter row -->
-        <div class="scan-sidebar-filters">
-          <div class="scan-sidebar-filter-ctrl">
+        <!-- Filter by dropdown -->
+        <div class="issue-side-filter-row">
+          <div class="issue-side-filter-ctrl" id="issueSideFilterCtrl" role="button" tabindex="0" aria-expanded="false">
             <span class="scan-filter-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M7 12h10M11 18h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
-            <span class="scan-filter-label">Filter by</span>
+            <span class="scan-filter-label">Filter by <span class="issue-side-filter-count" id="issueSideFilterCount">(0)</span></span>
             <span class="scan-filter-chevron"><svg viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.29289 8.29289C5.68342 7.90237 6.31658 7.90237 6.70711 8.29289L12 13.5858L17.2929 8.29289C17.6834 7.90237 18.3166 7.90237 18.7071 8.29289C19.0976 8.68342 19.0976 9.31658 18.7071 9.70711L12.7071 15.7071C12.3166 16.0976 11.6834 16.0976 11.2929 15.7071L5.29289 9.70711C4.90237 9.31658 4.90237 8.68342 5.29289 8.29289Z" fill="#676667"/></svg></span>
           </div>
-          <div class="scan-sidebar-filter-ctrl">
-            <input class="scan-search-input" placeholder="Search" type="text">
-            <span class="scan-search-icon"><svg viewBox="0 0 24 24" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 12.886 17.2542 14.5977 16.0413 15.8564C16.0071 15.8827 15.9742 15.9116 15.9429 15.9429C15.9116 15.9742 15.8828 16.0071 15.8565 16.0413C14.5978 17.2541 12.886 18 11 18C7.13401 18 4 14.866 4 11ZM16.6177 18.0319C15.078 19.2635 13.125 20 11 20C6.02944 20 2 15.9706 2 11C2 6.02944 6.02944 2 11 2C15.9706 2 20 6.02944 20 11C20 13.125 19.2635 15.078 18.0319 16.6177L21.7071 20.2929C22.0977 20.6834 22.0977 21.3166 21.7071 21.7071C21.3166 22.0976 20.6834 22.0976 20.2929 21.7071L16.6177 18.0319Z" fill="currentColor"/></svg></span>
-          </div>
+          <div class="issue-side-filter-popover" id="issueSideFilterPopover"></div>
         </div>
 
 
-        <!-- Scan list table — DS .th/.tc, 3 cols: Start time | Site | Actions -->
-        <div class="scan-mini-table">
+        <!-- Issues list — vertical, selectable. Populated by JS at load. -->
+        <div class="issue-side-list" id="issueSideList"></div>
+
+        <!-- Hidden: original scan list (kept temporarily for diff safety) -->
+        <div class="scan-mini-table" style="display:none">
           <div class="scan-mini-thead">
             <div class="th col-start">
               <span class="th-label">Start time</span>
@@ -4191,589 +4426,317 @@
     <!-- ── Main content ── -->
     <div class="scan-main" id="scan-main">
 
-      <!-- Title + actions -->
-      <div class="scan-main-hdr">
-        <h1 class="scan-main-title">Gin and Juice Shop</h1>
-        <div class="scan-main-actions">
-          <button class="scan-btn-outlined">
-            <span style="display:flex;line-height:0;color:#333332;">
-              <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><g transform="translate(2, 1)"><path d="M8 9C8.55228 9 9 9.44771 9 10V16C9 16.5523 8.55228 17 8 17C7.44772 17 7 16.5523 7 16V10C7 9.44771 7.44772 9 8 9Z" fill="currentColor"/><path d="M13 16V10C13 9.44771 12.5523 9 12 9C11.4477 9 11 9.44771 11 10V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M5 4V3C5 2.20435 5.31607 1.44129 5.87868 0.87868C6.44129 0.31607 7.20435 0 8 0H12C12.7956 0 13.5587 0.31607 14.1213 0.87868C14.6839 1.44129 15 2.20435 15 3V4H19C19.5523 4 20 4.44772 20 5C20 5.55228 19.5523 6 19 6H18V19C18 19.7957 17.6839 20.5587 17.1213 21.1213C16.5587 21.6839 15.7957 22 15 22H5C4.20435 22 3.44129 21.6839 2.87868 21.1213C2.31607 20.5587 2 19.7957 2 19V6H1C0.447715 6 0 5.55228 0 5C0 4.44772 0.447715 4 1 4H5ZM7.29289 2.29289C7.48043 2.10536 7.73478 2 8 2H12C12.2652 2 12.5196 2.10536 12.7071 2.29289C12.8946 2.48043 13 2.73478 13 3V4H7V3C7 2.73478 7.10536 2.48043 7.29289 2.29289ZM4 6V19C4 19.2652 4.10536 19.5196 4.29289 19.7071C4.48043 19.8946 4.73478 20 5 20H15C15.2652 20 15.5196 19.8946 15.7071 19.7071C15.8946 19.5196 16 19.2652 16 19V6H4Z" fill="currentColor"/></g></svg>
-            </span>
-            Delete scan
+      <!-- Issue detail top bar — back arrow + title only.
+           Manage controls + Raise ticket now live inside sp-manage below. -->
+      <div class="issue-detail-hdr">
+        <div class="issue-detail-hdr-left">
+          <button class="issue-detail-back" type="button" aria-label="Back" id="issueDetailBack">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#B86633" stroke-width="1.5"/><path d="M13 8l-4 4 4 4" stroke="#B86633" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <button class="scan-btn-primary">
-            <span style="display:flex;line-height:0;">
-              <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><g clip-path="url(#snc)"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.8532 2.38753L5.12136 11.58L16.8532 20.7725C18.8875 18.1495 20 14.9172 20 11.58C20 8.24289 18.8875 5.01051 16.8532 2.38753ZM17.7528 0.338772C20.4899 3.44385 22 7.44084 22 11.58C22 15.7192 20.4899 19.7162 17.7528 22.8213C17.4025 23.2187 16.8029 23.2739 16.3859 22.9472L2.88323 12.3672C2.64132 12.1776 2.5 11.8874 2.5 11.58C2.5 11.2727 2.64132 10.9824 2.88323 10.7929L16.3859 0.212877C16.8029 -0.113902 17.4025 -0.0586839 17.7528 0.338772ZM13.9997 8.00003C14.4415 8.00003 14.7997 8.3582 14.7997 8.80003V11.2001H17.2C17.6418 11.2001 18 11.5582 18 12.0001C18 12.4419 17.6418 12.8001 17.2 12.8001H14.7997V15.2C14.7997 15.6419 14.4415 16 13.9997 16C13.5579 16 13.1997 15.6419 13.1997 15.2V12.8001H10.8C10.3582 12.8001 10 12.4419 10 12.0001C10 11.5582 10.3582 11.2001 10.8 11.2001H13.1997V8.80003C13.1997 8.3582 13.5579 8.00003 13.9997 8.00003Z" fill="currentColor"/></g><defs><clipPath id="snc"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>
-            </span>
-            New scan
-          </button>
+          <h1 class="issue-detail-title" id="issueDetailTitle">SQL injection</h1>
         </div>
       </div>
 
-      <!-- Stat bar -->
-      <div class="scan-stat-bar">
-        <!-- Status -->
-        <div class="scan-stat-block">
-          <span class="scan-stat-icon" style="color:#0094FF;">
-            <svg viewBox="0 0 24 24" fill="none" width="24" height="24"><path d="M23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M16.6448 8.28264C17.1289 8.70154 17.1817 9.43353 16.7628 9.91759L11.4132 16.0994C11.2062 16.3385 10.9105 16.4827 10.5947 16.4985C10.2788 16.5144 9.97021 16.4004 9.7404 16.1832L7.36278 13.9352C6.89762 13.4954 6.87706 12.7618 7.31684 12.2967C7.75663 11.8315 8.49024 11.8109 8.9554 12.2507L10.4529 13.6665L15.0099 8.40063C15.4288 7.91657 16.1608 7.86374 16.6448 8.28264Z" fill="white"/></svg>
-          </span>
-          <div class="scan-stat-text">
-            <span class="scan-stat-label">Status</span>
-            <span class="scan-stat-value">Complete</span>
+      <!-- Manage issue collapsible panel (kept for back-compat; not used) -->
+      <div class="issue-detail-manage-panel" id="issueManagePanel" hidden style="display:none">
+        <!-- Inline-rendered v10 manage controls -->
+        <div class="issue-mgmt-grid">
+          <div class="issue-mgmt-block">
+            <span class="issue-mgmt-label">Status</span>
+            <div class="status-drop" id="issueMgmtStatus" data-status="open" style="width:auto"></div>
           </div>
-        </div>
-        <div class="scan-stat-divider"></div>
-        <!-- Start time -->
-        <div class="scan-stat-block">
-          <span class="scan-stat-icon" style="color:#0094FF;">
-            <svg viewBox="0 0 24 24" fill="none" width="24" height="24"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12ZM12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM13 6C13 5.44772 12.5523 5 12 5C11.4477 5 11 5.44772 11 6V12C11 12.3788 11.214 12.725 11.5528 12.8944L15.5528 14.8944C16.0468 15.1414 16.6474 14.9412 16.8944 14.4472C17.1414 13.9532 16.9412 13.3526 16.4472 13.1056L13 11.382V6Z" fill="currentColor"/></svg>
-          </span>
-          <div class="scan-stat-text">
-            <span class="scan-stat-label">Start time</span>
-            <span class="scan-stat-value">Today at 8:35am</span>
+          <div class="issue-mgmt-block">
+            <span class="issue-mgmt-label">Severity</span>
+            <div class="sp-sev-drop" id="issueMgmtSeverity">
+              <span style="display:flex;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8.25" fill="#F32A4C"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.77007 8.42239C6.72231 8.22008 6.76066 8.00702 6.87597 7.83405L8.37597 5.58405C8.60573 5.23941 9.07138 5.14628 9.41603 5.37604C9.76067 5.60581 9.85381 6.07146 9.62404 6.41611L8.56975 7.99755L10.4971 9.0989C10.8427 9.29639 10.9738 9.72946 10.7958 10.0855L9.67082 12.3355C9.48558 12.706 9.03508 12.8561 8.66459 12.6709C8.29411 12.4857 8.14394 12.0352 8.32918 11.6647L9.13689 10.0493L7.1279 8.90126C6.94741 8.79813 6.81783 8.62471 6.77007 8.42239Z" fill="white"/></svg></span>
+              <span>High</span>
+            </div>
           </div>
-        </div>
-        <div class="scan-stat-divider"></div>
-        <!-- Time remaining -->
-        <div class="scan-stat-block">
-          <span class="scan-stat-icon" style="color:#676667;">
-            <svg viewBox="0 0 24 24" fill="none" width="24" height="24"><path fill-rule="evenodd" clip-rule="evenodd" d="M5.61778 4.35695C5.98105 4.21165 6.72546 4 8 4C9.06075 4 9.96943 4.34184 11.2572 4.85695L11.3128 4.8792L11.357 4.89688C12.5589 5.3779 14.1132 6 16 6C16.7533 6 17.4171 5.94506 18 5.85354V13.7702C17.5766 13.8875 16.9292 14 16 14C14.9393 14 14.0305 13.6582 12.7428 13.143L12.643 13.1031C11.4411 12.6221 9.88675 12 8 12C7.31677 12 6.4665 12.0453 5.69365 12.1189C5.4616 12.141 5.22714 12.1664 5 12.1954V11V4.46131C5.03539 4.45876 5.06957 4.45618 5.10184 4.45357C5.16432 4.44851 5.23034 4.44254 5.28916 4.43538C5.31803 4.43187 5.35534 4.42686 5.39469 4.41977L5.39693 4.41937C5.42025 4.41521 5.51392 4.3985 5.61778 4.35695ZM3 11V3.53805C3 3.15805 3.21538 2.81089 3.55583 2.64211C3.64808 2.59638 3.72748 2.575 3.75373 2.56806C3.79067 2.55829 3.82232 2.55198 3.84283 2.54819C3.88409 2.54057 3.92265 2.53549 3.95009 2.53219C4.00705 2.52534 4.07152 2.51965 4.1318 2.51488C4.24902 2.50561 4.39514 2.49641 4.53213 2.48778L4.55066 2.48661C4.69865 2.47729 4.83542 2.46858 4.94067 2.46007L4.98918 2.45594C5.61933 2.22147 6.58819 2 8 2C9.5 2 10.7505 2.50021 11.9984 2.99936L12.0558 3.02233C13.2859 3.51452 14.5231 4 16 4C17.202 4 18.0826 3.83942 18.7056 3.6475C19.009 3.55407 19.3386 3.61019 19.594 3.79872C19.8493 3.98725 20 4.2858 20 4.6032V14.4619C20 14.8419 19.7846 15.1891 19.4442 15.3579C19.3508 15.4042 19.2447 15.4521 19.125 15.5C18.5 15.75 17.5 16 16 16C14.5 16 13.2495 15.4998 12.0016 15.0006L12 15L11.9442 14.9777C10.7142 14.4855 9.47695 14 8 14C7.39148 14 6.60555 14.0411 5.88324 14.1099C5.5517 14.1414 5.25259 14.1772 5 14.214V22C5 22.5523 4.55228 23 4 23C3.44772 23 3 22.5523 3 22V13.3968V11Z" fill="currentColor"/></svg>
-          </span>
-          <div class="scan-stat-text">
-            <span class="scan-stat-label">Time remaining</span>
-            <span class="scan-stat-value">32m remaining</span>
+          <div class="issue-mgmt-block">
+            <span class="issue-mgmt-label">Assignee</span>
+            <button class="issue-mgmt-assignee-btn" type="button">
+              <span class="issue-mgmt-assignee-avatar">RC</span>
+              <span>Ric Corbally</span>
+            </button>
           </div>
-        </div>
-        <div class="scan-stat-divider"></div>
-        <!-- Duration -->
-        <div class="scan-stat-block">
-          <span class="scan-stat-icon" style="color:#0094FF;">
-            <svg viewBox="0 0 24 24" fill="none" width="24" height="24"><path fill-rule="evenodd" clip-rule="evenodd" d="M3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12ZM12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM13 6C13 5.44772 12.5523 5 12 5C11.4477 5 11 5.44772 11 6V12C11 12.3788 11.214 12.725 11.5528 12.8944L15.5528 14.8944C16.0468 15.1414 16.6474 14.9412 16.8944 14.4472C17.1414 13.9532 16.9412 13.3526 16.4472 13.1056L13 11.382V6Z" fill="currentColor"/></svg>
-          </span>
-          <div class="scan-stat-text">
-            <span class="scan-stat-label">Duration</span>
-            <span class="scan-stat-value">3m 45s</span>
+          <div class="issue-mgmt-block">
+            <span class="issue-mgmt-label">Tags</span>
+            <div class="issue-mgmt-tags">
+              <span class="issue-mgmt-tag">payments</span>
+              <button class="issue-mgmt-tag-add" type="button" aria-label="Add tag">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="#333332" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="issue-mgmt-block">
+            <span class="issue-mgmt-label">Linked tickets</span>
+            <div class="issue-mgmt-tickets">
+              <button class="issue-mgmt-ticket-add" type="button">
+                <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Link ticket
+              </button>
+            </div>
+          </div>
+          <div class="issue-mgmt-block issue-mgmt-actions-block">
+            <button class="sp-qbtn" id="spRetestBtn" type="button">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M17 10A7 7 0 1 1 10 3h4.5M14.5 1v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Re-test issue
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Tab bar -->
-      <div class="scan-tab-bar">
-        <div class="scan-tab">Dashboard</div>
-        <div class="scan-tab">Timeline</div>
-        <div class="scan-tab is-active">Issues <span class="scan-tab-badge">50</span></div>
-        <div class="scan-tab">Discovered URLs <span class="scan-tab-badge">0</span></div>
-        <div class="scan-tab">Scan statistics</div>
-        <div class="scan-tab">Settings</div>
-        <div class="scan-tab">Reporting</div>
-        <div class="scan-tab">Logging</div>
+      <!-- Issue detail body (transplanted from the original side panel) -->
+      <div class="issue-detail-body side-panel open" id="sidePanel">
+          <div class="sp-body">
+
+    <div class="sp-manage">
+
+      <div class="sp-manage-card">
+        <p class="sp-manage-age" id="spAgeText">—</p>
+        <div class="sp-manage-row">
+
+          <!-- Dates -->
+          <div class="sp-manage-dates">
+            <div class="sp-date-pair"><span class="sp-date-label">First seen:</span><span class="sp-date-val" id="spFirstSeen">—</span></div>
+            <div class="sp-date-pair"><span class="sp-date-label">Last seen:</span><span class="sp-date-val" id="spLastSeen">—</span></div>
+          </div>
+
+          <div class="sp-vdivider"></div>
+
+          <!-- Status -->
+          <div class="sp-manage-col">
+            <span class="sp-manage-col-label">Status:</span>
+            <div class="status-drop" id="spStatusPill" data-status="new" style="width:auto"></div>
+          </div>
+
+          <div class="sp-vdivider"></div>
+
+          <!-- Severity -->
+          <div class="sp-manage-col">
+            <span class="sp-manage-col-label">Severity:</span>
+            <div class="sp-sev-drop" id="spSevDrop">
+              <span id="spSevDot" style="display:flex;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8.25" fill="#F32A4C"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.77007 8.42239C6.72231 8.22008 6.76066 8.00702 6.87597 7.83405L8.37597 5.58405C8.60573 5.23941 9.07138 5.14628 9.41603 5.37604C9.76067 5.60581 9.85381 6.07146 9.62404 6.41611L8.56975 7.99755L10.4971 9.0989C10.8427 9.29639 10.9738 9.72946 10.7958 10.0855L9.67082 12.3355C9.48558 12.706 9.03508 12.8561 8.66459 12.6709C8.29411 12.4857 8.14394 12.0352 8.32918 11.6647L9.13689 10.0493L7.1279 8.90126C6.94741 8.79813 6.81783 8.62471 6.77007 8.42239Z" fill="white"/></svg></span>
+              <span id="spSevText">High</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M4 6.5l4 4 4-4" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+
+          <div class="sp-vdivider"></div>
+
+          <!-- Actions -->
+          <div class="sp-manage-actions">
+            <button class="sp-qbtn" id="spRetestBtn">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M17 10A7 7 0 1 1 10 3h4.5M14.5 1v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Re-test issue
+            </button>
+            <button class="sp-qbtn" id="spRaiseTicketBtn">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M18 2L11.5 10.5M18 2L12.5 17.5L9 12L2.5 8.5 18 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Raise ticket
+            </button>
+          </div>
+
+        </div>
       </div>
 
-      <!-- Content area -->
-      <div class="scan-content">
-      <div class="issues-grid-card">
+      <!-- Re-test result notification bar -->
+      <div class="sp-retest-bar" id="spRetestBar">
+        <div class="sp-retest-bar-content">
+          <span id="spRetestBarIcon" style="flex-shrink:0;display:flex"></span>
+          <span class="sp-retest-bar-text" id="spRetestBarText"></span>
+        </div>
+        <button class="sp-retest-bar-close" id="spRetestBarClose" aria-label="Dismiss">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke="#333332" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
 
-        <!-- Download row -->
-        <div class="download-row">
-          <div style="display:flex;flex-direction:column;gap:5px;">
-            <span style="font-family:var(--font);font-size:12px;font-weight:400;color:var(--c-secondary);line-height:1.4;">8 April 2026, 9:47 AM</span>
-            <div style="display:flex;align-items:center;gap:20px;">
-              <h3 class="download-row-title">Issues found in this scan</h3>
-              <a href="burp-dast-figma-issues-v11-gin-juice-shop.html" class="btn-outlined" style="padding:0 15px;text-decoration:none;">Live issues for this site</a>
+    </div>
+
+    <div class="sp-tabbar">
+      <div class="sp-tabs">
+        <div class="sp-tab active" data-pane="Advisory">Advisory<span class="sp-tab-underline"></span></div>
+        <div class="sp-tab" data-pane="Request">Request<span class="sp-tab-underline"></span></div>
+        <div class="sp-tab" data-pane="Response">Response<span class="sp-tab-underline"></span></div>
+        <div class="sp-tab-badge-wrap">
+          <div class="sp-tab" data-pane="Timeline">Timeline<span class="sp-tab-underline"></span></div>
+          <span class="sp-tab-badge">New</span>
+        </div>
+      </div>
+      <div class="sp-tabbar-line"></div>
+    </div>
+
+    <!-- Advisory pane -->
+    <div class="sp-tab-pane active" id="spPaneAdvisory">
+      <div class="sp-advisory">
+        <div class="sp-advisory-card">
+          <div class="sp-advisory-section">
+            <p class="sp-section-title">Severity</p>
+            <div class="sp-advisory-row">
+              <div class="sp-icon-40">
+                <div class="sp-sev-icon-lg sev-high" id="spSevIconInner">
+                  <svg viewBox="0 0 18 18" width="34" height="34" fill="none"><g clip-path="url(#sp-sev-clip)"><circle cx="9" cy="9" r="8.25" fill="currentColor" style="color:transparent"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.77007 8.42239C6.72231 8.22008 6.76066 8.00702 6.87597 7.83405L8.37597 5.58405C8.60573 5.23941 9.07138 5.14628 9.41603 5.37604C9.76067 5.60581 9.85381 6.07146 9.62404 6.41611L8.56975 7.99755L10.4971 9.0989C10.8427 9.29639 10.9738 9.72946 10.7958 10.0855L9.67082 12.3355C9.48558 12.706 9.03508 12.8561 8.66459 12.6709C8.29411 12.4857 8.14394 12.0352 8.32918 11.6647L9.13689 10.0493L7.1279 8.90126C6.94741 8.79813 6.81783 8.62471 6.77007 8.42239Z" fill="white"/></g><defs><clipPath id="sp-sev-clip"><rect width="18" height="18" fill="white"/></clipPath></defs></svg>
+                </div>
+              </div>
+              <div class="sp-fields">
+                <div class="sp-field-row"><span class="sp-field-label">Severity:</span><span class="sp-field-val" id="spSevVal">High</span></div>
+                <div class="sp-field-row"><span class="sp-field-label">Confidence:</span><span class="sp-field-val" id="spConfVal">High</span></div>
+                <div class="sp-ai-output-row" id="spAIOutputRow" style="display:none">
+                  <span class="sp-ai-output-label">Burp AI:</span>
+                  <span class="sp-ai-output-val" id="spAIOutputVal"></span>
+                </div>
+              </div>
             </div>
           </div>
-          <div style="display:flex;align-items:center;gap:30px;">
-            <a href="burp-dast-settings-issue-management.html#sla-settings" class="btn-quat"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g clip-path="url(#clip-sla-icon-ns)"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.25 11.9999C7.25 9.35712 9.35721 7.24991 12 7.24991C14.6428 7.24991 16.75 9.35712 16.75 11.9999C16.75 14.6427 14.6428 16.7499 12 16.7499C9.35721 16.7499 7.25 14.6427 7.25 11.9999ZM9.25 11.9999C9.25 10.4617 10.4618 9.24991 12 9.24991C13.5382 9.24991 14.75 10.4617 14.75 11.9999C14.75 13.5381 13.5382 14.7499 12 14.7499C10.4618 14.7499 9.25 13.5381 9.25 11.9999Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M15.3394 3.36791L15.6864 3.50671L17.1111 2.73957C17.1178 2.73597 17.1245 2.73249 17.1313 2.7291C17.1609 2.71427 17.191 2.70031 17.2214 2.68719C17.882 2.40244 18.7154 2.52132 19.2637 3.06959L20.8637 4.66959C21.412 5.21785 21.5308 6.05125 21.2461 6.71187C21.233 6.74229 21.219 6.77235 21.2042 6.802C21.2025 6.80543 21.2007 6.80884 21.199 6.81225C21.1972 6.81557 21.1955 6.81887 21.1937 6.82216L20.4266 8.24685L20.5654 8.59385L22.0862 9.08266C22.1327 9.09636 22.1783 9.11188 22.223 9.12913C22.9403 9.40596 23.4167 10.1278 23.4167 10.8666V13.1333C23.4167 13.9294 22.8801 14.5785 22.233 14.8226C22.2123 14.8304 22.1915 14.8378 22.1705 14.8448L22.1557 14.8496L20.5637 15.3436L20.4266 15.6863L21.1937 17.111L21.1979 17.1189L21.2042 17.1312C21.2197 17.1621 21.2342 17.1936 21.2479 17.2254C21.5304 17.8854 21.4108 18.7164 20.8637 19.2636L19.2637 20.8636C18.7166 21.4107 17.8855 21.5302 17.2255 21.2477C17.1937 21.2341 17.1623 21.2196 17.1313 21.2041C17.1272 21.202 17.1231 21.1999 17.1191 21.1978C17.1164 21.1964 17.1138 21.195 17.1111 21.1936L15.6864 20.4265L15.3437 20.5635L14.8497 22.1556L14.8449 22.1704C14.8379 22.1913 14.8305 22.2122 14.8227 22.2329C14.5786 22.88 13.9295 23.4166 13.1334 23.4166H10.8667C10.0706 23.4166 9.42148 22.88 9.17738 22.2329C9.16957 22.2122 9.16217 22.1913 9.1552 22.1704L9.15041 22.1556L8.65634 20.5635L8.31364 20.4265L6.88895 21.1936C6.88228 21.1972 6.87556 21.2007 6.86878 21.2041C6.83781 21.2196 6.80639 21.2341 6.77457 21.2477C6.1146 21.5302 5.28351 21.4107 4.73638 20.8636L3.13638 19.2636C2.58811 18.7153 2.46923 17.8819 2.75398 17.2213C2.76709 17.1909 2.78106 17.1608 2.79589 17.1312C2.79927 17.1244 2.80276 17.1177 2.80635 17.111L3.57349 15.6863L3.4347 15.3393L1.91408 14.8506C1.86769 14.8369 1.82189 14.8216 1.77679 14.8045C1.10215 14.5496 0.583374 13.9192 0.583374 13.1333V10.8666C0.583374 10.045 1.1549 9.37995 1.82954 9.15507L1.83719 9.15252L3.36067 8.66288C3.3828 8.60267 3.40536 8.54065 3.42853 8.47694L3.43075 8.47083C3.45729 8.39786 3.48464 8.32263 3.51255 8.24707L2.7958 6.8687C2.78265 6.8424 2.77017 6.81577 2.75836 6.78884L2.74589 6.75971C2.47145 6.10214 2.59332 5.27931 3.13638 4.73626L4.73638 3.13626C5.30087 2.57176 6.16762 2.46245 6.83686 2.78021C6.84755 2.78528 6.85819 2.79047 6.86878 2.79576C6.87556 2.79915 6.88228 2.80264 6.88895 2.80623L8.32234 3.57806L8.73036 3.42505L9.20267 1.95566L9.2064 1.93623C9.21554 1.89006 9.22651 1.84471 9.2392 1.80024C9.44655 1.07396 10.1159 0.583252 10.8667 0.583252H13.1334C13.9069 0.583252 14.5416 1.08979 14.8009 1.71203C14.817 1.75074 14.8317 1.7899 14.8449 1.82941L14.8474 1.83707L15.3394 3.36791ZM11.1017 2.58325L10.6344 4.03707C10.4474 4.61881 10.0048 5.08315 9.43261 5.29771L9.02458 5.45072C8.48409 5.6534 7.88239 5.61267 7.37414 5.339L6.06629 4.63477L4.63347 6.06759L5.28699 7.32437C5.54709 7.82456 5.584 8.4113 5.38863 8.94014C5.36277 9.01014 5.33714 9.08061 5.31034 9.15433L5.30813 9.1604C5.28511 9.22371 5.26138 9.28892 5.23788 9.35287C5.02548 9.93073 4.55877 10.3786 3.97264 10.5669L2.58337 11.0135V12.9649L4.04671 13.4353C4.61395 13.6176 5.07037 14.0433 5.29165 14.5965L5.43045 14.9435C5.65047 15.4936 5.61531 16.1129 5.33444 16.6345L4.63489 17.9337L6.06629 19.3651L7.36544 18.6655C7.88706 18.3847 8.50636 18.3495 9.05642 18.5695L9.39912 18.7066C9.95888 18.9305 10.3878 19.395 10.5665 19.9707L11.0152 21.4166H12.9849L13.4336 19.9707C13.6123 19.395 14.0412 18.9305 14.601 18.7066L14.9437 18.5695C15.4937 18.3495 16.113 18.3847 16.6346 18.6655L17.9338 19.3651L19.3652 17.9337L18.6656 16.6345C18.3848 16.1129 18.3496 15.4936 18.5696 14.9435L18.7067 14.6008C18.9306 14.0411 19.3951 13.6122 19.9709 13.4335L21.4167 12.9848V10.9683L19.9534 10.4979C19.3861 10.3156 18.9297 9.88983 18.7084 9.33663L18.5696 8.98963C18.3496 8.43957 18.3848 7.82027 18.6656 7.29865L19.3652 5.9995L17.9338 4.56811L16.6346 5.26765C16.113 5.54852 15.4937 5.58368 14.9437 5.36366L14.5967 5.22486C14.0434 5.00357 13.6177 4.54714 13.4354 3.97987L12.9865 2.58325H11.1017Z" fill="currentColor"/></g><defs><clipPath id="clip-sla-icon-ns"><rect width="24" height="24" fill="white"/></clipPath></defs></svg>SLA settings</a>
-            <a href="#" class="btn-quat"><svg width="20" height="20" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M7 1.75v7M4.5 6.25l2.5 2.5 2.5-2.5M1.75 10.5v1a1 1 0 0 0 1 1h8.5a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Download issues</a>
-            <div class="issues-search">
-              <input type="text" placeholder="Search" aria-label="Search issues" id="issuesSearch">
-              <svg class="issues-search-icon" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="6" cy="6" r="4.5" stroke="#676667" stroke-width="1.2"/>
-                <path d="M9.5 9.5L12.5 12.5" stroke="#676667" stroke-width="1.2" stroke-linecap="round"/>
-              </svg>
+          <div class="sp-card-divider"></div>
+          <div class="sp-advisory-section">
+            <p class="sp-section-title">Location</p>
+            <div class="sp-advisory-row">
+              <div class="sp-icon-40">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M20 3C14.477 3 10 7.477 10 13C10 19.75 20 37 20 37C20 37 30 19.75 30 13C30 7.477 25.523 3 20 3Z" stroke="#333332" stroke-width="1.6" stroke-linejoin="round"/><circle cx="20" cy="13" r="3.5" stroke="#333332" stroke-width="1.6"/></svg>
+              </div>
+              <div class="sp-fields">
+                <div class="sp-field-row"><span class="sp-field-label">Host:</span><span class="sp-field-val" id="spHost">—</span></div>
+                <div class="sp-field-row"><span class="sp-field-label">Path:</span><span class="sp-field-val" id="spPathEl">—</span></div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Filter bar — scoped to issues table only (no Site chip: single-site view) -->
-        <div class="filter-bar">
-          <div class="filter-chips" id="filterChips"></div>
-          <button class="filter-clear-all" id="filterClearAll">Clear all</button>
-        </div>
-
-        <!-- Table section -->
-        <div class="table-section" id="tableSection">
-
-          <!-- Sticky table header -->
-          <div class="table-header-sticky-wrap">
-            <div id="tableHeaderHScroll" style="overflow:hidden;">
-              <div class="table-header">
-
-                <!-- Severity (with checkbox) -->
-                <div class="th col-severity" data-sort-col="severity" style="gap:4px;padding-left:6px;">
-                  <div class="th-checkbox">
-                    <div class="select-all-cb" id="selectAllCb" onclick="toggleSelectAll(this)"></div>
-                  </div>
-                  Severity
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
-                  <div class="col-resize-handle" data-col="col-severity"></div>
-                </div>
-
-                <div class="th col-confidence" data-sort-col="confidence">
-                  Confidence
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
-                  <div class="col-resize-handle" data-col="col-confidence"></div>
-                </div>
-
-                <div class="th col-issue" data-sort-col="issue">
-                  Issue
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
-                  <div class="col-resize-handle" data-col="col-issue"></div>
-                </div>
-
-                <div class="th col-path" data-sort-col="path">
-                  Path
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
-                  <div class="col-resize-handle" data-col="col-path"></div>
-                </div>
-
-                <div class="th col-first" data-sort-col="first">
-                  First seen
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
-                  <div class="col-resize-handle" data-col="col-first"></div>
-                </div>
-
-                <div class="th col-last" data-sort-col="last">
-                  Last seen
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
-                  <div class="col-resize-handle" data-col="col-last"></div>
-                </div>
-
-                <div class="th col-age" data-sort-col="age">
-                  Age
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
-                  <div class="col-resize-handle" data-col="col-age"></div>
-                </div>
-
-                <div class="th col-detection" data-sort-col="detection">
-                  Detected in this scan
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
-                  <div class="col-resize-handle" data-col="col-detection"></div>
-                </div>
-
-                <div class="th col-status" data-sort-col="status">
-                  Current status
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
-                  <div class="col-resize-handle" data-col="col-status"></div>
-                </div>
-
-                <div class="th col-ai" data-sort-col="ai">
-                  Burp AI output
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
-                  <div class="col-resize-handle" data-col="col-ai"></div>
-                </div>
-
-                <div class="th col-assignee" data-sort-col="assignee">
-                  Assignee
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
-                  <div class="col-resize-handle" data-col="col-assignee"></div>
-                </div>
-
-                <div class="th col-tags" data-sort-col="tags">
-                  Site tags
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
-                  <div class="col-resize-handle" data-col="col-tags"></div>
-                </div>
-
-                <div class="th col-tickets" data-sort-col="tickets">
-                  Linked tickets
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
-                  <div class="col-resize-handle" data-col="col-tickets"></div>
-                </div>
-
-                <div class="th col-actions">
-                  Actions
-                </div>
-
-              </div><!-- /table-header -->
-            </div><!-- /tableHeaderHScroll -->
-          </div><!-- /table-header-sticky-wrap -->
-
-          <!-- Table scroll wrapper -->
-          <div class="table-scroll-wrap" id="tableScrollWrap">
-            <div class="table-body">
-
-              <!-- ── Row 1: SQL injection — High/Certain/Issue Confirmed ── -->
-              <div class="table-row" data-row data-sev="High" data-status="open" data-conf="Certain">
-                <div class="td col-severity" style="padding-left:6px;">
-                  <div class="severity-cell">
-                    <div class="row-checkbox" data-cb onclick="toggleRowCb(this)"></div>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#sev-high-ns1)"><circle cx="9" cy="9" r="8.25" fill="#F32A4C"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.77007 8.42239C6.72231 8.22008 6.76066 8.00702 6.87597 7.83405L8.37597 5.58405C8.60573 5.23941 9.07138 5.14628 9.41603 5.37604C9.76067 5.60581 9.85381 6.07146 9.62404 6.41611L8.56975 7.99755L10.4971 9.0989C10.8427 9.29639 10.9738 9.72946 10.7958 10.0855L9.67082 12.3355C9.48558 12.706 9.03508 12.8561 8.66459 12.6709C8.29411 12.4857 8.14394 12.0352 8.32918 11.6647L9.13689 10.0493L7.1279 8.90126C6.94741 8.79813 6.81783 8.62471 6.77007 8.42239Z" fill="white"/></g><defs><clipPath id="sev-high-ns1"><rect width="18" height="18" fill="white"/></clipPath></defs></svg>
-                    <span class="severity-label">High</span>
-                  </div>
-                </div>
-                <div class="td col-confidence">Certain</div>
-                <div class="td col-issue">
-                  <span class="issue-name">SQL injection</span>
-                </div>
-                <div class="td col-path"><span class="path-text">/api/users/search</span></div>
-                <div class="td col-first">12 Mar 25</div>
-                <div class="td col-last">15 Mar 25</div>
-                <div class="td col-age">
-                  <span class="age-badge age-overdue">408 days</span>
-                </div>
-                <div class="td col-detection">Present</div>
-                <div class="td col-status">
-                  <div class="status-drop" data-status="open"></div>
-                </div>
-                <div class="td col-assignee"></div>
-                <div class="td col-tags"></div>
-                <div class="td col-tickets"></div>
-                <div class="td col-actions">
-                  <button class="kebab-btn" data-dot>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12.75C9.82843 12.75 10.5 13.4216 10.5 14.25C10.5 15.0784 9.82843 15.75 9 15.75C8.17157 15.75 7.5 15.0784 7.5 14.25C7.5 13.4216 8.17157 12.75 9 12.75ZM9 7.5C9.82843 7.5 10.5 8.17157 10.5 9C10.5 9.82843 9.82843 10.5 9 10.5C8.17157 10.5 7.5 9.82843 7.5 9C7.5 8.17157 8.17157 7.5 9 7.5ZM9 2.25C9.82843 2.25 10.5 2.92157 10.5 3.75C10.5 4.57843 9.82843 5.25 9 5.25C8.17157 5.25 7.5 4.57843 7.5 3.75C7.5 2.92157 8.17157 2.25 9 2.25Z" fill="#676667"/></svg>
-                  </button>
-                </div>
-              </div>
-
-              <!-- ── Row 2: Stored cross-site scripting — High/Certain/Issue Confirmed ── -->
-              <div class="table-row" data-row data-sev="High" data-status="open" data-conf="Certain">
-                <div class="td col-severity" style="padding-left:6px;">
-                  <div class="severity-cell">
-                    <div class="row-checkbox" data-cb onclick="toggleRowCb(this)"></div>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#sev-high-ns2)"><circle cx="9" cy="9" r="8.25" fill="#F32A4C"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.77007 8.42239C6.72231 8.22008 6.76066 8.00702 6.87597 7.83405L8.37597 5.58405C8.60573 5.23941 9.07138 5.14628 9.41603 5.37604C9.76067 5.60581 9.85381 6.07146 9.62404 6.41611L8.56975 7.99755L10.4971 9.0989C10.8427 9.29639 10.9738 9.72946 10.7958 10.0855L9.67082 12.3355C9.48558 12.706 9.03508 12.8561 8.66459 12.6709C8.29411 12.4857 8.14394 12.0352 8.32918 11.6647L9.13689 10.0493L7.1279 8.90126C6.94741 8.79813 6.81783 8.62471 6.77007 8.42239Z" fill="white"/></g><defs><clipPath id="sev-high-ns2"><rect width="18" height="18" fill="white"/></clipPath></defs></svg>
-                    <span class="severity-label">High</span>
-                  </div>
-                </div>
-                <div class="td col-confidence">Certain</div>
-                <div class="td col-issue">
-                  <span class="issue-name">Stored cross-site scripting</span>
-                </div>
-                <div class="td col-path"><span class="path-text">/app/comments</span></div>
-                <div class="td col-first">15 Mar 25</div>
-                <div class="td col-last">18 Mar 25</div>
-                <div class="td col-age">
-                  <span class="age-badge age-overdue">405 days</span>
-                </div>
-                <div class="td col-detection"><span class="det-new">New</span></div>
-                <div class="td col-status">
-                  <div class="status-drop" data-status="open"></div>
-                </div>
-                <div class="td col-assignee"></div>
-                <div class="td col-tags"></div>
-                <div class="td col-tickets"></div>
-                <div class="td col-actions">
-                  <button class="kebab-btn" data-dot>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12.75C9.82843 12.75 10.5 13.4216 10.5 14.25C10.5 15.0784 9.82843 15.75 9 15.75C8.17157 15.75 7.5 15.0784 7.5 14.25C7.5 13.4216 8.17157 12.75 9 12.75ZM9 7.5C9.82843 7.5 10.5 8.17157 10.5 9C10.5 9.82843 9.82843 10.5 9 10.5C8.17157 10.5 7.5 9.82843 7.5 9C7.5 8.17157 8.17157 7.5 9 7.5ZM9 2.25C9.82843 2.25 10.5 2.92157 10.5 3.75C10.5 4.57843 9.82843 5.25 9 5.25C8.17157 5.25 7.5 4.57843 7.5 3.75C7.5 2.92157 8.17157 2.25 9 2.25Z" fill="#676667"/></svg>
-                  </button>
-                </div>
-              </div>
-
-              <!-- ── Row 3: Broken authentication — High/Firm/Inconclusive ── -->
-              <div class="table-row" data-row data-sev="High" data-status="open" data-conf="Firm">
-                <div class="td col-severity" style="padding-left:6px;">
-                  <div class="severity-cell">
-                    <div class="row-checkbox" data-cb onclick="toggleRowCb(this)"></div>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#sev-high-ns3)"><circle cx="9" cy="9" r="8.25" fill="#F32A4C"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.77007 8.42239C6.72231 8.22008 6.76066 8.00702 6.87597 7.83405L8.37597 5.58405C8.60573 5.23941 9.07138 5.14628 9.41603 5.37604C9.76067 5.60581 9.85381 6.07146 9.62404 6.41611L8.56975 7.99755L10.4971 9.0989C10.8427 9.29639 10.9738 9.72946 10.7958 10.0855L9.67082 12.3355C9.48558 12.706 9.03508 12.8561 8.66459 12.6709C8.29411 12.4857 8.14394 12.0352 8.32918 11.6647L9.13689 10.0493L7.1279 8.90126C6.94741 8.79813 6.81783 8.62471 6.77007 8.42239Z" fill="white"/></g><defs><clipPath id="sev-high-ns3"><rect width="18" height="18" fill="white"/></clipPath></defs></svg>
-                    <span class="severity-label">High</span>
-                  </div>
-                </div>
-                <div class="td col-confidence">Firm</div>
-                <div class="td col-issue">
-                  <span class="issue-name">Broken authentication</span>
-                </div>
-                <div class="td col-path"><span class="path-text">/auth/login</span></div>
-                <div class="td col-first">18 Mar 25</div>
-                <div class="td col-last">21 Mar 25</div>
-                <div class="td col-age">
-                  <span class="age-badge age-overdue">402 days</span>
-                </div>
-                <div class="td col-detection">Present</div>
-                <div class="td col-status">
-                  <div class="status-drop" data-status="open"></div>
-                </div>
-                <div class="td col-assignee"></div>
-                <div class="td col-tags"></div>
-                <div class="td col-tickets"></div>
-                <div class="td col-actions">
-                  <button class="kebab-btn" data-dot>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12.75C9.82843 12.75 10.5 13.4216 10.5 14.25C10.5 15.0784 9.82843 15.75 9 15.75C8.17157 15.75 7.5 15.0784 7.5 14.25C7.5 13.4216 8.17157 12.75 9 12.75ZM9 7.5C9.82843 7.5 10.5 8.17157 10.5 9C10.5 9.82843 9.82843 10.5 9 10.5C8.17157 10.5 7.5 9.82843 7.5 9C7.5 8.17157 8.17157 7.5 9 7.5ZM9 2.25C9.82843 2.25 10.5 2.92157 10.5 3.75C10.5 4.57843 9.82843 5.25 9 5.25C8.17157 5.25 7.5 4.57843 7.5 3.75C7.5 2.92157 8.17157 2.25 9 2.25Z" fill="#676667"/></svg>
-                  </button>
-                </div>
-              </div>
-
-              <!-- ── Row 4: Server-side request forgery — High/Firm/Issue Confirmed ── -->
-              <div class="table-row" data-row data-sev="High" data-status="open" data-conf="Firm">
-                <div class="td col-severity" style="padding-left:6px;">
-                  <div class="severity-cell">
-                    <div class="row-checkbox" data-cb onclick="toggleRowCb(this)"></div>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#sev-high-ns4)"><circle cx="9" cy="9" r="8.25" fill="#F32A4C"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.77007 8.42239C6.72231 8.22008 6.76066 8.00702 6.87597 7.83405L8.37597 5.58405C8.60573 5.23941 9.07138 5.14628 9.41603 5.37604C9.76067 5.60581 9.85381 6.07146 9.62404 6.41611L8.56975 7.99755L10.4971 9.0989C10.8427 9.29639 10.9738 9.72946 10.7958 10.0855L9.67082 12.3355C9.48558 12.706 9.03508 12.8561 8.66459 12.6709C8.29411 12.4857 8.14394 12.0352 8.32918 11.6647L9.13689 10.0493L7.1279 8.90126C6.94741 8.79813 6.81783 8.62471 6.77007 8.42239Z" fill="white"/></g><defs><clipPath id="sev-high-ns4"><rect width="18" height="18" fill="white"/></clipPath></defs></svg>
-                    <span class="severity-label">High</span>
-                  </div>
-                </div>
-                <div class="td col-confidence">Firm</div>
-                <div class="td col-issue">
-                  <span class="issue-name">Server-side request forgery</span>
-                </div>
-                <div class="td col-path"><span class="path-text">/api/fetch?url=</span></div>
-                <div class="td col-first">20 Mar 25</div>
-                <div class="td col-last">23 Mar 25</div>
-                <div class="td col-age">
-                  <span class="age-badge age-overdue">400 days</span>
-                </div>
-                <div class="td col-detection"><span class="det-regressed">Regressed</span></div>
-                <div class="td col-status">
-                  <div class="status-drop" data-status="open"></div>
-                </div>
-                <div class="td col-assignee"></div>
-                <div class="td col-tags"></div>
-                <div class="td col-tickets"></div>
-                <div class="td col-actions">
-                  <button class="kebab-btn" data-dot>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12.75C9.82843 12.75 10.5 13.4216 10.5 14.25C10.5 15.0784 9.82843 15.75 9 15.75C8.17157 15.75 7.5 15.0784 7.5 14.25C7.5 13.4216 8.17157 12.75 9 12.75ZM9 7.5C9.82843 7.5 10.5 8.17157 10.5 9C10.5 9.82843 9.82843 10.5 9 10.5C8.17157 10.5 7.5 9.82843 7.5 9C7.5 8.17157 8.17157 7.5 9 7.5ZM9 2.25C9.82843 2.25 10.5 2.92157 10.5 3.75C10.5 4.57843 9.82843 5.25 9 5.25C8.17157 5.25 7.5 4.57843 7.5 3.75C7.5 2.92157 8.17157 2.25 9 2.25Z" fill="#676667"/></svg>
-                  </button>
-                </div>
-              </div>
-
-              <!-- ── Row 5: Cross-site request forgery — Medium/Certain/Issue Confirmed ── -->
-              <div class="table-row" data-row data-sev="Medium" data-status="open" data-conf="Certain">
-                <div class="td col-severity" style="padding-left:6px;">
-                  <div class="severity-cell">
-                    <div class="row-checkbox" data-cb onclick="toggleRowCb(this)"></div>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#sev-med-ns1)"><circle cx="9" cy="9" r="8.25" fill="#FF6633"/><rect x="8.25" y="4.5" width="1.5" height="6" rx="0.75" fill="white"/><circle cx="9" cy="13" r="0.75" fill="white"/></g><defs><clipPath id="sev-med-ns1"><rect width="18" height="18" fill="white"/></clipPath></defs></svg>
-                    <span class="severity-label">Medium</span>
-                  </div>
-                </div>
-                <div class="td col-confidence">Certain</div>
-                <div class="td col-issue">
-                  <span class="issue-name">Cross-site request forgery</span>
-                </div>
-                <div class="td col-path"><span class="path-text">/account/settings</span></div>
-                <div class="td col-first">14 Mar 25</div>
-                <div class="td col-last">17 Mar 25</div>
-                <div class="td col-age">
-                  <span class="age-badge age-overdue">406 days</span>
-                </div>
-                <div class="td col-detection"><span class="det-regressed">Regressed</span></div>
-                <div class="td col-status">
-                  <div class="status-drop" data-status="open"></div>
-                </div>
-                <div class="td col-assignee"></div>
-                <div class="td col-tags"></div>
-                <div class="td col-tickets"></div>
-                <div class="td col-actions">
-                  <button class="kebab-btn" data-dot>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12.75C9.82843 12.75 10.5 13.4216 10.5 14.25C10.5 15.0784 9.82843 15.75 9 15.75C8.17157 15.75 7.5 15.0784 7.5 14.25C7.5 13.4216 8.17157 12.75 9 12.75ZM9 7.5C9.82843 7.5 10.5 8.17157 10.5 9C10.5 9.82843 9.82843 10.5 9 10.5C8.17157 10.5 7.5 9.82843 7.5 9C7.5 8.17157 8.17157 7.5 9 7.5ZM9 2.25C9.82843 2.25 10.5 2.92157 10.5 3.75C10.5 4.57843 9.82843 5.25 9 5.25C8.17157 5.25 7.5 4.57843 7.5 3.75C7.5 2.92157 8.17157 2.25 9 2.25Z" fill="#676667"/></svg>
-                  </button>
-                </div>
-              </div>
-
-              <!-- ── Row 6: Insecure direct object reference — Medium/Firm/Inconclusive ── -->
-              <div class="table-row" data-row data-sev="Medium" data-status="open" data-conf="Firm">
-                <div class="td col-severity" style="padding-left:6px;">
-                  <div class="severity-cell">
-                    <div class="row-checkbox" data-cb onclick="toggleRowCb(this)"></div>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#sev-med-ns2)"><circle cx="9" cy="9" r="8.25" fill="#FF6633"/><rect x="8.25" y="4.5" width="1.5" height="6" rx="0.75" fill="white"/><circle cx="9" cy="13" r="0.75" fill="white"/></g><defs><clipPath id="sev-med-ns2"><rect width="18" height="18" fill="white"/></clipPath></defs></svg>
-                    <span class="severity-label">Medium</span>
-                  </div>
-                </div>
-                <div class="td col-confidence">Firm</div>
-                <div class="td col-issue">
-                  <span class="issue-name">Insecure direct object reference</span>
-                </div>
-                <div class="td col-path"><span class="path-text">/api/documents/42</span></div>
-                <div class="td col-first">16 Mar 25</div>
-                <div class="td col-last">19 Mar 25</div>
-                <div class="td col-age">
-                  <span class="age-badge age-overdue">404 days</span>
-                </div>
-                <div class="td col-detection">Present</div>
-                <div class="td col-status">
-                  <div class="status-drop" data-status="open"></div>
-                </div>
-                <div class="td col-assignee"></div>
-                <div class="td col-tags"></div>
-                <div class="td col-tickets"></div>
-                <div class="td col-actions">
-                  <button class="kebab-btn" data-dot>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12.75C9.82843 12.75 10.5 13.4216 10.5 14.25C10.5 15.0784 9.82843 15.75 9 15.75C8.17157 15.75 7.5 15.0784 7.5 14.25C7.5 13.4216 8.17157 12.75 9 12.75ZM9 7.5C9.82843 7.5 10.5 8.17157 10.5 9C10.5 9.82843 9.82843 10.5 9 10.5C8.17157 10.5 7.5 9.82843 7.5 9C7.5 8.17157 8.17157 7.5 9 7.5ZM9 2.25C9.82843 2.25 10.5 2.92157 10.5 3.75C10.5 4.57843 9.82843 5.25 9 5.25C8.17157 5.25 7.5 4.57843 7.5 3.75C7.5 2.92157 8.17157 2.25 9 2.25Z" fill="#676667"/></svg>
-                  </button>
-                </div>
-              </div>
-
-              <!-- ── Row 7: Sensitive data in URL query string — Medium/Certain/Issue Confirmed/Accepted ── -->
-              <div class="table-row" data-row data-sev="Medium" data-status="accepted" data-conf="Certain">
-                <div class="td col-severity" style="padding-left:6px;">
-                  <div class="severity-cell">
-                    <div class="row-checkbox" data-cb onclick="toggleRowCb(this)"></div>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#sev-med-ns3)"><circle cx="9" cy="9" r="8.25" fill="#FF6633"/><rect x="8.25" y="4.5" width="1.5" height="6" rx="0.75" fill="white"/><circle cx="9" cy="13" r="0.75" fill="white"/></g><defs><clipPath id="sev-med-ns3"><rect width="18" height="18" fill="white"/></clipPath></defs></svg>
-                    <span class="severity-label">Medium</span>
-                  </div>
-                </div>
-                <div class="td col-confidence">Certain</div>
-                <div class="td col-issue">
-                  <span class="issue-name">Sensitive data in URL query string</span>
-                </div>
-                <div class="td col-path"><span class="path-text">/login?token=…</span></div>
-                <div class="td col-first">10 Mar 25</div>
-                <div class="td col-last">13 Mar 25</div>
-                <div class="td col-age">
-                  <span class="age-badge age-overdue">410 days</span>
-                </div>
-                <div class="td col-detection"><span class="det-new">New</span></div>
-                <div class="td col-status">
-                  <div class="status-drop" data-status="accepted"></div>
-                </div>
-                <div class="td col-assignee"></div>
-                <div class="td col-tags"></div>
-                <div class="td col-tickets"></div>
-                <div class="td col-actions">
-                  <button class="kebab-btn" data-dot>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12.75C9.82843 12.75 10.5 13.4216 10.5 14.25C10.5 15.0784 9.82843 15.75 9 15.75C8.17157 15.75 7.5 15.0784 7.5 14.25C7.5 13.4216 8.17157 12.75 9 12.75ZM9 7.5C9.82843 7.5 10.5 8.17157 10.5 9C10.5 9.82843 9.82843 10.5 9 10.5C8.17157 10.5 7.5 9.82843 7.5 9C7.5 8.17157 8.17157 7.5 9 7.5ZM9 2.25C9.82843 2.25 10.5 2.92157 10.5 3.75C10.5 4.57843 9.82843 5.25 9 5.25C8.17157 5.25 7.5 4.57843 7.5 3.75C7.5 2.92157 8.17157 2.25 9 2.25Z" fill="#676667"/></svg>
-                  </button>
-                </div>
-              </div>
-
-              <!-- ── Row 8: Path traversal — Low/Firm/Error ── -->
-              <div class="table-row" data-row data-sev="Low" data-status="open" data-conf="Firm">
-                <div class="td col-severity" style="padding-left:6px;">
-                  <div class="severity-cell">
-                    <div class="row-checkbox" data-cb onclick="toggleRowCb(this)"></div>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#sev-low-ns1)"><circle cx="9" cy="9" r="8.25" fill="#0094FF"/><rect x="8.25" y="5.25" width="1.5" height="5.25" rx="0.75" fill="white"/><circle cx="9" cy="12.75" r="0.75" fill="white"/></g><defs><clipPath id="sev-low-ns1"><rect width="18" height="18" fill="white"/></clipPath></defs></svg>
-                    <span class="severity-label">Low</span>
-                  </div>
-                </div>
-                <div class="td col-confidence">Firm</div>
-                <div class="td col-issue">
-                  <span class="issue-name">Path traversal</span>
-                </div>
-                <div class="td col-path"><span class="path-text">/files?name=../</span></div>
-                <div class="td col-first">19 Mar 25</div>
-                <div class="td col-last">22 Mar 25</div>
-                <div class="td col-age">
-                  <span class="age-badge age-overdue">401 days</span>
-                </div>
-                <div class="td col-detection"><span class="det-new">New</span></div>
-                <div class="td col-status">
-                  <div class="status-drop" data-status="open"></div>
-                </div>
-                <div class="td col-assignee"></div>
-                <div class="td col-tags"></div>
-                <div class="td col-tickets"></div>
-                <div class="td col-actions">
-                  <button class="kebab-btn" data-dot>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12.75C9.82843 12.75 10.5 13.4216 10.5 14.25C10.5 15.0784 9.82843 15.75 9 15.75C8.17157 15.75 7.5 15.0784 7.5 14.25C7.5 13.4216 8.17157 12.75 9 12.75ZM9 7.5C9.82843 7.5 10.5 8.17157 10.5 9C10.5 9.82843 9.82843 10.5 9 10.5C8.17157 10.5 7.5 9.82843 7.5 9C7.5 8.17157 8.17157 7.5 9 7.5ZM9 2.25C9.82843 2.25 10.5 2.92157 10.5 3.75C10.5 4.57843 9.82843 5.25 9 5.25C8.17157 5.25 7.5 4.57843 7.5 3.75C7.5 2.92157 8.17157 2.25 9 2.25Z" fill="#676667"/></svg>
-                  </button>
-                </div>
-              </div>
-
-              <!-- ── Row 9: Vulnerable JavaScript library — Low/Certain/Issue Confirmed ── -->
-              <div class="table-row" data-row data-sev="Low" data-status="open" data-conf="Certain">
-                <div class="td col-severity" style="padding-left:6px;">
-                  <div class="severity-cell">
-                    <div class="row-checkbox" data-cb onclick="toggleRowCb(this)"></div>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#sev-low-ns2)"><circle cx="9" cy="9" r="8.25" fill="#0094FF"/><rect x="8.25" y="5.25" width="1.5" height="5.25" rx="0.75" fill="white"/><circle cx="9" cy="12.75" r="0.75" fill="white"/></g><defs><clipPath id="sev-low-ns2"><rect width="18" height="18" fill="white"/></clipPath></defs></svg>
-                    <span class="severity-label">Low</span>
-                  </div>
-                </div>
-                <div class="td col-confidence">Certain</div>
-                <div class="td col-issue">
-                  <span class="issue-name">Vulnerable JavaScript library</span>
-                </div>
-                <div class="td col-path"><span class="path-text">/</span></div>
-                <div class="td col-first">11 Mar 25</div>
-                <div class="td col-last">14 Mar 25</div>
-                <div class="td col-age">
-                  <span class="age-badge age-overdue">409 days</span>
-                </div>
-                <div class="td col-detection">Present</div>
-                <div class="td col-status">
-                  <div class="status-drop" data-status="open"></div>
-                </div>
-                <div class="td col-assignee"></div>
-                <div class="td col-tags"></div>
-                <div class="td col-tickets"></div>
-                <div class="td col-actions">
-                  <button class="kebab-btn" data-dot>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12.75C9.82843 12.75 10.5 13.4216 10.5 14.25C10.5 15.0784 9.82843 15.75 9 15.75C8.17157 15.75 7.5 15.0784 7.5 14.25C7.5 13.4216 8.17157 12.75 9 12.75ZM9 7.5C9.82843 7.5 10.5 8.17157 10.5 9C10.5 9.82843 9.82843 10.5 9 10.5C8.17157 10.5 7.5 9.82843 7.5 9C7.5 8.17157 8.17157 7.5 9 7.5ZM9 2.25C9.82843 2.25 10.5 2.92157 10.5 3.75C10.5 4.57843 9.82843 5.25 9 5.25C8.17157 5.25 7.5 4.57843 7.5 3.75C7.5 2.92157 8.17157 2.25 9 2.25Z" fill="#676667"/></svg>
-                  </button>
-                </div>
-              </div>
-
-              <!-- ── Row 10: Cookie without secure flag — Low/Certain/Issue Confirmed ── -->
-              <div class="table-row" data-row data-sev="Low" data-status="open" data-conf="Certain">
-                <div class="td col-severity" style="padding-left:6px;">
-                  <div class="severity-cell">
-                    <div class="row-checkbox" data-cb onclick="toggleRowCb(this)"></div>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#sev-low-ns3)"><circle cx="9" cy="9" r="8.25" fill="#0094FF"/><rect x="8.25" y="5.25" width="1.5" height="5.25" rx="0.75" fill="white"/><circle cx="9" cy="12.75" r="0.75" fill="white"/></g><defs><clipPath id="sev-low-ns3"><rect width="18" height="18" fill="white"/></clipPath></defs></svg>
-                    <span class="severity-label">Low</span>
-                  </div>
-                </div>
-                <div class="td col-confidence">Certain</div>
-                <div class="td col-issue">
-                  <span class="issue-name">Cookie without secure flag</span>
-                </div>
-                <div class="td col-path"><span class="path-text">/</span></div>
-                <div class="td col-first">11 Mar 25</div>
-                <div class="td col-last">14 Mar 25</div>
-                <div class="td col-age">
-                  <span class="age-badge age-overdue">409 days</span>
-                </div>
-                <div class="td col-detection">Present</div>
-                <div class="td col-status">
-                  <div class="status-drop" data-status="open"></div>
-                </div>
-                <div class="td col-assignee"></div>
-                <div class="td col-tags"></div>
-                <div class="td col-tickets"></div>
-                <div class="td col-actions">
-                  <button class="kebab-btn" data-dot>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12.75C9.82843 12.75 10.5 13.4216 10.5 14.25C10.5 15.0784 9.82843 15.75 9 15.75C8.17157 15.75 7.5 15.0784 7.5 14.25C7.5 13.4216 8.17157 12.75 9 12.75ZM9 7.5C9.82843 7.5 10.5 8.17157 10.5 9C10.5 9.82843 9.82843 10.5 9 10.5C8.17157 10.5 7.5 9.82843 7.5 9C7.5 8.17157 8.17157 7.5 9 7.5ZM9 2.25C9.82843 2.25 10.5 2.92157 10.5 3.75C10.5 4.57843 9.82843 5.25 9 5.25C8.17157 5.25 7.5 4.57843 7.5 3.75C7.5 2.92157 8.17157 2.25 9 2.25Z" fill="#676667"/></svg>
-                  </button>
-                </div>
-              </div>
-
-            </div><!-- /table-body -->
-          </div><!-- /table-scroll-wrap -->
-
-          <!-- Pagination -->
-          <div class="pagination" id="pagination">
-            <!-- Issues per page -->
-            <div class="pg-per-page">
-              <span class="pg-per-page-label">Issues per page</span>
-              <select class="pg-per-page-select" id="pgPageSize" aria-label="Issues per page">
-                <option value="10" selected>10</option>
-                <option value="15">15</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
+        <!-- ── Burp AI section (inline in Advisory tab) ── -->
+        <div id="spAIContent" style="display:none; flex-direction:column; gap:20px;">
+          <!-- Burp AI results panel -->
+          <div class="sp-ai-panel" id="spAIPanel">
+            <div class="sp-ai-panel-header" onclick="document.getElementById('spAIPanel').classList.toggle('collapsed')">
+              <span class="sp-ai-panel-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:white"><path d="M20.281 15.2093C15.9937 13.9771 15.0231 13.0065 13.7908 8.7191C13.7536 8.58935 13.6351 8.50012 13.5002 8.50012C13.3653 8.50012 13.2467 8.58935 13.2095 8.7191C11.977 13.0068 11.0064 13.9771 6.719 15.2093C6.58924 15.2465 6.50002 15.3651 6.50002 15.5C6.50002 15.6349 6.58924 15.7534 6.719 15.7906C11.0067 17.0232 11.977 17.9935 13.2095 22.2811C13.2467 22.4109 13.3653 22.5001 13.5002 22.5001C13.6351 22.5001 13.7536 22.4109 13.7908 22.2811C15.0231 17.9938 15.9934 17.0232 20.281 15.7906C20.4108 15.7534 20.5 15.6349 20.5 15.5C20.5 15.3651 20.4108 15.2468 20.281 15.2093Z" fill="currentColor"/><path d="M22.7968 4.23013C20.1075 3.45742 19.5431 2.89269 18.7698 0.203212C18.7352 0.0828006 18.6252 0 18.5 0C18.3748 0 18.2648 0.0828006 18.2303 0.203212C17.4573 2.89269 16.8925 3.45742 14.2032 4.23013C14.0828 4.26465 14 4.37468 14 4.49986C14 4.62504 14.0828 4.73507 14.2032 4.76959C16.8925 5.54259 17.4573 6.10731 18.2303 8.79679C18.2648 8.9172 18.3748 9 18.5 9C18.6252 9 18.7352 8.9172 18.7698 8.79679C19.5431 6.10731 20.1075 5.54259 22.7968 4.76959C22.9172 4.73507 23 4.62532 23 4.49986C23 4.3744 22.9172 4.26465 22.7968 4.23013Z" fill="currentColor"/><path d="M11 7.50009C11 7.30786 10.8729 7.1389 10.6879 7.08589C7.49971 6.16911 6.83077 5.50017 5.91442 2.31193C5.86141 2.12703 5.69245 1.99988 5.50022 1.99988C5.30798 1.99988 5.13902 2.12703 5.08601 2.31193C4.16923 5.50017 3.50029 6.16911 0.312057 7.08589C0.12715 7.1389 0 7.30743 0 7.50009C0 7.69276 0.12715 7.86129 0.312057 7.9143C3.49986 8.83021 4.16923 9.49958 5.08601 12.6878C5.13902 12.8727 5.30798 12.9999 5.50022 12.9999C5.69245 12.9999 5.86141 12.8727 5.91442 12.6878C6.83077 9.49958 7.50014 8.83021 10.6879 7.9143C10.8729 7.86086 11 7.69233 11 7.50009Z" fill="currentColor"/></svg>
+                Burp AI results:
+              </span>
+              <span class="sp-ai-acc-actions"><span class="sp-ai-updated" id="spAIUpdated"></span><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy all" onclick="event.stopPropagation(); copyAllAI(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-panel-chevron">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span></span>
             </div>
-            <!-- First page -->
-            <button class="pg-btn" id="pgFirst" title="First page">
-              <span class="pg-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M7.25 13.4167C7.25 13.8769 7.62312 14.25 8.08333 14.25C8.54354 14.25 8.91667 13.8769 8.91667 13.4167L8.91667 4.58333C8.91667 4.12312 8.54354 3.75 8.08333 3.75C7.62312 3.75 7.25 4.12312 7.25 4.58333L7.25 13.4167ZM14.9107 13.5893C15.2362 13.9147 15.7638 13.9147 16.0893 13.5893C16.4147 13.2638 16.4147 12.7362 16.0893 12.4107L11.6786 8L16.0893 3.58934C16.4147 3.26384 16.4147 2.73616 16.0893 2.41066C15.7638 2.08517 15.2362 2.08517 14.9107 2.41066L9.91066 7.41066C9.58517 7.73616 9.58517 8.26384 9.91066 8.58934L14.9107 13.5893Z" fill="currentColor"/></svg></span>
-            </button>
-            <!-- Prev page -->
-            <button class="pg-btn" id="pgPrev" title="Previous page">
-              <span class="pg-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M11.5893 2.41066C11.9147 2.73616 11.9147 3.26384 11.5893 3.58934L7.17855 8L11.5893 12.4107C11.9147 12.7362 11.9147 13.2638 11.5893 13.5893C11.2638 13.9147 10.7362 13.9147 10.4107 13.5893L5.41066 8.58934C5.08517 8.26384 5.08517 7.73616 5.41066 7.41066L10.4107 2.41066C10.7362 2.08517 11.2638 2.08517 11.5893 2.41066Z" fill="currentColor"/></svg></span>
-            </button>
-            <!-- Page input -->
-            <input class="pg-input" id="pgInput" type="text" value="1" aria-label="Current page">
-            <!-- of N label -->
-            <span class="pg-label">of <span id="pgTotal">1</span></span>
-            <!-- Next page -->
-            <button class="pg-btn" id="pgNext" title="Next page">
-              <span class="pg-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.41066 2.41066C6.08517 2.73616 6.08517 3.26384 6.41066 3.58934L10.8214 8L6.41066 12.4107C6.08517 12.7362 6.08517 13.2638 6.41066 13.5893C6.73616 13.9147 7.26384 13.9147 7.58934 13.5893L12.5893 8.58934C12.9147 8.26384 12.9147 7.73616 12.5893 7.41066L7.58934 2.41066C7.26384 2.08517 6.73616 2.08517 6.41066 2.41066Z" fill="currentColor"/></svg></span>
-            </button>
-            <!-- Last page -->
-            <button class="pg-btn" id="pgLast" title="Last page">
-              <span class="pg-icon"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.9167 13.4167C10.9167 13.8769 10.5435 14.25 10.0833 14.25C9.62312 14.25 9.25 13.8769 9.25 13.4167V4.58333C9.25 4.12312 9.62312 3.75 10.0833 3.75C10.5435 3.75 10.9167 4.12312 10.9167 4.58333V13.4167ZM3.08934 2.41066C2.76384 2.08517 2.23616 2.08517 1.91066 2.41066C1.58517 2.73616 1.58517 3.26384 1.91066 3.58934L6.32145 8L1.91066 12.4107C1.58517 12.7362 1.58517 13.2638 1.91066 13.5893C2.23616 13.9147 2.76384 13.9147 3.08934 13.5893L8.08934 8.58934C8.41483 8.26384 8.41483 7.73616 8.08934 7.41066L3.08934 2.41066Z" fill="currentColor"/></svg></span>
-            </button>
+            <div class="sp-ai-panel-body">
+              <div class="sp-ai-accordion open">
+                <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
+                  <span class="sp-ai-acc-title">Summary</span>
+                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+                </div>
+                <div class="sp-ai-acc-body"><p class="sp-ai-acc-summary" id="spAISummary"></p></div>
+              </div>
+              <div class="sp-ai-accordion">
+                <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
+                  <span class="sp-ai-acc-title">Impact</span>
+                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+                </div>
+                <div class="sp-ai-acc-body" id="spAIImpact"></div>
+              </div>
+              <div class="sp-ai-accordion">
+                <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
+                  <span class="sp-ai-acc-title">Evidence</span>
+                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+                </div>
+                <div class="sp-ai-acc-body" id="spAIEvidence"></div>
+              </div>
+              <div class="sp-ai-accordion">
+                <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
+                  <span class="sp-ai-acc-title">Details</span>
+                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+                </div>
+                <div class="sp-ai-acc-body" id="spAIDetails"></div>
+              </div>
+              <div class="sp-ai-accordion">
+                <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
+                  <span class="sp-ai-acc-title">Reproduction steps</span>
+                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
+                </div>
+                <div class="sp-ai-acc-body" id="spAIRepro"></div>
+              </div>
+              <div class="sp-ai-action-row">
+                <button class="sp-investigate-btn" id="spInvestigateBtn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:white"><path d="M20.281 15.2093C15.9937 13.9771 15.0231 13.0065 13.7908 8.7191C13.7536 8.58935 13.6351 8.50012 13.5002 8.50012C13.3653 8.50012 13.2467 8.58935 13.2095 8.7191C11.977 13.0068 11.0064 13.9771 6.719 15.2093C6.58924 15.2465 6.50002 15.3651 6.50002 15.5C6.50002 15.6349 6.58924 15.7534 6.719 15.7906C11.0067 17.0232 11.977 17.9935 13.2095 22.2811C13.2467 22.4109 13.3653 22.5001 13.5002 22.5001C13.6351 22.5001 13.7536 22.4109 13.7908 22.2811C15.0231 17.9938 15.9934 17.0232 20.281 15.7906C20.4108 15.7534 20.5 15.6349 20.5 15.5C20.5 15.3651 20.4108 15.2468 20.281 15.2093Z" fill="currentColor"/><path d="M22.7968 4.23013C20.1075 3.45742 19.5431 2.89269 18.7698 0.203212C18.7352 0.0828006 18.6252 0 18.5 0C18.3748 0 18.2648 0.0828006 18.2303 0.203212C17.4573 2.89269 16.8925 3.45742 14.2032 4.23013C14.0828 4.26465 14 4.37468 14 4.49986C14 4.62504 14.0828 4.73507 14.2032 4.76959C16.8925 5.54259 17.4573 6.10731 18.2303 8.79679C18.2648 8.9172 18.3748 9 18.5 9C18.6252 9 18.7352 8.9172 18.7698 8.79679C19.5431 6.10731 20.1075 5.54259 22.7968 4.76959C22.9172 4.73507 23 4.62532 23 4.49986C23 4.3744 22.9172 4.26465 22.7968 4.23013Z" fill="currentColor"/><path d="M11 7.50009C11 7.30786 10.8729 7.1389 10.6879 7.08589C7.49971 6.16911 6.83077 5.50017 5.91442 2.31193C5.86141 2.12703 5.69245 1.99988 5.50022 1.99988C5.30798 1.99988 5.13902 2.12703 5.08601 2.31193C4.16923 5.50017 3.50029 6.16911 0.312057 7.08589C0.12715 7.1389 0 7.30743 0 7.50009C0 7.69276 0.12715 7.86129 0.312057 7.9143C3.49986 8.83021 4.16923 9.49958 5.08601 12.6878C5.13902 12.8727 5.30798 12.9999 5.50022 12.9999C5.69245 12.9999 5.86141 12.8727 5.91442 12.6878C6.83077 9.49958 7.50014 8.83021 10.6879 7.9143C10.8729 7.86086 11 7.69233 11 7.50009Z" fill="currentColor"/></svg>
+                  Investigate issue
+                </button>
+                <a href="#" class="sp-ai-learn-more" style="padding:0" onclick="return false">
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8 2H12V6M12 2L6 8M3 4H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Learn more about Burp AI results
+                </a>
+              </div>
+            </div>
           </div>
+        </div>
+<div class="sp-accordions">
+          <div class="sp-accordion open">
+            <div class="sp-acc-header">
+              <span class="sp-acc-title">Issue detail</span>
+              <span class="sp-acc-chevron">
+                <svg class="sp-chevron-up" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 14.5l5-5 5 5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <svg class="sp-chevron-down" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 9.5l5 5 5-5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+            <div class="sp-acc-divider"></div>
+            <div class="sp-acc-body" id="spIssueDetail"></div>
+          </div>
+          <div class="sp-accordion">
+            <div class="sp-acc-header"><span class="sp-acc-title">Issue background</span><span class="sp-acc-chevron"><svg class="sp-chevron-up" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 14.5l5-5 5 5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="sp-chevron-down" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 9.5l5 5 5-5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+            <div class="sp-acc-divider"></div>
+            <div class="sp-acc-body" id="spIssueBackground"></div>
+          </div>
+          <div class="sp-accordion">
+            <div class="sp-acc-header"><span class="sp-acc-title">Issue remediation</span><span class="sp-acc-chevron"><svg class="sp-chevron-up" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 14.5l5-5 5 5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="sp-chevron-down" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 9.5l5 5 5-5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+            <div class="sp-acc-divider"></div>
+            <div class="sp-acc-body" id="spIssueRemediation"></div>
+          </div>
+          <div class="sp-accordion">
+            <div class="sp-acc-header"><span class="sp-acc-title">References</span><span class="sp-acc-chevron"><svg class="sp-chevron-up" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 14.5l5-5 5 5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="sp-chevron-down" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 9.5l5 5 5-5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+            <div class="sp-acc-divider"></div>
+            <div class="sp-acc-body" id="spIssueReferences"></div>
+          </div>
+          <div class="sp-accordion">
+            <div class="sp-acc-header"><span class="sp-acc-title">Vulnerability classifications</span><span class="sp-acc-chevron"><svg class="sp-chevron-up" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 14.5l5-5 5 5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="sp-chevron-down" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 9.5l5 5 5-5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
+            <div class="sp-acc-divider"></div>
+            <div class="sp-acc-body" id="spIssueClassifications"></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /spPaneAdvisory -->
 
-        </div><!-- /table-section -->
+    <!-- Request pane -->
+    <div class="sp-tab-pane" id="spPaneRequest">
+      <p style="color:#676667;font-size:14px;padding:20px 0">Request data will appear here.</p>
+    </div>
 
-      </div><!-- /issues-grid-card -->
+    <!-- Response pane -->
+    <div class="sp-tab-pane" id="spPaneResponse">
+      <p style="color:#676667;font-size:14px;padding:20px 0">Response data will appear here.</p>
+    </div>
+
+    <!-- Timeline pane -->
+    <div class="sp-tab-pane" id="spPaneTimeline">
+      <div class="tl-filters">
+        <button class="tl-filter-btn active" data-filter="all">All</button>
+        <button class="tl-filter-btn" data-filter="status">Status changes</button>
+        <button class="tl-filter-btn" data-filter="retest">Re-tests</button>
+        <button class="tl-filter-btn" data-filter="comment">Comments</button>
+        <button class="tl-filter-btn" data-filter="assignees">Assignments</button>
+        <button class="tl-filter-btn" data-filter="tags">Tags</button>
+        <button class="tl-filter-btn" data-filter="integrations">Integrations</button>
+        <button class="tl-filter-btn" data-filter="ai">AI investigation</button>
+      </div>
+      <div class="tl-list">
+        <div class="tl-dot-col" id="tlDotCol"></div>
+        <div class="tl-cards" id="tlCards"></div>
+      </div>
+      <div class="tl-divider"></div>
+      <div class="tl-comments">
+        <h3 class="tl-comments-title">Comments</h3>
+        <textarea class="tl-comments-input" id="tlCommentInput" placeholder="Add a comment…"></textarea>
+        <div class="tl-comments-footer">
+          <button class="tl-comments-btn" id="tlCommentBtn" disabled>Add comment</button>
+        </div>
+      </div>
+    </div><!-- /spPaneTimeline -->
+
+  </div><!-- /sp-body -->
       </div>
 
     </div><!-- /scan-main -->
@@ -4988,256 +4951,7 @@
   </div>
 </div>
 
-<div class="side-panel" id="sidePanel">
-  <div class="sp-head">
-    <p class="sp-title" id="spTitle">Issue title</p>
-    <button class="sp-close" id="spClose" aria-label="Close">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M17.927 0.427C18.496-0.142 19.42-0.142 19.99 0.427 20.559 0.996 20.559 1.92 19.99 2.489L12.271 10.208 19.99 17.927C20.559 18.497 20.559 19.42 19.99 19.99 19.42 20.559 18.497 20.559 17.927 19.99L10.208 12.271 2.489 19.99C1.92 20.559 0.996 20.559 0.427 19.99-0.142 19.42-0.142 18.497 0.427 17.927L8.146 10.208 0.427 2.489C-0.142 1.92-0.142 0.996 0.427 0.427 0.996-0.142 1.92-0.142 2.489 0.427L10.208 8.146 17.927 0.427Z" fill="#333332"/></svg>
-    </button>
-  </div>
 
-  <div class="sp-body">
-
-    <div class="sp-manage">
-
-      <div class="sp-manage-card">
-        <p class="sp-manage-age" id="spAgeText">—</p>
-        <div class="sp-manage-row">
-
-          <!-- Dates -->
-          <div class="sp-manage-dates">
-            <div class="sp-date-pair"><span class="sp-date-label">First seen:</span><span class="sp-date-val" id="spFirstSeen">—</span></div>
-            <div class="sp-date-pair"><span class="sp-date-label">Last seen:</span><span class="sp-date-val" id="spLastSeen">—</span></div>
-          </div>
-
-          <div class="sp-vdivider"></div>
-
-          <!-- Status -->
-          <div class="sp-manage-col">
-            <span class="sp-manage-col-label">Status:</span>
-            <div class="status-drop" id="spStatusPill" data-status="new" style="width:auto"></div>
-          </div>
-
-          <div class="sp-vdivider"></div>
-
-          <!-- Severity -->
-          <div class="sp-manage-col">
-            <span class="sp-manage-col-label">Severity:</span>
-            <div class="sp-sev-drop" id="spSevDrop">
-              <span id="spSevDot" style="display:flex;flex-shrink:0"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8.25" fill="#F32A4C"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.77007 8.42239C6.72231 8.22008 6.76066 8.00702 6.87597 7.83405L8.37597 5.58405C8.60573 5.23941 9.07138 5.14628 9.41603 5.37604C9.76067 5.60581 9.85381 6.07146 9.62404 6.41611L8.56975 7.99755L10.4971 9.0989C10.8427 9.29639 10.9738 9.72946 10.7958 10.0855L9.67082 12.3355C9.48558 12.706 9.03508 12.8561 8.66459 12.6709C8.29411 12.4857 8.14394 12.0352 8.32918 11.6647L9.13689 10.0493L7.1279 8.90126C6.94741 8.79813 6.81783 8.62471 6.77007 8.42239Z" fill="white"/></svg></span>
-              <span id="spSevText">High</span>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M4 6.5l4 4 4-4" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
-          </div>
-
-          <div class="sp-vdivider"></div>
-
-          <!-- Actions -->
-          <div class="sp-manage-actions">
-            <button class="sp-qbtn" id="spRetestBtn">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M17 10A7 7 0 1 1 10 3h4.5M14.5 1v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Re-test issue
-            </button>
-            <button class="sp-qbtn" id="spRaiseTicketBtn">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M18 2L11.5 10.5M18 2L12.5 17.5L9 12L2.5 8.5 18 2Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              Raise ticket
-            </button>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Re-test result notification bar -->
-      <div class="sp-retest-bar" id="spRetestBar">
-        <div class="sp-retest-bar-content">
-          <span id="spRetestBarIcon" style="flex-shrink:0;display:flex"></span>
-          <span class="sp-retest-bar-text" id="spRetestBarText"></span>
-        </div>
-        <button class="sp-retest-bar-close" id="spRetestBarClose" aria-label="Dismiss">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M4.5 4.5l9 9M13.5 4.5l-9 9" stroke="#333332" stroke-width="1.5" stroke-linecap="round"/></svg>
-        </button>
-      </div>
-
-    </div>
-
-    <div class="sp-tabbar">
-      <div class="sp-tabs">
-        <div class="sp-tab active" data-pane="Advisory">Advisory<span class="sp-tab-underline"></span></div>
-        <div class="sp-tab" data-pane="Request">Request<span class="sp-tab-underline"></span></div>
-        <div class="sp-tab" data-pane="Response">Response<span class="sp-tab-underline"></span></div>
-        <div class="sp-tab-badge-wrap">
-          <div class="sp-tab" data-pane="Timeline">Timeline<span class="sp-tab-underline"></span></div>
-          <span class="sp-tab-badge">New</span>
-        </div>
-      </div>
-      <div class="sp-tabbar-line"></div>
-    </div>
-
-    <!-- Advisory pane -->
-    <div class="sp-tab-pane active" id="spPaneAdvisory">
-      <div class="sp-advisory">
-        <div class="sp-advisory-card">
-          <div class="sp-advisory-section">
-            <p class="sp-section-title">Severity</p>
-            <div class="sp-advisory-row">
-              <div class="sp-icon-40">
-                <div class="sp-sev-icon-lg sev-high" id="spSevIconInner">
-                  <svg viewBox="0 0 18 18" width="34" height="34" fill="none"><g clip-path="url(#sp-sev-clip)"><circle cx="9" cy="9" r="8.25" fill="currentColor" style="color:transparent"/><path fill-rule="evenodd" clip-rule="evenodd" d="M6.77007 8.42239C6.72231 8.22008 6.76066 8.00702 6.87597 7.83405L8.37597 5.58405C8.60573 5.23941 9.07138 5.14628 9.41603 5.37604C9.76067 5.60581 9.85381 6.07146 9.62404 6.41611L8.56975 7.99755L10.4971 9.0989C10.8427 9.29639 10.9738 9.72946 10.7958 10.0855L9.67082 12.3355C9.48558 12.706 9.03508 12.8561 8.66459 12.6709C8.29411 12.4857 8.14394 12.0352 8.32918 11.6647L9.13689 10.0493L7.1279 8.90126C6.94741 8.79813 6.81783 8.62471 6.77007 8.42239Z" fill="white"/></g><defs><clipPath id="sp-sev-clip"><rect width="18" height="18" fill="white"/></clipPath></defs></svg>
-                </div>
-              </div>
-              <div class="sp-fields">
-                <div class="sp-field-row"><span class="sp-field-label">Severity:</span><span class="sp-field-val" id="spSevVal">High</span></div>
-                <div class="sp-field-row"><span class="sp-field-label">Confidence:</span><span class="sp-field-val" id="spConfVal">High</span></div>
-                <div class="sp-ai-output-row" id="spAIOutputRow" style="display:none">
-                  <span class="sp-ai-output-label">Burp AI:</span>
-                  <span class="sp-ai-output-val" id="spAIOutputVal"></span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="sp-card-divider"></div>
-          <div class="sp-advisory-section">
-            <p class="sp-section-title">Location</p>
-            <div class="sp-advisory-row">
-              <div class="sp-icon-40">
-                <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M20 3C14.477 3 10 7.477 10 13C10 19.75 20 37 20 37C20 37 30 19.75 30 13C30 7.477 25.523 3 20 3Z" stroke="#333332" stroke-width="1.6" stroke-linejoin="round"/><circle cx="20" cy="13" r="3.5" stroke="#333332" stroke-width="1.6"/></svg>
-              </div>
-              <div class="sp-fields">
-                <div class="sp-field-row"><span class="sp-field-label">Host:</span><span class="sp-field-val" id="spHost">—</span></div>
-                <div class="sp-field-row"><span class="sp-field-label">Path:</span><span class="sp-field-val" id="spPathEl">—</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ── Burp AI section (inline in Advisory tab) ── -->
-        <div id="spAIContent" style="display:none; flex-direction:column; gap:20px;">
-          <!-- Burp AI results panel -->
-          <div class="sp-ai-panel" id="spAIPanel">
-            <div class="sp-ai-panel-header" onclick="document.getElementById('spAIPanel').classList.toggle('collapsed')">
-              <span class="sp-ai-panel-title">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:white"><path d="M20.281 15.2093C15.9937 13.9771 15.0231 13.0065 13.7908 8.7191C13.7536 8.58935 13.6351 8.50012 13.5002 8.50012C13.3653 8.50012 13.2467 8.58935 13.2095 8.7191C11.977 13.0068 11.0064 13.9771 6.719 15.2093C6.58924 15.2465 6.50002 15.3651 6.50002 15.5C6.50002 15.6349 6.58924 15.7534 6.719 15.7906C11.0067 17.0232 11.977 17.9935 13.2095 22.2811C13.2467 22.4109 13.3653 22.5001 13.5002 22.5001C13.6351 22.5001 13.7536 22.4109 13.7908 22.2811C15.0231 17.9938 15.9934 17.0232 20.281 15.7906C20.4108 15.7534 20.5 15.6349 20.5 15.5C20.5 15.3651 20.4108 15.2468 20.281 15.2093Z" fill="currentColor"/><path d="M22.7968 4.23013C20.1075 3.45742 19.5431 2.89269 18.7698 0.203212C18.7352 0.0828006 18.6252 0 18.5 0C18.3748 0 18.2648 0.0828006 18.2303 0.203212C17.4573 2.89269 16.8925 3.45742 14.2032 4.23013C14.0828 4.26465 14 4.37468 14 4.49986C14 4.62504 14.0828 4.73507 14.2032 4.76959C16.8925 5.54259 17.4573 6.10731 18.2303 8.79679C18.2648 8.9172 18.3748 9 18.5 9C18.6252 9 18.7352 8.9172 18.7698 8.79679C19.5431 6.10731 20.1075 5.54259 22.7968 4.76959C22.9172 4.73507 23 4.62532 23 4.49986C23 4.3744 22.9172 4.26465 22.7968 4.23013Z" fill="currentColor"/><path d="M11 7.50009C11 7.30786 10.8729 7.1389 10.6879 7.08589C7.49971 6.16911 6.83077 5.50017 5.91442 2.31193C5.86141 2.12703 5.69245 1.99988 5.50022 1.99988C5.30798 1.99988 5.13902 2.12703 5.08601 2.31193C4.16923 5.50017 3.50029 6.16911 0.312057 7.08589C0.12715 7.1389 0 7.30743 0 7.50009C0 7.69276 0.12715 7.86129 0.312057 7.9143C3.49986 8.83021 4.16923 9.49958 5.08601 12.6878C5.13902 12.8727 5.30798 12.9999 5.50022 12.9999C5.69245 12.9999 5.86141 12.8727 5.91442 12.6878C6.83077 9.49958 7.50014 8.83021 10.6879 7.9143C10.8729 7.86086 11 7.69233 11 7.50009Z" fill="currentColor"/></svg>
-                Burp AI results:
-              </span>
-              <span class="sp-ai-acc-actions"><span class="sp-ai-updated" id="spAIUpdated"></span><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy all" onclick="event.stopPropagation(); copyAllAI(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-panel-chevron">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span></span>
-            </div>
-            <div class="sp-ai-panel-body">
-              <div class="sp-ai-accordion open">
-                <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
-                  <span class="sp-ai-acc-title">Summary</span>
-                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
-                </div>
-                <div class="sp-ai-acc-body"><p class="sp-ai-acc-summary" id="spAISummary"></p></div>
-              </div>
-              <div class="sp-ai-accordion">
-                <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
-                  <span class="sp-ai-acc-title">Impact</span>
-                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
-                </div>
-                <div class="sp-ai-acc-body" id="spAIImpact"></div>
-              </div>
-              <div class="sp-ai-accordion">
-                <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
-                  <span class="sp-ai-acc-title">Evidence</span>
-                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
-                </div>
-                <div class="sp-ai-acc-body" id="spAIEvidence"></div>
-              </div>
-              <div class="sp-ai-accordion">
-                <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
-                  <span class="sp-ai-acc-title">Details</span>
-                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
-                </div>
-                <div class="sp-ai-acc-body" id="spAIDetails"></div>
-              </div>
-              <div class="sp-ai-accordion">
-                <div class="sp-ai-acc-header" onclick="this.closest('.sp-ai-accordion').classList.toggle('open')">
-                  <span class="sp-ai-acc-title">Reproduction steps</span>
-                  <span class="sp-ai-acc-actions"><button class="sp-ai-copy-btn" type="button" data-tooltip="Copy" onclick="event.stopPropagation(); copyAIAccordion(this);"><svg class="sp-ai-copy-icon-default" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="sp-ai-copy-icon-copied" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></button><span class="sp-ai-acc-chevron"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span>
-                </div>
-                <div class="sp-ai-acc-body" id="spAIRepro"></div>
-              </div>
-              <div class="sp-ai-action-row">
-                <button class="sp-investigate-btn" id="spInvestigateBtn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:white"><path d="M20.281 15.2093C15.9937 13.9771 15.0231 13.0065 13.7908 8.7191C13.7536 8.58935 13.6351 8.50012 13.5002 8.50012C13.3653 8.50012 13.2467 8.58935 13.2095 8.7191C11.977 13.0068 11.0064 13.9771 6.719 15.2093C6.58924 15.2465 6.50002 15.3651 6.50002 15.5C6.50002 15.6349 6.58924 15.7534 6.719 15.7906C11.0067 17.0232 11.977 17.9935 13.2095 22.2811C13.2467 22.4109 13.3653 22.5001 13.5002 22.5001C13.6351 22.5001 13.7536 22.4109 13.7908 22.2811C15.0231 17.9938 15.9934 17.0232 20.281 15.7906C20.4108 15.7534 20.5 15.6349 20.5 15.5C20.5 15.3651 20.4108 15.2468 20.281 15.2093Z" fill="currentColor"/><path d="M22.7968 4.23013C20.1075 3.45742 19.5431 2.89269 18.7698 0.203212C18.7352 0.0828006 18.6252 0 18.5 0C18.3748 0 18.2648 0.0828006 18.2303 0.203212C17.4573 2.89269 16.8925 3.45742 14.2032 4.23013C14.0828 4.26465 14 4.37468 14 4.49986C14 4.62504 14.0828 4.73507 14.2032 4.76959C16.8925 5.54259 17.4573 6.10731 18.2303 8.79679C18.2648 8.9172 18.3748 9 18.5 9C18.6252 9 18.7352 8.9172 18.7698 8.79679C19.5431 6.10731 20.1075 5.54259 22.7968 4.76959C22.9172 4.73507 23 4.62532 23 4.49986C23 4.3744 22.9172 4.26465 22.7968 4.23013Z" fill="currentColor"/><path d="M11 7.50009C11 7.30786 10.8729 7.1389 10.6879 7.08589C7.49971 6.16911 6.83077 5.50017 5.91442 2.31193C5.86141 2.12703 5.69245 1.99988 5.50022 1.99988C5.30798 1.99988 5.13902 2.12703 5.08601 2.31193C4.16923 5.50017 3.50029 6.16911 0.312057 7.08589C0.12715 7.1389 0 7.30743 0 7.50009C0 7.69276 0.12715 7.86129 0.312057 7.9143C3.49986 8.83021 4.16923 9.49958 5.08601 12.6878C5.13902 12.8727 5.30798 12.9999 5.50022 12.9999C5.69245 12.9999 5.86141 12.8727 5.91442 12.6878C6.83077 9.49958 7.50014 8.83021 10.6879 7.9143C10.8729 7.86086 11 7.69233 11 7.50009Z" fill="currentColor"/></svg>
-                  Investigate issue
-                </button>
-                <a href="#" class="sp-ai-learn-more" style="padding:0" onclick="return false">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M8 2H12V6M12 2L6 8M3 4H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  Learn more about Burp AI results
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-<div class="sp-accordions">
-          <div class="sp-accordion open">
-            <div class="sp-acc-header">
-              <span class="sp-acc-title">Issue detail</span>
-              <span class="sp-acc-chevron">
-                <svg class="sp-chevron-up" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 14.5l5-5 5 5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <svg class="sp-chevron-down" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 9.5l5 5 5-5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span>
-            </div>
-            <div class="sp-acc-divider"></div>
-            <div class="sp-acc-body" id="spIssueDetail"></div>
-          </div>
-          <div class="sp-accordion">
-            <div class="sp-acc-header"><span class="sp-acc-title">Issue background</span><span class="sp-acc-chevron"><svg class="sp-chevron-up" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 14.5l5-5 5 5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="sp-chevron-down" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 9.5l5 5 5-5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-          </div>
-          <div class="sp-accordion">
-            <div class="sp-acc-header"><span class="sp-acc-title">Issue remediation</span><span class="sp-acc-chevron"><svg class="sp-chevron-up" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 14.5l5-5 5 5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="sp-chevron-down" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 9.5l5 5 5-5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-          </div>
-          <div class="sp-accordion">
-            <div class="sp-acc-header"><span class="sp-acc-title">References</span><span class="sp-acc-chevron"><svg class="sp-chevron-up" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 14.5l5-5 5 5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="sp-chevron-down" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 9.5l5 5 5-5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-          </div>
-          <div class="sp-accordion">
-            <div class="sp-acc-header"><span class="sp-acc-title">Vulnerability classifications</span><span class="sp-acc-chevron"><svg class="sp-chevron-up" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 14.5l5-5 5 5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="sp-chevron-down" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M7 9.5l5 5 5-5" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>
-          </div>
-        </div>
-      </div>
-    </div><!-- /spPaneAdvisory -->
-
-    <!-- Request pane -->
-    <div class="sp-tab-pane" id="spPaneRequest">
-      <p style="color:#676667;font-size:14px;padding:20px 0">Request data will appear here.</p>
-    </div>
-
-    <!-- Response pane -->
-    <div class="sp-tab-pane" id="spPaneResponse">
-      <p style="color:#676667;font-size:14px;padding:20px 0">Response data will appear here.</p>
-    </div>
-
-    <!-- Timeline pane -->
-    <div class="sp-tab-pane" id="spPaneTimeline">
-      <div class="tl-filters">
-        <button class="tl-filter-btn active" data-filter="all">All</button>
-        <button class="tl-filter-btn" data-filter="status">Status changes</button>
-        <button class="tl-filter-btn" data-filter="retest">Re-tests</button>
-        <button class="tl-filter-btn" data-filter="comment">Comments</button>
-        <button class="tl-filter-btn" data-filter="assignees">Assignments</button>
-        <button class="tl-filter-btn" data-filter="tags">Tags</button>
-        <button class="tl-filter-btn" data-filter="integrations">Integrations</button>
-        <button class="tl-filter-btn" data-filter="ai">AI investigation</button>
-      </div>
-      <div class="tl-list">
-        <div class="tl-dot-col" id="tlDotCol"></div>
-        <div class="tl-cards" id="tlCards"></div>
-      </div>
-      <div class="tl-divider"></div>
-      <div class="tl-comments">
-        <h3 class="tl-comments-title">Comments</h3>
-        <textarea class="tl-comments-input" id="tlCommentInput" placeholder="Add a comment…"></textarea>
-        <div class="tl-comments-footer">
-          <button class="tl-comments-btn" id="tlCommentBtn" disabled>Add comment</button>
-        </div>
-      </div>
-    </div><!-- /spPaneTimeline -->
-
-  </div><!-- /sp-body -->
-</div><!-- /side-panel -->
 
 <!-- Sticky horizontal scrollbar -->
 <div id="stickyScrollbar"><div id="stickyScrollInner"></div></div>
@@ -6462,6 +6176,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   /* ── Table header shadow on scroll ── */
   (function() {
     var wrap = document.querySelector('.table-header-sticky-wrap');
+    if (!wrap) return;
     window.addEventListener('scroll', function() {
       wrap.classList.toggle('is-stuck', window.scrollY > 0);
     }, { passive: true });
@@ -6471,14 +6186,15 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   (function() {
     var scrollWrap = document.getElementById('tableScrollWrap');
     var headerHScroll = document.getElementById('tableHeaderHScroll');
+    if (!scrollWrap || !headerHScroll) return;
     scrollWrap.addEventListener('scroll', function() {
       headerHScroll.scrollLeft = scrollWrap.scrollLeft;
     });
   })();
 
 /* ── Reposition on scroll + freeze shadow ── */
-  document.getElementById('tableScrollWrap').addEventListener('scroll', function() {
-    document.querySelector('.table-section').classList.toggle('is-scrolled-x', this.scrollLeft > 0);
+  if (document.getElementById('tableScrollWrap')) document.getElementById('tableScrollWrap').addEventListener('scroll', function() {
+    document.querySelector('.table-section')?.classList.toggle('is-scrolled-x', this.scrollLeft > 0);
     if (activePill && statusMenu.style.display !== 'none') {
       const rect = activePill.getBoundingClientRect();
       statusMenu.style.top  = rect.bottom + 'px';
@@ -8093,23 +7809,22 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     }
   }
 
-  // Row click — first 7 columns navigate to the dedicated issue detail page.
-  // The issue identity is stashed in sessionStorage so the new page can load it.
+  // Row click — first 7 columns trigger panel
   const PANEL_COLS = ['col-severity','col-confidence','col-issue','col-site','col-first','col-last','col-age','col-status','col-ai'];
   document.querySelectorAll('[data-row]').forEach(row => {
     row.addEventListener('click', function(e) {
       if (e.target.closest('[data-cb]')) return; // checkbox
       const cell = e.target.closest('.td');
       if (!cell || !PANEL_COLS.some(c => cell.classList.contains(c))) return;
-      const issueName = row.querySelector('.issue-name')?.textContent.trim();
-      try {
-        if (issueName) sessionStorage.setItem('selectedIssue', issueName);
-      } catch (_) {}
-      window.location.href = 'burp-dast-scan-issue-detail.html';
+      if (activeRow === row && sidePanel.classList.contains('open')) {
+        closeSidePanel();
+      } else {
+        openSidePanel(row);
+      }
     });
   });
 
-  spClose.addEventListener('click', closeSidePanel);
+  if (spClose) spClose.addEventListener('click', closeSidePanel);
 
   // Tab switching
   sidePanel.querySelectorAll('.sp-tab').forEach(tab => {
@@ -8611,18 +8326,21 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         hideTimer = setTimeout(function() { pop.classList.remove('is-visible'); }, 80);
       }
 
-      document.querySelector('.table-body').addEventListener('mouseover', function(e) {
-        var badge = e.target.closest('.ai-badge');
-        if (!badge) return;
-        var row = badge.closest('[data-row]');
-        if (!row) return;
-        showPopover(badge, row.dataset.ai || '');
-      });
+      var tableBodyEl = document.querySelector('.table-body');
+      if (tableBodyEl) {
+        tableBodyEl.addEventListener('mouseover', function(e) {
+          var badge = e.target.closest('.ai-badge');
+          if (!badge) return;
+          var row = badge.closest('[data-row]');
+          if (!row) return;
+          showPopover(badge, row.dataset.ai || '');
+        });
 
-      document.querySelector('.table-body').addEventListener('mouseout', function(e) {
-        if (!e.target.closest('.ai-badge')) return;
-        hidePopover();
-      });
+        tableBodyEl.addEventListener('mouseout', function(e) {
+          if (!e.target.closest('.ai-badge')) return;
+          hidePopover();
+        });
+      }
     })();
 
   })();
@@ -8631,6 +8349,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
 
   // ── Column resize ─────────────────────────────────────────────────────────
   (function() {
+    if (!document.querySelector('.table-header')) return; // no table on this page
     var MIN_WIDTH = 60;
 
     function setColWidth(col, w) {
@@ -8703,6 +8422,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     var pgInput    = document.getElementById('pgInput');
     var pgTotal    = document.getElementById('pgTotal');
     var pgPageSize = document.getElementById('pgPageSize');
+    if (!pgFirst) return; // no table/pagination on this page
 
     function getAllRows() {
       return Array.from(document.querySelectorAll('.table-body [data-row]'));
@@ -9229,6 +8949,637 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       flash();
     }
   };
+</script>
+<script>
+/* ── Issue detail page wiring ───────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function () {
+
+  // The 10 issues from this scan — mirrors the scan-detail issues table 1-for-1
+  // (severity, confidence, name, path, first/last seen, age, status).
+  const HOST = 'https://gin-and-juice-shop.dev';
+  const ISSUES = [
+    { name: 'SQL injection',                       sev: 'High',   conf: 'Certain',   status: 'present',   ai: 'confirmed',    path: '/api/users/search',  first: '12 Mar 25', last: '15 Mar 25', age: '408 days', ageCls: 'age-overdue', host: HOST },
+    { name: 'Stored cross-site scripting',         sev: 'High',   conf: 'Certain',   status: 'new',       ai: 'confirmed',    path: '/app/comments',      first: '15 Mar 25', last: '18 Mar 25', age: '405 days', ageCls: 'age-overdue', host: HOST },
+    { name: 'Broken authentication',               sev: 'High',   conf: 'Firm',      status: 'present',   ai: 'inconclusive', path: '/auth/login',        first: '18 Mar 25', last: '21 Mar 25', age: '402 days', ageCls: 'age-overdue', host: HOST },
+    { name: 'Server-side request forgery',         sev: 'High',   conf: 'Firm',      status: 'regressed', ai: 'confirmed',    path: '/api/fetch?url=',    first: '20 Mar 25', last: '23 Mar 25', age: '400 days', ageCls: 'age-overdue', host: HOST },
+    { name: 'Cross-site request forgery',          sev: 'Medium', conf: 'Certain',   status: 'regressed', ai: 'confirmed',    path: '/account/settings',  first: '14 Mar 25', last: '17 Mar 25', age: '406 days', ageCls: 'age-overdue', host: HOST },
+    { name: 'Insecure direct object reference',    sev: 'Medium', conf: 'Firm',      status: 'present',   ai: 'inconclusive', path: '/api/documents/42',  first: '16 Mar 25', last: '19 Mar 25', age: '404 days', ageCls: 'age-overdue', host: HOST },
+    { name: 'Sensitive data in URL query string',  sev: 'Medium', conf: 'Certain',   status: 'accepted',  ai: 'none',         path: '/login?token=…',     first: '10 Mar 25', last: '13 Mar 25', age: '410 days', ageCls: 'age-overdue', host: HOST },
+    { name: 'Path traversal',                      sev: 'Low',    conf: 'Firm',      status: 'new',       ai: 'inconclusive', path: '/files?name=../',    first: '19 Mar 25', last: '22 Mar 25', age: '401 days', ageCls: 'age-overdue', host: HOST },
+    { name: 'Vulnerable JavaScript library',       sev: 'Low',    conf: 'Certain',   status: 'present',   ai: 'none',         path: '/',                  first: '11 Mar 25', last: '14 Mar 25', age: '409 days', ageCls: 'age-overdue', host: HOST },
+    { name: 'Cookie without secure flag',          sev: 'Low',    conf: 'Certain',   status: 'present',   ai: 'none',         path: '/',                  first: '11 Mar 25', last: '14 Mar 25', age: '409 days', ageCls: 'age-overdue', host: HOST }
+  ];
+
+  const SEV_COLORS = { High: '#F32A4C', Medium: '#FF6633', Low: '#0094FF', Information: '#8C8D8E' };
+  const SEV_CLS    = { High: 'sev-high', Medium: 'sev-medium', Low: 'sev-low', Information: 'sev-info' };
+  const SEV_ICON_PATH = 'M6.77007 8.42239C6.72231 8.22008 6.76066 8.00702 6.87597 7.83405L8.37597 5.58405C8.60573 5.23941 9.07138 5.14628 9.41603 5.37604C9.76067 5.60581 9.85381 6.07146 9.62404 6.41611L8.56975 7.99755L10.4971 9.0989C10.8427 9.29639 10.9738 9.72946 10.7958 10.0855L9.67082 12.3355C9.48558 12.706 9.03508 12.8561 8.66459 12.6709C8.29411 12.4857 8.14394 12.0352 8.32918 11.6647L9.13689 10.0493L7.1279 8.90126C6.94741 8.79813 6.81783 8.62471 6.77007 8.42239Z';
+
+  // Burp AI investigation content per issue index. Each entry mirrors the
+  // structure of v10/scan-detail AI_DETAIL (summary / impact / evidence /
+  // details / repro). Issues whose `ai` field is 'none' have no entry here.
+  const AI_CONTENT = {
+    0: { // SQL injection — confirmed
+      summary:  'Burp AI confirmed time-based blind SQL injection on the username parameter of the /api/users/search endpoint. A SLEEP(5) payload reproducibly induced a ~5-second response delay, isolating the vulnerable field.',
+      impact:   'An attacker can extract arbitrary data from the database, including credentials, session tokens, and PII. Depending on database privileges, this can escalate to filesystem read/write or remote code execution via UDFs.',
+      evidence: 'Payload: " AND SLEEP(5)-- → 5021ms response vs. 184ms baseline; verified 5×. Boolean-based extraction confirmed via " AND 1=1-- (200 OK) vs. " AND 1=2-- (200 OK, different body length).',
+      details:  'The username parameter is concatenated into the SQL query without parameterisation. Database: MySQL 8.0. Application connection runs with elevated privileges.',
+      repro:    '1. POST /api/users/search with username=admin" AND SLEEP(5)--&password=anything. 2. Observe ~5s delay. 3. Use boolean extraction to enumerate the schema.'
+    },
+    1: { // Stored cross-site scripting — confirmed
+      summary:  'Burp AI confirmed stored XSS on /app/comments. A persistent script payload submitted via the comment form is rendered to all subsequent viewers without output encoding.',
+      impact:   'A single injection persists across user sessions and executes in every viewer\'s browser, enabling mass session hijack, credential theft, or worm-like spread.',
+      evidence: 'Injected <img src=x onerror=alert(document.cookie)>; verified in a separate browser session that the alert fires on every page load of /app/comments.',
+      details:  'Comment bodies are stored raw and rendered via innerHTML in /static/comments.js. No server-side sanitisation.',
+      repro:    '1. Submit a comment on /app/comments containing <img src=x onerror="alert(1)">. 2. Log in as a separate user and revisit the page. 3. Observe the script executes automatically.'
+    },
+    2: { // Broken authentication — inconclusive
+      summary:  'Burp AI could not conclusively verify the reported broken authentication on /auth/login. The endpoint enforces rate limiting after 10 requests, which blocked completion of the credential-bypass test sequence.',
+      impact:   'If confirmed, broken authentication could allow attackers to impersonate users, bypass MFA, or escalate privileges. Severity remains High pending manual validation.',
+      evidence: 'Initial probes accepted "admin\'--" as the username field without a database error, but the rate limiter triggered before the bypass could be fully verified.',
+      details:  'Rate limit appears to be 10 requests / 60s per source IP. Burp AI lacked the rotating-egress capability needed to complete the test.',
+      repro:    '1. Manually submit authentication bypass payloads at < 10/minute. 2. Test JWT algorithm confusion (none, RS-to-HS swap). 3. Probe for account-enumeration via response time deltas.'
+    },
+    3: { // Server-side request forgery — confirmed
+      summary:  'Burp AI confirmed SSRF on /api/fetch?url=. An outbound request to the cloud metadata service returned IAM credentials, proving full IMDS read access from the application server.',
+      impact:   'An attacker can pivot from the public-facing application into internal services, exfiltrate cloud credentials, and reach databases and admin APIs not exposed to the internet.',
+      evidence: 'Request: /api/fetch?url=http://169.254.169.254/latest/meta-data/iam/security-credentials/ → 200 OK with valid AccessKeyId / SecretAccessKey / SessionToken in the body.',
+      details:  'No allowlist on the url parameter. HTTP redirects are followed, defeating naive scheme/host checks. Application runs with full IMDS access on AWS.',
+      repro:    '1. Send a GET to /api/fetch?url=http://169.254.169.254/latest/meta-data/. 2. Observe the response contains AWS metadata. 3. Escalate to /iam/security-credentials/ for live keys.'
+    },
+    4: { // Cross-site request forgery — confirmed
+      summary:  'Burp AI confirmed CSRF on /account/settings. A cross-origin POST submitted from an attacker-controlled page successfully changed the victim\'s registered email address without their interaction.',
+      impact:   'An attacker can take over an authenticated victim\'s account by changing the email/password, or perform any state-changing action available to the user (transfers, role changes, deletions).',
+      evidence: 'Auto-submitting form targeting /account/settings/update from a third-party origin updated the account email when visited by an authenticated test user. No CSRF token was present or validated.',
+      details:  'Endpoint accepts a plain POST body without CSRF token. Session cookie has SameSite=None and Secure, but no anti-forgery protection.',
+      repro:    '1. Host an HTML page with <form action="https://target/account/settings/update" method="POST"><input name="email" value="attacker@evil.tld"></form> + auto-submit. 2. Trick an authenticated victim into visiting it. 3. Observe the email change.'
+    },
+    5: { // Insecure direct object reference — inconclusive
+      summary:  'Burp AI investigation of /api/documents/42 was inconclusive. Sequential IDs returned varying responses (200/403/404) without a consistent pattern, suggesting partial access control that could not be fully characterised in this run.',
+      impact:   'If confirmed, IDOR on the documents API could allow horizontal privilege escalation — an attacker reading documents belonging to other tenants.',
+      evidence: 'IDs 1–10 returned 200 for the test user; IDs 11–20 returned 403; ID 42 returned 200 unexpectedly. The intended ownership model could not be reconstructed without a second test account.',
+      details:  'Burp AI lacked credentials for a second tenant to verify cross-tenant access. Recommend manual testing with two accounts in separate organisations.',
+      repro:    '1. Authenticate as User A. 2. Enumerate document IDs across a wider range (1–1000). 3. Authenticate as User B and check whether documents owned by A are reachable.'
+    },
+    7: { // Path traversal — inconclusive
+      summary:  'Burp AI could not reliably verify path traversal on /files?name=../. The endpoint returned 404 for most payloads but occasionally returned file contents — possibly due to a partial filter or upstream caching layer.',
+      impact:   'If confirmed, path traversal would allow arbitrary file reads from the server filesystem (config files, SSH keys, source code).',
+      evidence: 'Payload ../../../../etc/passwd returned 404; ..%2f..%2f..%2fetc%2fpasswd returned the contents of /etc/passwd in a single test, but the result was not reproducible.',
+      details:  'A caching layer (CloudFront) appears to be normalising paths inconsistently, making the test results non-deterministic. Manual verification with cache-busting parameters is recommended.',
+      repro:    '1. Send GET /files?name=..%2f..%2f..%2fetc%2fpasswd&cb=$RANDOM. 2. Vary the encoding (single, double, mixed). 3. Compare response sizes for evidence of file contents.'
+    }
+  };
+
+  const AI_LABEL_FROM_STATE = { confirmed: 'Issue Confirmed', inconclusive: 'Inconclusive', error: 'Error' };
+
+  // Advisory copy per issue — detail / background / remediation / references /
+  // vulnerability classifications. Each field is an array of paragraph strings
+  // (or `<li>` items for references / classifications) so we can wrap them in
+  // the right HTML at render time.
+  const ADVISORY_CONTENT = {
+    0: { // SQL injection
+      detail: [
+        'SQL injection vulnerabilities arise when user-controllable data is incorporated into database SQL queries in an unsafe manner. An attacker can submit crafted input that breaks out of the data context and interferes with the structure of the surrounding query.',
+        'On <code>/api/users/search</code>, the application appends the <code>username</code> request parameter directly into a SQL <code>SELECT</code> statement without parameterisation. This allowed a time-based blind injection payload to delay the response by 5 seconds.',
+        'A wide range of damaging attacks can be delivered via SQL injection, including reading or modifying critical application data, interfering with application logic, escalating privileges within the database, and (depending on database configuration) taking control of the database server.'
+      ],
+      background: [
+        'SQL injection is one of the most well-known and impactful web vulnerabilities. It has featured in the OWASP Top 10 for over two decades and remains common in legacy code that builds SQL via string concatenation.',
+        'Most SQL injection bugs can be eliminated by ensuring all SQL statements use parameterised queries (also known as prepared statements). Stored procedures, ORMs, and query builders provide similar protection when used correctly.'
+      ],
+      remediation: [
+        'Refactor the vulnerable database query at <code>/api/users/search</code> to use a parameterised statement. Treat all user-controllable values as data, never as part of the query structure.',
+        'As a defence-in-depth measure, run the application database account with the minimum privileges it needs. Avoid running queries as a privileged role such as <code>root</code> or <code>sa</code>.',
+        'Adopt a code-review checklist that flags any string concatenation involving SQL keywords or user input.'
+      ],
+      references: [
+        { href: '#', label: 'PortSwigger Web Security Academy — SQL injection' },
+        { href: '#', label: 'OWASP — SQL Injection Prevention Cheat Sheet' },
+        { href: '#', label: 'CWE-89: Improper Neutralization of Special Elements used in an SQL Command' }
+      ],
+      classifications: ['CWE-89', 'CAPEC-66', 'WASC-19', 'OWASP A03:2021 — Injection']
+    },
+    1: { // Stored XSS
+      detail: [
+        'Stored (persistent) cross-site scripting vulnerabilities arise when user-controlled data is stored by the application and later rendered into HTML pages without proper output encoding.',
+        'The <code>/app/comments</code> endpoint accepts comment text from any authenticated user and renders it back to all other users via <code>innerHTML</code>. A script payload such as <code>&lt;img src=x onerror=alert(1)&gt;</code> persists in the database and executes for every visitor.',
+        'Stored XSS is especially severe because the payload runs in the security context of every user who views the affected page — no user interaction is required.'
+      ],
+      background: [
+        'XSS comes in three primary forms: reflected, stored, and DOM-based. Stored XSS is generally the most serious because of its persistence and reach.',
+        'Modern frameworks (React, Vue, Angular) automatically escape values rendered into templates, but direct <code>innerHTML</code> assignments or <code>dangerouslySetInnerHTML</code> bypass this protection.'
+      ],
+      remediation: [
+        'Apply context-appropriate output encoding when rendering comment text into the page. Replace any direct <code>innerHTML</code> assignment with <code>textContent</code>, or render via the templating engine\'s safe interpolation.',
+        'Implement a Content Security Policy with <code>script-src \'self\'</code> as a defence-in-depth control.',
+        'Validate input on the server to reject obviously malicious content, but do not rely on input validation as the primary defence.'
+      ],
+      references: [
+        { href: '#', label: 'PortSwigger Web Security Academy — Cross-site scripting' },
+        { href: '#', label: 'OWASP — XSS Prevention Cheat Sheet' },
+        { href: '#', label: 'CWE-79: Cross-site Scripting' }
+      ],
+      classifications: ['CWE-79', 'CAPEC-19', 'WASC-08', 'OWASP A03:2021 — Injection']
+    },
+    2: { // Broken authentication
+      detail: [
+        'Broken authentication covers a broad class of issues where an attacker can bypass authentication controls, impersonate other users, or compromise authentication tokens or sessions.',
+        'On <code>/auth/login</code>, the scanner observed responses that suggest some bypass techniques (such as username injection) may succeed, though confirmation was blocked by aggressive rate limiting on the test infrastructure.'
+      ],
+      background: [
+        'Authentication mechanisms are notoriously difficult to implement correctly. Common failure modes include weak credential storage, missing brute-force protection, predictable session identifiers, and improper handling of MFA flows.',
+        'Adopting a battle-tested identity provider (Okta, Auth0, Keycloak) is usually safer than rolling a bespoke implementation.'
+      ],
+      remediation: [
+        'Verify that the login endpoint correctly rejects all injection payloads in the username and password fields by using parameterised queries.',
+        'Ensure the rate-limit response does not leak whether an account exists.',
+        'Run a manual penetration test against the authentication flow to confirm whether bypass payloads can succeed end-to-end.'
+      ],
+      references: [
+        { href: '#', label: 'PortSwigger Web Security Academy — Authentication' },
+        { href: '#', label: 'OWASP — Authentication Cheat Sheet' },
+        { href: '#', label: 'CWE-287: Improper Authentication' }
+      ],
+      classifications: ['CWE-287', 'CAPEC-114', 'WASC-01', 'OWASP A07:2021 — Identification and Authentication Failures']
+    },
+    3: { // SSRF
+      detail: [
+        'Server-side request forgery (SSRF) arises when the application can be coaxed into making outbound requests to arbitrary URLs supplied (directly or indirectly) by an attacker.',
+        'The <code>/api/fetch?url=</code> endpoint accepts a URL parameter and fetches it server-side without allowlist validation. A request to <code>http://169.254.169.254/latest/meta-data/iam/security-credentials/</code> returned valid AWS IAM credentials, demonstrating full reachability of the cloud metadata service.'
+      ],
+      background: [
+        'SSRF often serves as the pivot point for far more damaging attacks. The classic Capital One breach started with an SSRF that reached the AWS metadata service and yielded credentials for an over-privileged role.',
+        'SSRF is rated A10 in the OWASP Top 10 (2021) — a category newly added to highlight its growing prevalence.'
+      ],
+      remediation: [
+        'Validate the <code>url</code> parameter against an allowlist of permitted hosts. Block private, loopback, and link-local IP ranges (including IPv6 equivalents).',
+        'Do not follow HTTP redirects when fetching user-supplied URLs, or apply the same allowlist to redirect targets.',
+        'On AWS, migrate to IMDSv2 (token-based) and set <code>HttpPutResponseHopLimit=1</code> so the metadata service can\'t be reached from container/SSRF contexts.'
+      ],
+      references: [
+        { href: '#', label: 'PortSwigger Web Security Academy — SSRF' },
+        { href: '#', label: 'OWASP — SSRF Prevention Cheat Sheet' },
+        { href: '#', label: 'CWE-918: Server-Side Request Forgery' }
+      ],
+      classifications: ['CWE-918', 'CAPEC-664', 'OWASP A10:2021 — Server-Side Request Forgery']
+    },
+    4: { // CSRF
+      detail: [
+        'Cross-site request forgery (CSRF) allows an attacker to induce a victim to perform actions they didn\'t intend to. The application accepts state-changing requests on <code>/account/settings/update</code> without verifying that the request originated from a trusted page.',
+        'A crafted attacker page hosted on a third-party domain was able to change the victim\'s registered email address with no user interaction beyond visiting the page.'
+      ],
+      background: [
+        'CSRF exploits the trust the application places in the user\'s browser. Same-origin policy does not prevent browsers from sending authenticated cross-origin requests — only from reading the responses.',
+        'Modern browsers default to <code>SameSite=Lax</code> for cookies without an explicit attribute, which mitigates many CSRF cases but is not a substitute for proper anti-CSRF tokens.'
+      ],
+      remediation: [
+        'Issue a per-session CSRF token on every state-changing form/endpoint and validate it server-side.',
+        'Set session cookies with <code>SameSite=Lax</code> or <code>Strict</code> and <code>Secure</code>.',
+        'For sensitive operations (password change, email change, payments), require re-authentication or step-up MFA.'
+      ],
+      references: [
+        { href: '#', label: 'PortSwigger Web Security Academy — CSRF' },
+        { href: '#', label: 'OWASP — CSRF Prevention Cheat Sheet' },
+        { href: '#', label: 'CWE-352: Cross-Site Request Forgery' }
+      ],
+      classifications: ['CWE-352', 'CAPEC-62', 'WASC-09', 'OWASP A01:2021 — Broken Access Control']
+    },
+    5: { // IDOR
+      detail: [
+        'Insecure direct object references occur when an application exposes references to internal resources without performing authorisation checks.',
+        'The <code>/api/documents/{id}</code> endpoint returned a 200 response for some document IDs that should not have belonged to the test user. The inconsistent access pattern suggests partial — but incomplete — authorisation enforcement.'
+      ],
+      background: [
+        'IDOR is a subset of broken access control and the most common access-control flaw flagged by penetration tests. It frequently arises from relying on URL obscurity rather than per-request ownership checks.'
+      ],
+      remediation: [
+        'Implement a server-side authorisation check on every document fetch that confirms the requesting user owns (or has been granted access to) the requested resource.',
+        'Prefer indirect references (per-user maps) over exposing raw database IDs.',
+        'Add automated tests that verify a second user account cannot access the first user\'s resources by enumerating IDs.'
+      ],
+      references: [
+        { href: '#', label: 'PortSwigger Web Security Academy — Access control' },
+        { href: '#', label: 'OWASP — Access Control Cheat Sheet' },
+        { href: '#', label: 'CWE-639: Authorization Bypass Through User-Controlled Key' }
+      ],
+      classifications: ['CWE-639', 'CWE-284', 'OWASP A01:2021 — Broken Access Control']
+    },
+    6: { // Sensitive data in URL query string
+      detail: [
+        'The application transmits a session/authentication token as part of the URL query string on <code>/login?token=…</code>. URL parameters are persisted in browser history, server access logs, and HTTP <code>Referer</code> headers, which exposes the token to a wide range of unintended audiences.'
+      ],
+      background: [
+        'Even when transmitted over HTTPS, query-string secrets routinely leak via referer headers to third-party scripts (analytics, CDNs), browser sync features, shared bookmarks, screen recordings, and corporate proxy logs.'
+      ],
+      remediation: [
+        'Submit the token in a request header (e.g. <code>Authorization</code>) or as part of a POST request body instead of placing it in the URL.',
+        'If a callback URL must be used, scope tokens to single use and short expiry.',
+        'Audit existing access logs to determine the leakage exposure window.'
+      ],
+      references: [
+        { href: '#', label: 'OWASP — Information exposure through query strings' },
+        { href: '#', label: 'CWE-598: Use of GET Request Method With Sensitive Query Strings' }
+      ],
+      classifications: ['CWE-598', 'CWE-200', 'OWASP A02:2021 — Cryptographic Failures']
+    },
+    7: { // Path traversal
+      detail: [
+        'Path traversal (directory traversal) vulnerabilities allow an attacker to read (and sometimes write) arbitrary files on the server filesystem by manipulating file-path parameters.',
+        'The <code>/files?name=…</code> endpoint appeared to honour traversal sequences inconsistently in testing — some encodings returned file contents while others returned 404. A caching layer makes the result non-deterministic.'
+      ],
+      background: [
+        'Path traversal remains a top-tier vulnerability because file-handling APIs in most languages don\'t natively prevent traversal — developers must explicitly canonicalise and validate paths against a permitted root.'
+      ],
+      remediation: [
+        'Canonicalise the requested filename, then verify the resolved path remains within the intended directory using something like <code>Path.startsWith()</code>.',
+        'Strip or reject any path containing <code>..</code>, <code>~</code>, or NULL bytes after URL decoding.',
+        'Investigate the CDN/cache behaviour that produced inconsistent results — caching layers can mask the underlying vulnerability and hinder remediation.'
+      ],
+      references: [
+        { href: '#', label: 'PortSwigger Web Security Academy — Directory traversal' },
+        { href: '#', label: 'OWASP — Path Traversal' },
+        { href: '#', label: 'CWE-22: Improper Limitation of a Pathname to a Restricted Directory' }
+      ],
+      classifications: ['CWE-22', 'CWE-23', 'CAPEC-126', 'OWASP A01:2021 — Broken Access Control']
+    },
+    8: { // Vulnerable JavaScript library
+      detail: [
+        'The application includes one or more JavaScript libraries with known security vulnerabilities. The detected library version is older than the latest patched release and has at least one published CVE affecting client-side functionality.',
+        'Exploitability depends on the specific functions the application uses from the library and whether attacker-controlled data flows into them.'
+      ],
+      background: [
+        'Outdated client-side libraries are routinely exploited as part of larger attack chains — for example, an XSS sink in a vulnerable jQuery version, or a prototype-pollution gadget in a vulnerable Lodash version.'
+      ],
+      remediation: [
+        'Upgrade the affected library to the latest patched version.',
+        'Add a software-composition-analysis (SCA) step to your CI pipeline so vulnerable dependencies are flagged at PR time.',
+        'Consider removing any third-party dependency that is no longer maintained.'
+      ],
+      references: [
+        { href: '#', label: 'OWASP — Vulnerable and Outdated Components' },
+        { href: '#', label: 'CWE-1104: Use of Unmaintained Third Party Components' }
+      ],
+      classifications: ['CWE-1104', 'CWE-937', 'OWASP A06:2021 — Vulnerable and Outdated Components']
+    },
+    9: { // Cookie without secure flag
+      detail: [
+        'The application sets cookies — including session cookies — without the <code>Secure</code> attribute. This means the cookies will be transmitted over unencrypted HTTP if a downgrade attack succeeds, exposing them to network attackers.'
+      ],
+      background: [
+        'The <code>Secure</code> attribute instructs the browser to send a cookie only over HTTPS. Combined with <code>HttpOnly</code> and <code>SameSite</code>, it is one of the three baseline protections expected on all modern sites.'
+      ],
+      remediation: [
+        'Set <code>Secure</code>, <code>HttpOnly</code> and an appropriate <code>SameSite</code> attribute on every cookie issued by the application.',
+        'Enforce HTTPS at the server, redirect HTTP → HTTPS, and use HSTS to prevent protocol downgrades.'
+      ],
+      references: [
+        { href: '#', label: 'OWASP — Cookie Security' },
+        { href: '#', label: 'CWE-614: Sensitive Cookie in HTTPS Session Without Secure Attribute' }
+      ],
+      classifications: ['CWE-614', 'CWE-311', 'OWASP A02:2021 — Cryptographic Failures']
+    }
+  };
+
+  function sevSvg(sev) {
+    return `<svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="8.25" fill="${SEV_COLORS[sev]}"/><path fill-rule="evenodd" clip-rule="evenodd" d="${SEV_ICON_PATH}" fill="white"/></svg>`;
+  }
+
+  // Did we navigate in with a specific issue selected? (set by scan-detail row click)
+  let initialIdx = 0;
+  try {
+    const wanted = sessionStorage.getItem('selectedIssue');
+    if (wanted) {
+      const found = ISSUES.findIndex(i => i.name === wanted);
+      if (found >= 0) initialIdx = found;
+    }
+  } catch (_) {}
+
+  // Populate the issues sidebar
+  const sideList = document.getElementById('issueSideList');
+  if (sideList) {
+    sideList.innerHTML = ISSUES.map((iss, idx) =>
+      `<div class="issue-side-item${idx === initialIdx ? ' is-active' : ''}" data-issue-idx="${idx}">
+        <span class="issue-side-item-icon">${sevSvg(iss.sev)}</span>
+        <span class="issue-side-item-name">${iss.name}</span>
+      </div>`
+    ).join('');
+
+    // Sidebar click — load that issue into the detail pane
+    sideList.addEventListener('click', function (e) {
+      const item = e.target.closest('.issue-side-item');
+      if (!item) return;
+      sideList.querySelectorAll('.issue-side-item').forEach(el => el.classList.remove('is-active'));
+      item.classList.add('is-active');
+      const issue = ISSUES[parseInt(item.dataset.issueIdx, 10)];
+      if (issue) loadIssue(issue);
+    });
+  }
+
+  // ── Filter by popover ─────────────────────────────────────────────
+  // Filter groups — same shape as the issues-table filters (Severity,
+  // Confidence, Status, AI output). Each group's `field` keys into the
+  // ISSUES row data and each option carries the matching value.
+  const FILTER_GROUPS = [
+    { id: 'severity', label: 'Severity', field: 'sev',
+      options: [
+        { value: 'High',        label: 'High',        icon: sevSvg('High') },
+        { value: 'Medium',      label: 'Medium',      icon: sevSvg('Medium') },
+        { value: 'Low',         label: 'Low',         icon: sevSvg('Low') },
+        { value: 'Information', label: 'Information', icon: sevSvg('Information') }
+      ]
+    },
+    { id: 'confidence', label: 'Confidence', field: 'conf',
+      options: [
+        { value: 'Certain',   label: 'Certain' },
+        { value: 'Firm',      label: 'Firm' },
+        { value: 'Tentative', label: 'Tentative' }
+      ]
+    },
+    { id: 'status', label: 'Status', field: 'status',
+      options: [
+        { value: 'New',       label: 'New' },
+        { value: 'Present',   label: 'Present' },
+        { value: 'Regressed', label: 'Regressed' },
+        { value: 'Fixed',     label: 'Fixed' },
+        { value: 'Accepted',  label: 'Accepted risk' }
+      ]
+    },
+    { id: 'ai', label: 'Burp AI output', field: 'ai',
+      options: [
+        { value: 'confirmed',    label: 'Issue Confirmed' },
+        { value: 'inconclusive', label: 'Inconclusive' },
+        { value: 'error',        label: 'Error' },
+        { value: 'none',         label: 'No AI investigation' }
+      ]
+    }
+  ];
+  // active[groupId] is a Set of selected values
+  const activeFilters = {};
+  FILTER_GROUPS.forEach(g => { activeFilters[g.id] = new Set(); });
+
+  function countForOption(group, value) {
+    return ISSUES.filter(i => i[group.field] === value).length;
+  }
+
+  function buildFilterPopover() {
+    const pop = document.getElementById('issueSideFilterPopover');
+    if (!pop) return;
+    const sections = FILTER_GROUPS.map(g => `
+      <div class="issue-side-filter-section">
+        <div class="issue-side-filter-section-title">${g.label}</div>
+        <div class="issue-side-filter-options">
+          ${g.options.map(o => {
+            const n = countForOption(g, o.value);
+            const checked = activeFilters[g.id].has(o.value);
+            return `<label class="issue-side-filter-opt">
+              <input type="checkbox" data-group="${g.id}" data-value="${o.value}"${checked ? ' checked' : ''}>
+              ${o.icon ? `<span class="issue-side-filter-opt-icon">${o.icon}</span>` : ''}
+              <span class="issue-side-filter-opt-label">${o.label}</span>
+              <span class="scan-tab-badge">${n}</span>
+            </label>`;
+          }).join('')}
+        </div>
+      </div>
+    `).join('');
+    const anyActive = Object.values(activeFilters).some(s => s.size > 0);
+    pop.innerHTML = sections + `
+      <div class="issue-side-filter-footer">
+        <button type="button" class="issue-side-filter-clear" id="issueSideFilterClear"${anyActive ? '' : ' disabled'}>Clear all</button>
+      </div>`;
+  }
+
+  // Keep the Clear all button's disabled state in sync without rebuilding
+  // the whole popover (preserves checkbox focus state).
+  function refreshClearAllState() {
+    const btn = document.getElementById('issueSideFilterClear');
+    if (!btn) return;
+    const anyActive = Object.values(activeFilters).some(s => s.size > 0);
+    if (anyActive) btn.removeAttribute('disabled');
+    else btn.setAttribute('disabled', '');
+  }
+
+  function applyFilters() {
+    let visibleCount = 0;
+    document.querySelectorAll('.issue-side-item').forEach(el => {
+      const issue = ISSUES[parseInt(el.dataset.issueIdx, 10)];
+      const passes = FILTER_GROUPS.every(g => {
+        const sel = activeFilters[g.id];
+        if (sel.size === 0) return true;
+        return sel.has(issue[g.field]);
+      });
+      el.style.display = passes ? '' : 'none';
+      if (passes) visibleCount++;
+    });
+    // Update the count badge to show *how many filters are active*
+    const totalActive = Object.values(activeFilters).reduce((sum, s) => sum + s.size, 0);
+    const countEl = document.getElementById('issueSideFilterCount');
+    if (countEl) countEl.textContent = '(' + totalActive + ')';
+
+    // The right-hand pane is intentionally NOT touched by filtering — the
+    // sidebar narrows but whatever the user was looking at stays loaded.
+
+    // Empty-state message in the list
+    let empty = document.getElementById('issueSideListEmpty');
+    if (visibleCount === 0) {
+      if (!empty && sideList) {
+        empty = document.createElement('div');
+        empty.id = 'issueSideListEmpty';
+        empty.style.cssText = 'padding:24px 20px;text-align:center;font-size:13px;color:#8C8D8E;font-family:var(--font);';
+        empty.textContent = 'No issues match the current filters.';
+        sideList.appendChild(empty);
+      }
+    } else if (empty) {
+      empty.remove();
+    }
+  }
+
+  (function wireFilterPopover() {
+    const ctrl = document.getElementById('issueSideFilterCtrl');
+    const pop  = document.getElementById('issueSideFilterPopover');
+    if (!ctrl || !pop) return;
+
+    function openPopover() {
+      buildFilterPopover();
+      pop.classList.add('is-open');
+      ctrl.classList.add('is-open');
+      ctrl.setAttribute('aria-expanded', 'true');
+    }
+    function closePopover() {
+      pop.classList.remove('is-open');
+      ctrl.classList.remove('is-open');
+      ctrl.setAttribute('aria-expanded', 'false');
+    }
+    function toggle() {
+      if (pop.classList.contains('is-open')) closePopover(); else openPopover();
+    }
+
+    ctrl.addEventListener('click', toggle);
+    ctrl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+      if (e.key === 'Escape') closePopover();
+    });
+
+    // Checkbox + clear-all interactions (event delegation)
+    pop.addEventListener('change', (e) => {
+      const cb = e.target.closest('input[type="checkbox"]');
+      if (!cb) return;
+      const groupId = cb.dataset.group;
+      const value   = cb.dataset.value;
+      if (cb.checked) activeFilters[groupId].add(value);
+      else activeFilters[groupId].delete(value);
+      applyFilters();
+      refreshClearAllState();
+    });
+    pop.addEventListener('click', (e) => {
+      if (e.target.id === 'issueSideFilterClear') {
+        FILTER_GROUPS.forEach(g => activeFilters[g.id].clear());
+        buildFilterPopover(); // re-render the checkboxes
+        applyFilters();
+      }
+    });
+
+    // Click outside closes the popover
+    document.addEventListener('click', (e) => {
+      if (!pop.classList.contains('is-open')) return;
+      if (e.target.closest('#issueSideFilterPopover') || e.target.closest('#issueSideFilterCtrl')) return;
+      closePopover();
+    });
+  })();
+
+  // Load an issue into the right pane — populates title, sp-manage card
+  // (age / first seen / last seen / status pill / severity dropdown / confidence)
+  // and the advisory Severity + Location card.
+  function loadIssue(issue) {
+    const titleEl = document.getElementById('issueDetailTitle');
+    if (titleEl) titleEl.textContent = issue.name;
+
+    // ── sp-manage card ─────────────────────────────────────────────
+    // Age + SLA-due copy: "X days old. Fix due in Y days" — or "Overdue
+    // by Y days" in red when the SLA has lapsed. SLA targets per severity:
+    //   High: 14d · Medium: 30d · Low: 60d · Information: 90d.
+    const ageEl   = document.getElementById('spAgeText');
+    if (ageEl) {
+      const days = parseInt((issue.age || '0').match(/\d+/)?.[0] || '0', 10);
+      const SLA  = { High: 14, Medium: 30, Low: 60, Information: 90 }[issue.sev] || 0;
+      const due  = SLA - days;
+      const olderTxt = `${days} ${days === 1 ? 'day' : 'days'} old.`;
+      const dueTxt   = due >= 0
+        ? `Fix due in ${due} ${due === 1 ? 'day' : 'days'}`
+        : `Overdue by ${-due} ${-due === 1 ? 'day' : 'days'}`;
+      ageEl.textContent = `${olderTxt} ${dueTxt}`;
+    }
+    const firstEl = document.getElementById('spFirstSeen');
+    if (firstEl) firstEl.textContent = issue.first || '—';
+    const lastEl  = document.getElementById('spLastSeen');
+    if (lastEl) lastEl.textContent = issue.last || '—';
+
+    // Status pill — re-render to match the issue's status
+    const statusPill = document.getElementById('spStatusPill');
+    if (statusPill && typeof renderPill === 'function') {
+      renderPill(statusPill, issue.status);
+    }
+
+    // Severity dropdown (sp-manage card)
+    const sevDotInner = document.getElementById('spSevDot')?.querySelector('circle');
+    if (sevDotInner) sevDotInner.setAttribute('fill', SEV_COLORS[issue.sev]);
+    const sevTextSm = document.getElementById('spSevText');
+    if (sevTextSm) sevTextSm.textContent = issue.sev;
+
+    // ── Advisory: Severity + Location card ─────────────────────────
+    const sevValEl  = document.getElementById('spSevVal');
+    if (sevValEl) sevValEl.textContent = issue.sev;
+    const confValEl = document.getElementById('spConfVal');
+    if (confValEl) confValEl.textContent = issue.conf;
+    const sevIcon = document.getElementById('spSevIconInner');
+    if (sevIcon) {
+      sevIcon.className = 'sp-sev-icon-lg ' + SEV_CLS[issue.sev];
+      const circle = sevIcon.querySelector('circle');
+      if (circle) circle.style.color = SEV_COLORS[issue.sev];
+    }
+    const hostEl = document.getElementById('spHost');
+    if (hostEl) hostEl.textContent = issue.host;
+    const pathEl = document.getElementById('spPathEl');
+    if (pathEl) pathEl.textContent = issue.path;
+
+    // ── Advisory accordions ───────────────────────────────────────
+    const advIdx = ISSUES.indexOf(issue);
+    const adv = ADVISORY_CONTENT[advIdx];
+    const renderParas = arr => (arr || []).map(p => `<p>${p}</p>`).join('') || '<p style="color:#8C8D8E">No content available for this issue.</p>';
+    const renderLinks = arr => (arr || []).length
+      ? '<ul style="margin:0;padding-left:18px;list-style:disc">' + arr.map(l => `<li style="margin-bottom:6px"><a href="${l.href}" style="color:#B86633;text-decoration:underline" onclick="return false">${l.label}</a></li>`).join('') + '</ul>'
+      : '<p style="color:#8C8D8E">No references for this issue.</p>';
+    const renderClassifications = arr => (arr || []).length
+      ? '<ul style="margin:0;padding-left:18px;list-style:disc">' + arr.map(c => `<li style="margin-bottom:4px">${c}</li>`).join('') + '</ul>'
+      : '<p style="color:#8C8D8E">No classifications for this issue.</p>';
+
+    const detailEl   = document.getElementById('spIssueDetail');
+    const bgEl       = document.getElementById('spIssueBackground');
+    const remEl      = document.getElementById('spIssueRemediation');
+    const refEl      = document.getElementById('spIssueReferences');
+    const classEl    = document.getElementById('spIssueClassifications');
+    if (detailEl) detailEl.innerHTML = renderParas(adv?.detail);
+    if (bgEl)     bgEl.innerHTML     = renderParas(adv?.background);
+    if (remEl)    remEl.innerHTML    = renderParas(adv?.remediation);
+    if (refEl)    refEl.innerHTML    = renderLinks(adv?.references);
+    if (classEl)  classEl.innerHTML  = renderClassifications(adv?.classifications);
+
+    // ── Timeline ──────────────────────────────────────────────────
+    if (typeof renderTimeline === 'function') renderTimeline(advIdx);
+
+    // ── Burp AI panel ──────────────────────────────────────────────
+    // Show the AI badge in the advisory severity card AND the full sp-ai-panel
+    // (Summary / Impact / Evidence / Details / Reproduction) when the issue
+    // has an AI investigation. Hide everything otherwise.
+    const idx = ISSUES.indexOf(issue);
+    const aiContent = document.getElementById('spAIContent');
+    const aiOutputRow = document.getElementById('spAIOutputRow');
+    const aiOutputVal = document.getElementById('spAIOutputVal');
+    const aiState = issue.ai;
+    const hasAI = aiState && aiState !== 'none';
+
+    if (hasAI && aiOutputRow) aiOutputRow.style.display = 'flex';
+    else if (aiOutputRow) aiOutputRow.style.display = 'none';
+
+    if (hasAI && aiOutputVal && typeof AI_SVG_CHECK !== 'undefined') {
+      const icon = aiState === 'confirmed' ? AI_SVG_CHECK
+                 : aiState === 'inconclusive' ? AI_SVG_HELP
+                 : AI_SVG_ALERT;
+      const label = AI_LABEL_FROM_STATE[aiState] || aiState;
+      aiOutputVal.innerHTML = '<span class="ai-badge">' + icon + '<span class="ai-badge-text">' + label + '</span></span>';
+    }
+
+    if (aiContent) {
+      if (hasAI) {
+        aiContent.style.display = 'flex';
+        const d = AI_CONTENT[idx];
+        if (d) {
+          const set = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+          set('spAISummary', d.summary || '');
+          set('spAIImpact',  d.impact  || '');
+          set('spAIEvidence',d.evidence|| '');
+          set('spAIDetails', d.details || '');
+          set('spAIRepro',   d.repro   || '');
+          // The header "updated X" label — show today's date for the demo
+          const updatedEl = document.getElementById('spAIUpdated');
+          if (updatedEl) updatedEl.textContent = 'Updated today';
+        }
+      } else {
+        aiContent.style.display = 'none';
+      }
+    }
+  }
+
+  // Initialise with the preselected issue (or the first one)
+  if (ISSUES[initialIdx]) loadIssue(ISSUES[initialIdx]);
+
+  // sp-manage section is always visible — Re-test and Raise ticket live
+  // inside it (the redundant header buttons were removed).
+
+  // Hide the leftover scan-mini pagination from the cloned scan-detail layout
+  document.querySelector('.scan-mini-pagination')?.style.setProperty('display', 'none');
+
+  // Hide the sticky horizontal scrollbar (was for the issues table)
+  document.getElementById('stickyScrollbar')?.style.setProperty('display', 'none');
+});
 </script>
 </body>
 </html>
