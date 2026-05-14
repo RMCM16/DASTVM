@@ -1493,7 +1493,7 @@
     .s-fp        { color: #333332; }
     .s-regressed { color: #D6213F; }
     .s-scanning  { color: #8C8D8E; }
-    .s-needs-retest { color: #8C8D8E; }
+    .s-needs-retest { color: #333332; }
     .s-fixed     { color: #0094FF; }
     .s-accepted  { color: #333332; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -2326,6 +2326,17 @@
       flex-shrink: 0;
     }
     .bulk-bar-btn:hover { background: rgba(255,255,255,0.12); border-color: #fff; }
+    .bulk-bar-btn:disabled,
+    .bulk-bar-btn[aria-disabled="true"] {
+      cursor: not-allowed;
+      opacity: 0.45;
+      background: none;
+    }
+    .bulk-bar-btn:disabled:hover,
+    .bulk-bar-btn[aria-disabled="true"]:hover {
+      background: none;
+      border-color: rgba(255,255,255,0.6);
+    }
     .bulk-bar-btn-icon { width: 14px; height: 14px; flex-shrink: 0; }
     .bulk-bar-deselect {
       font-family: var(--font);
@@ -2468,6 +2479,30 @@
     .sp-retest-bar.bar-error .sp-retest-bar-action:active {
       background: rgba(255,255,255,0.18);
     }
+    /* Left icon inside the action pill (Info bar - Stacked / Error) */
+    .sp-retest-bar.bar-error .sp-retest-bar-action svg { color: #FFFFFF; flex-shrink: 0; }
+
+    /* Re-test button — disabled state when the issue type isn't
+       auto-retestable. Stays visible (so users see the affordance) but
+       muted + not-allowed cursor; hover surfaces a popover with the
+       reason. Colour matches the DS Quaternary disabled state (#CBD0D1). */
+    .sp-qbtn.sp-btn-disabled {
+      color: #CBD0D1;
+      cursor: default;
+    }
+    .sp-qbtn.sp-btn-disabled:hover { opacity: 1; }
+
+    /* Row-level indicator — small grey info-circle shown before the status
+       pill on rows where the issue type isn't auto-retestable. Metadata,
+       not an alert — muted colour, cursor: help. */
+    .row-noretest-icon {
+      flex-shrink: 0;
+      display: inline-flex; align-items: center;
+      color: #676667;
+      margin-right: 6px;
+      cursor: help;
+    }
+    .row-noretest-icon:hover { color: #333332; }
     .sp-sev-drop {
       display: inline-flex; align-items: center; gap: 10px; padding: 5px 15px;
       border: 1px solid #CBD0D1; border-radius: 4px; background: #fff; cursor: pointer;
@@ -5893,6 +5928,24 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       const row = cb.closest('[data-row]');
       if (row) row.classList.toggle('row-selected', cb.classList.contains('checked'));
     });
+
+    // Gate the bulk Re-test action: if any selected row is not auto-retestable,
+    // disable the button and explain on hover.
+    const retestBtn = bulkBar.querySelector('[data-bulk-action="retest"]');
+    if (retestBtn) {
+      const blockingRows = Array.from(checkedCbs)
+        .map(cb => cb.closest('[data-row]'))
+        .filter(r => r && r.dataset.retestCapability && r.dataset.retestCapability !== 'auto');
+      if (blockingRows.length) {
+        retestBtn.disabled = true;
+        retestBtn.setAttribute('aria-disabled', 'true');
+        retestBtn.title = `${blockingRows.length} of ${count} selected issues can't be auto-retested — remove them from the selection to re-test.`;
+      } else {
+        retestBtn.disabled = false;
+        retestBtn.removeAttribute('aria-disabled');
+        retestBtn.removeAttribute('title');
+      }
+    }
   }
 
   document.getElementById('bulkDeselect').addEventListener('click', () => {
@@ -5941,7 +5994,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
 
   const SVG_INFO_16 = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M8 7.27273C8.40166 7.27273 8.72727 7.59834 8.72727 8V10.9091C8.72727 11.3108 8.40166 11.6364 8 11.6364C7.59834 11.6364 7.27273 11.3108 7.27273 10.9091V8C7.27273 7.59834 7.59834 7.27273 8 7.27273Z" fill="#333332"/><path d="M8 4.36364C7.59834 4.36364 7.27273 4.68925 7.27273 5.09091C7.27273 5.49257 7.59834 5.81818 8 5.81818H8.00727C8.40894 5.81818 8.73455 5.49257 8.73455 5.09091C8.73455 4.68925 8.40894 4.36364 8.00727 4.36364H8Z" fill="#333332"/><path fill-rule="evenodd" clip-rule="evenodd" d="M0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8ZM8 1.45455C4.38505 1.45455 1.45455 4.38505 1.45455 8C1.45455 11.615 4.38505 14.5455 8 14.5455C11.615 14.5455 14.5455 11.615 14.5455 8C14.5455 4.38505 11.615 1.45455 8 1.45455Z" fill="#333332"/></svg>`;
   const SVG_SPINNER  = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;animation:spin 1.2s linear infinite"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 1.33333C4.3181 1.33333 1.33333 4.3181 1.33333 8C1.33333 8.36819 1.03486 8.66667 0.666667 8.66667C0.298477 8.66667 0 8.36819 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 12.4183 12.4183 16 8 16C7.63181 16 7.33333 15.7015 7.33333 15.3333C7.33333 14.9651 7.63181 14.6667 8 14.6667C11.6819 14.6667 14.6667 11.6819 14.6667 8C14.6667 4.3181 11.6819 1.33333 8 1.33333Z" fill="#0094FF"/></svg>`;
-  const SVG_REFRESH  = `<svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M17 10A7 7 0 1 1 10 3h4.5M14.5 1v4h-4" stroke="#8C8D8E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const SVG_REFRESH  = `<svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M17 10A7 7 0 1 1 10 3h4.5M14.5 1v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const SVG_CARET    = `<svg width="10" height="6" viewBox="0 0 9.33333 5.33333" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.195262 0.195262C0.455612 -0.0650874 0.877722 -0.0650874 1.13807 0.195262L4.66667 3.72386L8.19526 0.195262C8.45561 -0.0650874 8.87772 -0.0650874 9.13807 0.195262C9.39842 0.455612 9.39842 0.877722 9.13807 1.13807L5.13807 5.13807C4.87772 5.39842 4.45561 5.39842 4.19526 5.13807L0.195262 1.13807C-0.0650874 0.877722 -0.0650874 0.455612 0.195262 0.195262Z" fill="#333332"/></svg>`;
   const SVG_CHECK    = `<svg class="item-check" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg>`;
   const SVG_CHECK_CIRCLE = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><svg x="0.667" y="0.667" width="14.667" height="14.667" viewBox="0 0 14.667 14.667"><path d="M7.33301 0C11.383 0 14.6668 3.28307 14.667 7.33301C14.667 11.3831 11.3831 14.667 7.33301 14.667C3.28307 14.6668 0 11.383 0 7.33301C0.000175871 3.28318 3.28318 0.000175875 7.33301 0Z" fill="#0094FF"/></svg><svg x="4.667" y="5.33" width="6.697" height="5.667" viewBox="0 0 6.69697 5.66666"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.42988 0.188427C6.75259 0.467691 6.7878 0.955685 6.50854 1.27839L2.94211 5.39959C2.80415 5.55902 2.60703 5.65515 2.39645 5.6657C2.18588 5.67624 1.98014 5.60028 1.82693 5.45544L0.241856 3.95682C-0.0682508 3.66363 -0.081963 3.17456 0.211229 2.86445C0.504421 2.55434 0.993491 2.54063 1.3036 2.83382L2.30191 3.77768L5.33992 0.267084C5.61918 -0.0556217 6.10718 -0.0908377 6.42988 0.188427Z" fill="white"/></svg></svg>`;
@@ -5976,6 +6029,49 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   document.querySelectorAll('.status-drop').forEach(pill => {
     if (!SCANNER_SET.has(pill.dataset.status) && !pill.dataset.scannerStatus) {
       pill.dataset.scannerStatus = 'present';
+    }
+  });
+
+  // ── Re-test capability — type-level. Three tiers:
+  //   'auto'    — normal: scanner can run a focused re-test (default)
+  //   'not-yet' — Burp doesn't currently support a re-test for this type;
+  //               may improve in future versions
+  //   'never'   — structurally not auto-verifiable (passive findings, headers).
+  // Used to gate the side-panel Re-test button, render the row indicator,
+  // and disable the bulk Re-test action when a non-auto row is selected.
+  const RETEST_CAPABILITY = {
+    'Information Disclosure via Error Messages': 'never',
+    'Improper Input Validation':                  'not-yet',
+  };
+  function getRetestCapability(issueName) {
+    return RETEST_CAPABILITY[(issueName || '').trim()] || 'auto';
+  }
+
+  // DS Icons/Info Circle — small grey for row indicator (14px) + medium navy
+  // for the bar-info variant header (18px) + check for the info-bar CTA.
+  const SVG_INFO_GREY_14 = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M8 7.27273C8.40166 7.27273 8.72727 7.59834 8.72727 8V10.9091C8.72727 11.3108 8.40166 11.6364 8 11.6364C7.59834 11.6364 7.27273 11.3108 7.27273 10.9091V8C7.27273 7.59834 7.59834 7.27273 8 7.27273Z" fill="currentColor"/><path d="M8 4.36364C7.59834 4.36364 7.27273 4.68925 7.27273 5.09091C7.27273 5.49257 7.59834 5.81818 8 5.81818H8.00727C8.40894 5.81818 8.73455 5.49257 8.73455 5.09091C8.73455 4.68925 8.40894 4.36364 8.00727 4.36364H8Z" fill="currentColor"/><path fill-rule="evenodd" clip-rule="evenodd" d="M0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8ZM8 1.45455C4.38505 1.45455 1.45455 4.38505 1.45455 8C1.45455 11.615 4.38505 14.5455 8 14.5455C11.615 14.5455 14.5455 11.615 14.5455 8C14.5455 4.38505 11.615 1.45455 8 1.45455Z" fill="currentColor"/></svg>';
+  const SVG_INFO_NAVY_18 = '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><circle cx="9" cy="9" r="8.25" stroke="#000023" stroke-width="1.5"/><path d="M9 8v4.5" stroke="#000023" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="5.75" r="0.85" fill="#000023"/></svg>';
+  const SVG_CHECK_NAVY_16 = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M3 8.5 6.5 12l6.5-8"/></svg>';
+
+  // Tag rows whose issue type isn't auto-retestable so the side panel can
+  // branch and bulk-action gating can read it. Also drops a small grey
+  // info-circle before the status pill as a row-level signal.
+  document.querySelectorAll('.table-row').forEach(row => {
+    const issueName = row.querySelector('.issue-name')?.getAttribute('title')
+                   || row.querySelector('.issue-name')?.textContent.trim()
+                   || '';
+    const cap = getRetestCapability(issueName);
+    if (cap === 'auto') return;
+    row.dataset.retestCapability = cap;
+    const statusCell = row.querySelector('.td.col-status');
+    if (statusCell && !statusCell.querySelector('.row-noretest-icon')) {
+      const icon = document.createElement('span');
+      icon.className = 'row-noretest-icon';
+      icon.title = cap === 'never'
+        ? "This issue type can't be re-tested automatically."
+        : "Burp can't re-test this issue type yet.";
+      icon.innerHTML = SVG_INFO_GREY_14;
+      statusCell.insertBefore(icon, statusCell.firstChild);
     }
   });
   (function sizePills() {
@@ -7570,6 +7666,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   function tlStatusPill(statusId) {
     const cfg = STATUS_CFG[statusId] || STATUS_CFG['present'];
     let iconSvg = '';
+    if (cfg.icon === 'refresh')      iconSvg = SVG_REFRESH;
     if (cfg.icon === 'check-circle') iconSvg = SVG_CHECK_CIRCLE;
     return `<div class="tl-pill ${cfg.cls}"><span class="pill-content">${iconSvg}${cfg.label}</span></div>`;
   }
@@ -7852,34 +7949,63 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   // ── Re-test failure taxonomy — single source of truth used by ──────
   // the side-panel error bar, the row chip + tooltip, the timeline card,
   // and the bulk completion summary sheet.
+  // Three named remediation paths. Each fail reason picks the one that
+  // most directly addresses the failure — so users see one specific
+  // next step per issue, not a buffet.
+  // DS Icons — white outlined, sized for the pill button (Figma Info bar - Stacked)
+  const ICON_W_EDIT    = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M11.5 2 14 4.5 5 13.5 2 14l.5-3L11.5 2Z"/></svg>';
+  const ICON_W_RERUN   = '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M17 10A7 7 0 1 1 10 3h4.5M14.5 1v4h-4"/></svg>';
+  const ICON_W_CHECK   = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M3 8.5 6.5 12l6.5-8"/></svg>';
+
+  const REM_RERUN = {
+    detail:     'Failures can be transient — try re-running the scan first.',
+    buttonText: 'Re-run scan',
+    buttonIcon: ICON_W_RERUN,
+    actionHref: '#'
+  };
+  const REM_UPDATE_AUTH = (rlLabel) => ({
+    // Per spec: re-test uses the latest RL from the site matched by label.
+    // If no RL with the original label exists, this remediation fires.
+    detail:     `We couldn't find the "${rlLabel}" credentials used to reach this issue. Update and try again, or rescan.`,
+    buttonText: 'Edit recorded login',
+    buttonIcon: ICON_W_EDIT,
+    actionHref: 'burp-dast-settings-issue-management.html'
+  });
+  const REM_MARK_FIXED = {
+    detail:     'If you have verified the issue is resolved outside Burp, mark it as Fixed (unconfirmed). It will auto-confirm on the next successful scan.',
+    buttonText: 'Mark as Fixed (unconfirmed)',
+    buttonIcon: ICON_W_CHECK,
+    actionHref: '#'
+  };
+
   const RETEST_FAIL_REASONS = {
     'auth-failed': {
       short:        'Authentication error',
       title:        'Re-test failed — authentication error',
-      detail:       'The saved credentials for app.zenithcorp.com returned 401 Unauthorized. Update credentials in scan settings, then retry.',
-      tooltipBody:  'Saved credentials returned 401. Update credentials in scan settings.',
-      action:       'Scan settings',
-      actionHref:   'burp-dast-settings-issue-management.html',
+      // No standalone detail — the remediation body is the full message
+      // (per spec wording). detail concatenates first, so leaving empty
+      // makes the remediation copy the entire body.
+      detail:       '',
+      tooltipBody:  "Couldn't find matching Recorded Login credentials on the site.",
+      remediation:  REM_UPDATE_AUTH('Zenith Bank login'),
       groupLabel:   'Authentication failed',
-      groupHint:    'app.zenithcorp.com returned 401 Unauthorized'
+      groupHint:    'Matching Recorded Login not found on the site'
     },
     'target-unreachable': {
       short:        'Target unreachable',
       title:        'Re-test failed — target unreachable',
-      detail:       'No response from the target host (DNS or connection refused). Confirm the host is online, then retry.',
+      detail:       'No response from the target host (DNS or connection refused).',
       tooltipBody:  'No response from the target host.',
-      action:       'View scan log',
-      actionHref:   '#',
+      remediation:  REM_RERUN,
       groupLabel:   'Target unreachable',
       groupHint:    'Target host did not respond'
     },
     'out-of-scope': {
       short:        'Out of scope',
       title:        'Re-test failed — out of scope',
-      detail:       'The issue URL is excluded from this site’s current scan scope. Adjust scope, then retry.',
+      detail:       'The issue URL is excluded from this site’s current scan scope.',
       tooltipBody:  'Issue URL is excluded from this site’s scan scope.',
-      action:       'Edit scan scope',
-      actionHref:   'burp-dast-settings-issue-management.html',
+      remediation:  REM_MARK_FIXED,
       groupLabel:   'Out of scope',
       groupHint:    'Issue URL excluded from current scope'
     },
@@ -7888,18 +8014,16 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       title:        'Re-test failed — no scanning agent available',
       detail:       'No agent is online to run this re-test. It will resume automatically once an agent comes online.',
       tooltipBody:  'No scanning agent is currently online.',
-      action:       'View agents',
-      actionHref:   '#',
+      remediation:  REM_RERUN,
       groupLabel:   'No scanning agent available',
       groupHint:    'Re-test will resume when an agent comes online'
     },
     'engine-error': {
       short:        'Scan engine error',
       title:        'Re-test failed — scan engine error',
-      detail:       'An unexpected error occurred during re-test. The engineering team has been notified. Please retry, or contact support if the issue persists.',
+      detail:       'An unexpected error occurred during re-test. The engineering team has been notified.',
       tooltipBody:  'Unexpected error during re-test.',
-      action:       'View scan log',
-      actionHref:   '#',
+      remediation:  REM_RERUN,
       groupLabel:   'Scan engine error',
       groupHint:    'Unexpected error during re-test'
     }
@@ -8574,14 +8698,23 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       retestBar.classList.add('bar-error');
       document.getElementById('spRetestBarIcon').innerHTML = ICON_ERROR;
       document.getElementById('spRetestBarText').textContent = r.title;
+      // Body paragraph = failure detail + remediation explanation (matches
+      // the DS Info bar - Stacked / Error layout — one body paragraph, one CTA).
+      // Either piece can be empty; .filter(Boolean) avoids a leading space.
       const reasonEl = document.getElementById('spRetestBarReason');
-      reasonEl.textContent = r.detail;
+      const remDetail = r.remediation ? r.remediation.detail : '';
+      reasonEl.textContent = [r.detail, remDetail].filter(Boolean).join(' ');
       reasonEl.style.display = 'block';
       const actionEl = document.getElementById('spRetestBarAction');
-      // DS Secondary Dark pill — text only, no trailing icon (Figma 11059:445)
-      actionEl.textContent = r.action;
-      actionEl.style.display = 'inline-flex';
-      actionEl.dataset.href = r.actionHref;
+      if (r.remediation) {
+        const icon = r.remediation.buttonIcon || '';
+        actionEl.innerHTML = `${icon}<span>${r.remediation.buttonText}</span>`;
+        actionEl.style.display = 'inline-flex';
+        actionEl.dataset.href = r.remediation.actionHref || '#';
+      } else {
+        actionEl.innerHTML = '';
+        actionEl.style.display = 'none';
+      }
       retestBar.classList.add('visible');
     }
 
@@ -8600,6 +8733,9 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     }
 
     function runRetest() {
+      // If the active row's issue type isn't auto-retestable the button is
+      // shown disabled; clicks are no-ops.
+      if (retestBtn.classList.contains('sp-btn-disabled')) return;
       const fromStatus = spStatusPill.dataset.status;
       const targetRow  = activeRow;
       const decision   = pickOutcome(targetRow);
@@ -8626,9 +8762,87 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
 
     retestBtn.addEventListener('click', runRetest);
 
-    // Bar action link (e.g. "Open scan settings")
+    // Hover popover for the disabled Re-test button — same copy as the
+    // (removed) blue Info-bar previously surfaced, but anchored to the
+    // button so the panel stays calm until the user looks for it.
+    // Lazily build a single body-level popover element on first hover.
+    let retestDisabledPopover = null;
+    function ensureRetestDisabledPopover() {
+      if (retestDisabledPopover) return retestDisabledPopover;
+      retestDisabledPopover = document.createElement('div');
+      // Two classes: shared visual style + unique selector that doesn't
+      // collide with the row alert-triangle popover.
+      retestDisabledPopover.className = 'retest-fail-popover retest-disabled-popover';
+      // Arrow sits BEFORE the card so it appears at the top of the popover,
+      // pointing up at the Re-test button (which sits above-right of the
+      // popover in the panel's actions row).
+      retestDisabledPopover.innerHTML =
+        '<div class="retest-fail-popover-arrow">' +
+          '<svg width="34" height="16" viewBox="0 0 34 16" fill="none">' +
+            '<path d="M0 16H34L17 0L0 16Z" fill="#FFFFFF"/>' +
+          '</svg>' +
+        '</div>' +
+        '<div class="retest-fail-popover-card">' +
+          '<span class="retest-fail-popover-title"></span>' +
+          '<p class="retest-fail-popover-body"></p>' +
+        '</div>';
+      document.body.appendChild(retestDisabledPopover);
+      return retestDisabledPopover;
+    }
+    function positionRetestDisabledPopover() {
+      const pop = retestDisabledPopover;
+      const r = retestBtn.getBoundingClientRect();
+      pop.classList.add('is-visible');
+      const popW = pop.offsetWidth;
+      const arrowW = 34;
+      // Anchor the popover's right edge to the button's right edge — the
+      // popover extends to the left, arrow at top-right pointing up at the
+      // button. Clamp to viewport with an 8px gutter on either side.
+      let left = r.right - popW;
+      left = Math.max(8, Math.min(left, window.innerWidth - popW - 8));
+      const top  = r.bottom + 6;
+      pop.style.left = left + 'px';
+      pop.style.top  = top  + 'px';
+      const arrow = pop.querySelector('.retest-fail-popover-arrow');
+      if (arrow) {
+        // Place arrow under the button's centre.
+        const arrowCenterX = r.left + r.width / 2;
+        const arrowLeft = Math.max(8, Math.min(arrowCenterX - left - arrowW / 2, popW - arrowW - 8));
+        arrow.style.marginLeft = arrowLeft + 'px';
+      }
+    }
+    retestBtn.addEventListener('mouseenter', () => {
+      if (!retestBtn.classList.contains('sp-btn-disabled')) return;
+      const cap = retestBtn.dataset.disabledReason;
+      const title = cap === 'never'
+        ? "This issue type can't be re-tested automatically"
+        : "Burp can't re-test this issue type yet";
+      const body = cap === 'never'
+        ? "Burp can't run a re-test for this finding type. Verify manually, then update the status when you're done."
+        : "This finding type doesn't currently support automatic re-test. Verify manually, then update the status when you're done.";
+      const pop = ensureRetestDisabledPopover();
+      pop.querySelector('.retest-fail-popover-title').textContent = title;
+      pop.querySelector('.retest-fail-popover-body').textContent  = body;
+      positionRetestDisabledPopover();
+    });
+    retestBtn.addEventListener('mouseleave', () => {
+      if (retestDisabledPopover) retestDisabledPopover.classList.remove('is-visible');
+    });
+
+    // Bar action click — either navigates to the remediation's target, or
+    // (for the capability Info-bar) flips the panel's status pill to
+    // Fixed (unconfirmed) and dismisses the bar.
     document.getElementById('spRetestBarAction').addEventListener('click', function () {
       const href = this.dataset.href;
+      if (href === 'mark-fixed') {
+        renderPill(spStatusPill, 'fixed');
+        if (activeRow) {
+          const rowPill = activeRow.querySelector('.status-drop');
+          if (rowPill) renderPill(rowPill, 'fixed');
+        }
+        retestBar.classList.remove('visible');
+        return;
+      }
       if (href && href !== '#') window.location.href = href;
     });
 
@@ -8641,15 +8855,28 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     });
 
     // Re-evaluate button + bar state when the side panel opens for a different
-    // row — if that row already has a failure flagged, show the retry button
-    // treatment AND restore the error bar so a returning user sees the reason
-    // and the contextual action without having to dig into the timeline.
+    // row. Capability check comes first — non-auto rows get the Re-test
+    // button in a disabled state (kept visible so users see the affordance);
+    // a hover popover explains why. Auto rows fall through to the failure-bar
+    // logic so a returning user sees why a previous re-test failed.
     window.__refreshRetestUIForActiveRow = function () {
       if (!activeRow) {
         resetRetestButton();
         retestBar.classList.remove('visible');
+        retestBtn.classList.remove('sp-btn-disabled');
+        delete retestBtn.dataset.disabledReason;
         return;
       }
+      const cap = activeRow.dataset.retestCapability;
+      if (cap && cap !== 'auto') {
+        resetRetestButton();
+        retestBtn.classList.add('sp-btn-disabled');
+        retestBtn.dataset.disabledReason = cap;
+        retestBar.classList.remove('visible');
+        return;
+      }
+      retestBtn.classList.remove('sp-btn-disabled');
+      delete retestBtn.dataset.disabledReason;
       const reasonId = activeRow.dataset.retestFailed;
       if (reasonId) {
         setRetryButton();

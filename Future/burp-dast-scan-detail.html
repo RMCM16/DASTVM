@@ -2106,6 +2106,7 @@
     .s-fp        { color: #333332; }
     .s-regressed { color: #D6213F; }
     .s-scanning  { color: #8C8D8E; }
+    .s-needs-retest { color: #333332; }
     .s-fixed     { color: #0094FF; }
     .s-accepted  { color: #333332; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -6020,10 +6021,12 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     'accepted':       { label: 'Accepted risk',       cls: 's-accepted',  icon: null,      caret: true  },
     'false-positive': { label: 'False positive',      cls: 's-fp',        icon: null,      caret: true  },
     'verified':       { label: 'Verified risk',       cls: 's-vrisk',     icon: null,      caret: true  },
+    'needs-retest':   { label: 'Needs re-test',       cls: 's-needs-retest', icon: 'refresh', caret: true  },
   };
 
   const SVG_INFO_16 = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M8 7.27273C8.40166 7.27273 8.72727 7.59834 8.72727 8V10.9091C8.72727 11.3108 8.40166 11.6364 8 11.6364C7.59834 11.6364 7.27273 11.3108 7.27273 10.9091V8C7.27273 7.59834 7.59834 7.27273 8 7.27273Z" fill="#333332"/><path d="M8 4.36364C7.59834 4.36364 7.27273 4.68925 7.27273 5.09091C7.27273 5.49257 7.59834 5.81818 8 5.81818H8.00727C8.40894 5.81818 8.73455 5.49257 8.73455 5.09091C8.73455 4.68925 8.40894 4.36364 8.00727 4.36364H8Z" fill="#333332"/><path fill-rule="evenodd" clip-rule="evenodd" d="M0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8ZM8 1.45455C4.38505 1.45455 1.45455 4.38505 1.45455 8C1.45455 11.615 4.38505 14.5455 8 14.5455C11.615 14.5455 14.5455 11.615 14.5455 8C14.5455 4.38505 11.615 1.45455 8 1.45455Z" fill="#333332"/></svg>`;
   const SVG_SPINNER  = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;animation:spin 1.2s linear infinite"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 1.33333C4.3181 1.33333 1.33333 4.3181 1.33333 8C1.33333 8.36819 1.03486 8.66667 0.666667 8.66667C0.298477 8.66667 0 8.36819 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 12.4183 12.4183 16 8 16C7.63181 16 7.33333 15.7015 7.33333 15.3333C7.33333 14.9651 7.63181 14.6667 8 14.6667C11.6819 14.6667 14.6667 11.6819 14.6667 8C14.6667 4.3181 11.6819 1.33333 8 1.33333Z" fill="#0094FF"/></svg>`;
+  const SVG_REFRESH  = `<svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M17 10A7 7 0 1 1 10 3h4.5M14.5 1v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const SVG_CARET    = `<svg width="10" height="6" viewBox="0 0 9.33333 5.33333" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.195262 0.195262C0.455612 -0.0650874 0.877722 -0.0650874 1.13807 0.195262L4.66667 3.72386L8.19526 0.195262C8.45561 -0.0650874 8.87772 -0.0650874 9.13807 0.195262C9.39842 0.455612 9.39842 0.877722 9.13807 1.13807L5.13807 5.13807C4.87772 5.39842 4.45561 5.39842 4.19526 5.13807L0.195262 1.13807C-0.0650874 0.877722 -0.0650874 0.455612 0.195262 0.195262Z" fill="#333332"/></svg>`;
   const SVG_CHECK    = `<svg class="item-check" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg>`;
   const SVG_CHECK_CIRCLE = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><svg x="0.667" y="0.667" width="14.667" height="14.667" viewBox="0 0 14.667 14.667"><path d="M7.33301 0C11.383 0 14.6668 3.28307 14.667 7.33301C14.667 11.3831 11.3831 14.667 7.33301 14.667C3.28307 14.6668 0 11.383 0 7.33301C0.000175871 3.28318 3.28318 0.000175875 7.33301 0Z" fill="#0094FF"/></svg><svg x="4.667" y="5.33" width="6.697" height="5.667" viewBox="0 0 6.69697 5.66666"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.42988 0.188427C6.75259 0.467691 6.7878 0.955685 6.50854 1.27839L2.94211 5.39959C2.80415 5.55902 2.60703 5.65515 2.39645 5.6657C2.18588 5.67624 1.98014 5.60028 1.82693 5.45544L0.241856 3.95682C-0.0682508 3.66363 -0.081963 3.17456 0.211229 2.86445C0.504421 2.55434 0.993491 2.54063 1.3036 2.83382L2.30191 3.77768L5.33992 0.267084C5.61918 -0.0556217 6.10718 -0.0908377 6.42988 0.188427Z" fill="white"/></svg></svg>`;
@@ -6035,6 +6038,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     let iconSvg = '';
     if (cfg.icon === 'info16')       iconSvg = SVG_INFO_16;
     if (cfg.icon === 'spinner')      iconSvg = SVG_SPINNER;
+    if (cfg.icon === 'refresh')      iconSvg = SVG_REFRESH;
     if (cfg.icon === 'check-circle') iconSvg = SVG_CHECK_CIRCLE;
     el.innerHTML = `<span class="pill-content">${iconSvg}${cfg.label}</span>${cfg.caret ? SVG_CARET : ''}`;
   }
@@ -7549,6 +7553,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   function tlStatusPill(statusId) {
     const cfg = STATUS_CFG[statusId] || STATUS_CFG['present'];
     let iconSvg = '';
+    if (cfg.icon === 'refresh')      iconSvg = SVG_REFRESH;
     if (cfg.icon === 'check-circle') iconSvg = SVG_CHECK_CIRCLE;
     return `<div class="tl-pill ${cfg.cls}"><span class="pill-content">${iconSvg}${cfg.label}</span></div>`;
   }
