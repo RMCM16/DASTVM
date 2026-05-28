@@ -1505,6 +1505,14 @@
       display: inline-flex; align-items: center; line-height: 0;
     }
 
+    /* "Issue type isn't auto-retestable" indicator — small grey info-circle
+       inside the status pill. Metadata, not an alert. */
+    .pill-noretest-icon {
+      display: inline-flex; align-items: center; line-height: 0;
+      color: #676667;
+    }
+    .pill-noretest-icon:hover { color: #333332; }
+
     /* DS Popover (Figma 11059:2301) — shared, body-level element */
     .retest-fail-popover {
       position: fixed; z-index: 9999; pointer-events: none;
@@ -2567,17 +2575,6 @@
     }
     .sp-qbtn.sp-btn-disabled:hover { opacity: 1; }
 
-    /* Row-level indicator — small grey info-circle shown before the status
-       pill on rows where the issue type isn't auto-retestable. Metadata,
-       not an alert — muted colour, cursor: help. */
-    .row-noretest-icon {
-      flex-shrink: 0;
-      display: inline-flex; align-items: center;
-      color: #676667;
-      margin-right: 6px;
-      cursor: help;
-    }
-    .row-noretest-icon:hover { color: #333332; }
     .sp-sev-drop {
       display: inline-flex; align-items: center; gap: 10px; padding: 5px 15px;
       border: 1px solid #CBD0D1; border-radius: 4px; background: #fff; cursor: pointer;
@@ -6095,7 +6092,17 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       if (cfg.icon === 'refresh')      iconSvg = SVG_REFRESH;
       if (cfg.icon === 'check-circle') iconSvg = SVG_CHECK_CIRCLE;
     }
-    el.innerHTML = `<span class="pill-content">${iconSvg}${cfg.label}</span>${cfg.caret ? SVG_CARET : ''}`;
+    // "Issue type isn't auto-retestable" indicator — small grey info-circle
+    // prepended inside the pill, before any leading status icon. Suppressed
+    // when the alert-triangle is showing (re-test failure takes priority).
+    let noRetestSvg = '';
+    if (el.dataset.noRetest && !el.dataset.retestFailed) {
+      const tip = el.dataset.noRetest === 'never'
+        ? "This issue type can't be re-tested automatically."
+        : "Burp can't re-test this issue type yet.";
+      noRetestSvg = `<span class="pill-noretest-icon" title="${tip}">${SVG_INFO_GREY_14}</span>`;
+    }
+    el.innerHTML = `<span class="pill-content">${noRetestSvg}${iconSvg}${cfg.label}</span>${cfg.caret ? SVG_CARET : ''}`;
   }
 
   // Render all pills and size to widest
@@ -6129,8 +6136,8 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   const SVG_CHECK_NAVY_16 = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M3 8.5 6.5 12l6.5-8"/></svg>';
 
   // Tag rows whose issue type isn't auto-retestable so the side panel can
-  // branch and bulk-action gating can read it. Also drops a small grey
-  // info-circle before the status pill as a row-level signal.
+  // branch and bulk-action gating can read it. Flag the row's status pill
+  // so renderPill() draws a small grey info-circle inside it.
   document.querySelectorAll('.table-row').forEach(row => {
     const issueName = row.querySelector('.issue-name')?.getAttribute('title')
                    || row.querySelector('.issue-name')?.textContent.trim()
@@ -6138,25 +6145,22 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     const cap = getRetestCapability(issueName);
     if (cap === 'auto') return;
     row.dataset.retestCapability = cap;
-    const statusCell = row.querySelector('.td.col-status');
-    if (statusCell && !statusCell.querySelector('.row-noretest-icon')) {
-      const icon = document.createElement('span');
-      icon.className = 'row-noretest-icon';
-      icon.title = cap === 'never'
-        ? "This issue type can't be re-tested automatically."
-        : "Burp can't re-test this issue type yet.";
-      icon.innerHTML = SVG_INFO_GREY_14;
-      statusCell.insertBefore(icon, statusCell.firstChild);
+    const pill = row.querySelector('.col-status .status-drop');
+    if (pill) {
+      pill.dataset.noRetest = cap;
+      renderPill(pill, pill.dataset.status);
     }
   });
   (function sizePills() {
-    // Measure the widest possible pill content. Two candidates:
+    // Measure the widest possible pill content. Candidates:
     //   1. The longest label with its normal leading icon (Fixed unconfirmed + check)
     //   2. Any label with the alert-triangle prepended (re-test failed indicator)
-    // Take the larger so the pill never clips when the alert-triangle is shown.
-    const measure = (statusId, withFailIcon) => {
+    //   3. Any label with the no-retest info-circle prepended
+    // Take the largest so the pill never clips.
+    const measure = (statusId, opts = {}) => {
       const probe = document.createElement('div');
-      if (withFailIcon) probe.dataset.retestFailed = 'auth-failed';
+      if (opts.failIcon)  probe.dataset.retestFailed = 'auth-failed';
+      if (opts.noRetest)  probe.dataset.noRetest = 'never';
       renderPill(probe, statusId);
       probe.style.cssText = 'position:fixed;visibility:hidden;top:-9999px;left:-9999px';
       document.body.appendChild(probe);
@@ -6165,9 +6169,11 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       return w;
     };
     let maxW = Math.max(
-      measure('fixed', false),          // 'Fixed (unconfirmed)' + check-circle
-      measure('fixed', true),           // same with alert-triangle override
-      measure('needs-retest', true)     // 'Needs re-test' + alert-triangle
+      measure('fixed'),                          // 'Fixed (unconfirmed)' + check-circle
+      measure('fixed',        { failIcon: true }),// same with alert-triangle override
+      measure('needs-retest', { failIcon: true }),// 'Needs re-test' + alert-triangle
+      measure('fixed',        { noRetest: true }),// label + check-circle + info-circle
+      measure('needs-retest', { noRetest: true }) // label + refresh + info-circle
     );
 
     if (maxW <= 0) return;
