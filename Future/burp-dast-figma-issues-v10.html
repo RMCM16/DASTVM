@@ -233,6 +233,8 @@
       border-bottom-color: var(--c-blue);
       font-weight: 400;
     }
+    .tab .scan-tab-badge { margin-left: 4px; vertical-align: middle; }
+    .tab.active .scan-tab-badge { background: #D0EBFF; }
 
     /* Date filter — styled as a filter chip */
     .date-filter {
@@ -1775,6 +1777,8 @@
       white-space: nowrap;
     }
     .sc-btn-confirm:hover { background: #e55520; }
+    .sc-btn-confirm:disabled { background: #EBF0F2; color: #8C8D8E; cursor: default; }
+    .sc-btn-confirm:disabled:hover { background: #EBF0F2; }
 
     /* Tag */
     .tag {
@@ -3491,7 +3495,7 @@
     <!-- Tab bar -->
     <div class="tab-bar">
       <a href="#" class="tab">Dashboard</a>
-      <a href="#" class="tab active">Issues</a>
+      <a href="#" class="tab active">Issues <span class="scan-tab-badge" id="issuesTabCount">0</span></a>
       <a href="#" class="tab">Quicklinks</a>
       <div class="tab-bar-spacer"></div>
     </div>
@@ -6243,7 +6247,21 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     const delta = oldStatusW - newStatusW;
 
     document.querySelectorAll('.col-status').forEach(el => { el.style.width = newStatusW + 'px'; });
-    // col-issue is flex:1 — it absorbs/releases any space automatically
+
+    // The status column grows to fit its pills, but the table track (header,
+    // body, rows) has a fixed min-width calibrated for the original status
+    // width. Without widening the track to match, the extra width pushes the
+    // last column (Actions) past the row edge and its kebab clips when scrolled
+    // fully right. Grow each track element's min-width by the same delta (+ a
+    // small buffer) so every column stays inside the row.
+    const widthDelta = newStatusW - oldStatusW;
+    if (widthDelta > 0) {
+      const base = parseFloat(getComputedStyle(document.querySelector('.table-body')).minWidth) || 1902;
+      const newMinW = Math.ceil(base + widthDelta + 8) + 'px';
+      document.querySelector('.table-header').style.minWidth = newMinW;
+      document.querySelector('.table-body').style.minWidth = newMinW;
+      document.querySelectorAll('.table-row').forEach(r => { r.style.minWidth = newMinW; });
+    }
   })();
 
   // Shared menu element
@@ -6346,11 +6364,52 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
 
   scSelect.addEventListener('change', syncScModeFromSelect);
 
+  // Build the <select> options for a single issue so the dropdown can always
+  // pre-select that issue's CURRENT status. Mirrors the inline status menu:
+  //  · scanner status (New/Present/…) → shown as a disabled, selected "current"
+  //    option above the override choices; no "remove override" row.
+  //  · override status (Fixed/Accepted/…) → overrides listed with the current
+  //    one selected, plus a "Use scanner status (X)" revert row.
+  function buildStatusOptions(pill, currentId) {
+    if (!USER_OPTIONS.some(o => o.id === currentId)) {
+      const cur = (STATUS_CFG[currentId] || STATUS_CFG['present']).label;
+      return '<optgroup label="Scanner status">'
+           +   `<option value="${currentId}" disabled selected>${cur}</option>`
+           + '</optgroup>'
+           + '<optgroup label="Override with">'
+           +   USER_OPTIONS.map(o => `<option value="${o.id}">${o.label}</option>`).join('')
+           + '</optgroup>';
+    }
+    const scannerStatus = pill?.dataset.scannerStatus || 'present';
+    const scannerLabel  = STATUS_CFG[scannerStatus]?.label || scannerStatus;
+    return '<optgroup label="Override status">'
+         +   USER_OPTIONS.map(o => `<option value="${o.id}"${o.id === currentId ? ' selected' : ''}>${o.label}</option>`).join('')
+         + '</optgroup>'
+         + '<optgroup label="Remove override">'
+         +   `<option value="__revert">Use scanner status (${scannerLabel})</option>`
+         + '</optgroup>';
+  }
+
+  // Full override option set for bulk edits (selected rows may differ in status).
+  function buildBulkStatusOptions() {
+    return '<optgroup label="Override status">'
+         +   USER_OPTIONS.map(o => `<option value="${o.id}">${o.label}</option>`).join('')
+         + '</optgroup>'
+         + '<optgroup label="Remove override"><option value="__revert">Use scanner status</option></optgroup>';
+  }
+
   function openStatusModal(pill, preselectedId) {
     scTargetPill = pill;
+    scBulkRows = [];
+    scSelect.innerHTML = buildStatusOptions(pill, preselectedId);
     scSelect.value = preselectedId;
     scNotes.value = '';
     syncScModeFromSelect();
+    // Confirm stays disabled until the user picks a status different from the
+    // current one — the modal opens pre-selected with it, so a no-op confirm
+    // would be meaningless.
+    scConfirmBtn.disabled = true;
+    scSelect.onchange = () => { scConfirmBtn.disabled = (scSelect.value === preselectedId); };
     scOverlay.style.display = 'flex';
   }
 
@@ -6358,9 +6417,13 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     scBulkRows = rows;
     const firstPill = rows[0]?.querySelector('.status-drop');
     scTargetPill = firstPill || null;
+    scSelect.innerHTML = buildBulkStatusOptions();
     scSelect.value = firstPill && !SCANNER_SET.has(firstPill.dataset.status) ? firstPill.dataset.status : 'fixed';
     scNotes.value = '';
     syncScModeFromSelect();
+    // Bulk: the user is explicitly choosing a status to apply across rows — allow confirm.
+    scConfirmBtn.disabled = false;
+    scSelect.onchange = null;
     scOverlay.style.display = 'flex';
   }
 
@@ -11325,6 +11388,14 @@ document.addEventListener('DOMContentLoaded', function() {
       flash();
     }
   };
+</script>
+<script>
+  // Issues tab counter — reflects the total number of issues in the table.
+  (function () {
+    var badge = document.getElementById('issuesTabCount');
+    if (!badge) return;
+    badge.textContent = document.querySelectorAll('.table-body [data-row]').length;
+  })();
 </script>
 </body>
 </html>

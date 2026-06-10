@@ -1629,6 +1629,8 @@
       white-space: nowrap;
     }
     .sc-btn-confirm:hover { background: #e55520; }
+    .sc-btn-confirm:disabled { background: #EBF0F2; color: #8C8D8E; cursor: default; }
+    .sc-btn-confirm:disabled:hover { background: #EBF0F2; }
 
     /* Tag */
     .tag {
@@ -2498,6 +2500,35 @@
     .tl-tag { border: 1px solid #CBD0D1; border-radius: 4px; padding: 3px 6px; font-family: var(--font); font-size: 12px; font-weight: 700; line-height: 1.2; letter-spacing: 0.12px; white-space: nowrap; min-height: 22px; display: inline-flex; align-items: center; justify-content: center; }
     .tl-divider { height: 1px; background: #CBD0D1; width: 100%; margin-top: 30px; }
     .tl-comments { margin-top: 30px; display: flex; flex-direction: column; gap: 10px; }
+    /* ── Anchored comments composer: dock the comment input to the bottom of the
+       side panel so it's always visible while scrolling the timeline. .side-panel
+       is the scroll container; sticky pins this to the viewport bottom. */
+    #spPaneTimeline .tl-divider { display: none; }
+    #spPaneTimeline .tl-comments {
+      position: sticky; bottom: 0; z-index: 2;
+      margin: 30px -30px -30px;        /* cancel .sp-body padding → span full panel width + reach bottom edge */
+      padding: 20px 30px;
+      background: #fff;
+      border-top: 1px solid #CBD0D1;
+      box-shadow: 0 -4px 16px rgba(0,0,35,0.08);
+    }
+    /* Collapse toggle — chevron in the composer header */
+    .tl-comments-head { display: flex; align-items: center; justify-content: space-between; }
+    .tl-comments-toggle {
+      display: flex; align-items: center; justify-content: center;
+      width: 28px; height: 28px; flex-shrink: 0;
+      border: none; background: none; cursor: pointer;
+      color: #676667; border-radius: 4px;
+    }
+    .tl-comments-toggle:hover { background: #EBF0F2; color: #333332; }
+    .tl-comments-toggle svg { transition: transform 0.15s ease; }
+    /* Collapsed state: slim docked bar — textarea + footer hidden, header acts as the
+       click target to expand. Stays anchored so it's always reachable. */
+    #spPaneTimeline .tl-comments.collapsed { gap: 0; }
+    #spPaneTimeline .tl-comments.collapsed .tl-comments-input,
+    #spPaneTimeline .tl-comments.collapsed .tl-comments-footer { display: none; }
+    #spPaneTimeline .tl-comments.collapsed .tl-comments-head { cursor: pointer; }
+    #spPaneTimeline .tl-comments.collapsed .tl-comments-toggle svg { transform: rotate(180deg); }
     .tl-comments-title { font-family: var(--font); font-size: 16px; font-weight: 500; color: #000023; line-height: 1.4; letter-spacing: 0.16px; }
     .tl-comments-input { background: #F0F8FB; border: 1px solid #CBD0D1; border-radius: 4px; padding: 10px; height: 70px; width: 100%; resize: none; font-family: var(--font); font-size: 14px; color: #676667; line-height: 1.4; letter-spacing: 0.14px; box-sizing: border-box; }
     .tl-comments-input:focus { outline: none; border-color: #8C8D8E; }
@@ -3282,6 +3313,8 @@
       color: #000023;
     }
     .folder-tab-active-bar { height: 3px; background: #0094FF; width: 100%; border-radius: 1px 1px 0 0; }
+    .folder-tab-label { display: inline-flex; align-items: center; gap: 8px; }
+    .folder-tab.is-active .scan-tab-badge { background: #D0EBFF; }
     .folder-tab-divider { height: 1px; background: #CBD0D1; width: 100%; }
 
     /* Issues panel (white card) */
@@ -3942,7 +3975,7 @@
         <a href="#" class="folder-tab">Scans</a>
         <a href="#" class="folder-tab">Scheduled scans</a>
         <a href="#" class="folder-tab is-active">
-          Issues
+          <span class="folder-tab-label">Issues <span class="scan-tab-badge" id="issuesTabCount">0</span></span>
           <span class="folder-tab-active-bar"></span>
         </a>
         <a href="#" class="folder-tab">Details</a>
@@ -6706,16 +6739,42 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   let scTargetPill = null;
   let scBulkRows   = [];
 
+  // Build override options; when the issue's current status is a scanner status
+  // (New/Present/…) it isn't one of the override options, so surface it as a
+  // disabled, selected "current" row above them — otherwise the select renders
+  // blank. Override statuses just pre-select their matching option.
+  function buildStatusOptions(currentId) {
+    if (!USER_OPTIONS.some(o => o.id === currentId)) {
+      const cur = (STATUS_CFG[currentId] || STATUS_CFG['present']).label;
+      return '<optgroup label="Scanner status">'
+           +   `<option value="${currentId}" disabled selected>${cur}</option>`
+           + '</optgroup>'
+           + '<optgroup label="Override with">'
+           +   USER_OPTIONS.map(o => `<option value="${o.id}">${o.label}</option>`).join('')
+           + '</optgroup>';
+    }
+    return USER_OPTIONS.map(o => `<option value="${o.id}"${o.id === currentId ? ' selected' : ''}>${o.label}</option>`).join('');
+  }
+
   function openStatusModal(pill, preselectedId) {
     scTargetPill = pill;
+    scSelect.innerHTML = buildStatusOptions(preselectedId);
     scSelect.value = preselectedId;
     scNotes.value = '';
+    // Confirm stays disabled until the user picks a status different from the
+    // current one. For a bulk edit the user is explicitly choosing a status to
+    // apply, so confirm is enabled immediately.
+    const scConfirmBtn = document.getElementById('sc-confirm-btn');
+    const isBulk = scBulkRows.length > 0;
+    scConfirmBtn.disabled = !isBulk;
+    scSelect.onchange = isBulk ? null : () => { scConfirmBtn.disabled = (scSelect.value === preselectedId); };
     scOverlay.style.display = 'flex';
   }
 
   function closeStatusModal() {
     scOverlay.style.display = 'none';
     scTargetPill = null;
+    scBulkRows = [];
   }
 
   document.getElementById('sc-close-btn').addEventListener('click', closeStatusModal);
@@ -8516,6 +8575,19 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     document.getElementById('tlCommentBtn').disabled = !this.value.trim();
   });
 
+  // Collapse / expand the docked comment composer
+  (function () {
+    const wrap   = document.getElementById('tlComments');
+    const head   = document.getElementById('tlCommentsHead');
+    const toggle = document.getElementById('tlCommentsToggle');
+    function setCollapsed(collapsed) {
+      wrap.classList.toggle('collapsed', collapsed);
+      toggle.setAttribute('aria-label', collapsed ? 'Expand comments' : 'Collapse comments');
+      if (!collapsed) document.getElementById('tlCommentInput').focus();
+    }
+    head.addEventListener('click', () => setCollapsed(!wrap.classList.contains('collapsed')));
+  })();
+
   // Add comment → insert new card at top of timeline
   document.getElementById('tlCommentBtn').addEventListener('click', function() {
     const input = document.getElementById('tlCommentInput');
@@ -10104,8 +10176,13 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         <div class="tl-cards" id="tlCards"></div>
       </div>
       <div class="tl-divider"></div>
-      <div class="tl-comments">
-        <h3 class="tl-comments-title">Comments</h3>
+      <div class="tl-comments" id="tlComments">
+        <div class="tl-comments-head" id="tlCommentsHead">
+          <h3 class="tl-comments-title">Comments</h3>
+          <button class="tl-comments-toggle" id="tlCommentsToggle" type="button" aria-label="Collapse comments">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 11l4-4 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
         <textarea class="tl-comments-input" id="tlCommentInput" placeholder="Add a comment…"></textarea>
         <div class="tl-comments-footer">
           <button class="tl-comments-btn" id="tlCommentBtn" disabled>Add comment</button>
@@ -11055,6 +11132,14 @@ document.addEventListener('DOMContentLoaded', function() {
       flash();
     }
   };
+</script>
+<script>
+  // Issues tab counter — reflects the total number of issues in the table.
+  (function () {
+    var badge = document.getElementById('issuesTabCount');
+    if (!badge) return;
+    badge.textContent = document.querySelectorAll('.table-body [data-row]').length;
+  })();
 </script>
 </body>
 </html>

@@ -2418,6 +2418,8 @@
       white-space: nowrap;
     }
     .sc-btn-confirm:hover { background: #e55520; }
+    .sc-btn-confirm:disabled { background: #EBF0F2; color: #8C8D8E; cursor: default; }
+    .sc-btn-confirm:disabled:hover { background: #EBF0F2; }
 
     /* Tag */
     .tag {
@@ -6005,16 +6007,42 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   let scTargetPill = null;
   let scBulkRows   = [];
 
+  // Build override options; when the issue's current status is a scanner status
+  // (New/Present/…) it isn't one of the override options, so surface it as a
+  // disabled, selected "current" row above them — otherwise the select renders
+  // blank. Override statuses just pre-select their matching option.
+  function buildStatusOptions(currentId) {
+    if (!USER_OPTIONS.some(o => o.id === currentId)) {
+      const cur = (STATUS_CFG[currentId] || STATUS_CFG['present']).label;
+      return '<optgroup label="Scanner status">'
+           +   `<option value="${currentId}" disabled selected>${cur}</option>`
+           + '</optgroup>'
+           + '<optgroup label="Override with">'
+           +   USER_OPTIONS.map(o => `<option value="${o.id}">${o.label}</option>`).join('')
+           + '</optgroup>';
+    }
+    return USER_OPTIONS.map(o => `<option value="${o.id}"${o.id === currentId ? ' selected' : ''}>${o.label}</option>`).join('');
+  }
+
   function openStatusModal(pill, preselectedId) {
     scTargetPill = pill;
+    scSelect.innerHTML = buildStatusOptions(preselectedId);
     scSelect.value = preselectedId;
     scNotes.value = '';
+    // Confirm stays disabled until the user picks a status different from the
+    // current one. For a bulk edit the user is explicitly choosing a status to
+    // apply, so confirm is enabled immediately.
+    const scConfirmBtn = document.getElementById('sc-confirm-btn');
+    const isBulk = scBulkRows.length > 0;
+    scConfirmBtn.disabled = !isBulk;
+    scSelect.onchange = isBulk ? null : () => { scConfirmBtn.disabled = (scSelect.value === preselectedId); };
     scOverlay.style.display = 'flex';
   }
 
   function closeStatusModal() {
     scOverlay.style.display = 'none';
     scTargetPill = null;
+    scBulkRows = [];
   }
 
   document.getElementById('sc-close-btn').addEventListener('click', closeStatusModal);
