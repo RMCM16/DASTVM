@@ -1867,8 +1867,6 @@
     .col-first      { width: 120px; }
     .col-last       { width: 120px; }
     .col-age        { width: 90px; }
-    .col-detection  { width: 170px; }
-    .col-detection .det-regressed { color: #D6213F; }
     .col-status     { width: 173px; }
     .col-assignee   { width: 110px; }
     .col-tags       { width: 160px; }
@@ -4353,10 +4351,9 @@
         <!-- Download row -->
         <div class="download-row">
           <div style="display:flex;flex-direction:column;gap:5px;">
-            <span style="font-family:var(--font);font-size:12px;font-weight:400;color:var(--c-secondary);line-height:1.4;">April 8, 2026, 9:47 AM</span>
             <div style="display:flex;align-items:center;gap:20px;">
               <h3 class="download-row-title">Issues found in this scan</h3>
-              <a href="burp-dast-figma-issues-v11-gin-juice-shop.html" class="btn-outlined" style="padding:0 15px;text-decoration:none;">Live issues for this site</a>
+              <a href="burp-dast-figma-issues-v11-gin-juice-shop.html" class="btn-outlined" style="padding:0 15px;text-decoration:none;">All issues for this site</a>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:30px;">
@@ -4432,14 +4429,8 @@
                   <div class="col-resize-handle" data-col="col-age"></div>
                 </div>
 
-                <div class="th col-detection" data-sort-col="detection">
-                  Detected in this scan
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
-                  <div class="col-resize-handle" data-col="col-detection"></div>
-                </div>
-
                 <div class="th col-status" data-sort-col="status">
-                  Current status
+                  Status
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none" class="sort-icon"><path class="sort-up" d="M6 1L9 4H3L6 1Z" fill="#CBD0D1"/><path class="sort-down" d="M6 11L3 8H9L6 11Z" fill="#CBD0D1"/></svg>
                   <div class="col-resize-handle" data-col="col-status"></div>
                 </div>
@@ -4498,9 +4489,7 @@
                 <div class="td col-last">Mar 15, 2025</div>
                 <div class="td col-age">
                   <span class="age-badge age-overdue">408 days</span>
-                </div>
-                <div class="td col-detection">Present</div>
-                <div class="td col-status">
+                </div>                <div class="td col-status">
                   <div class="status-drop" data-status="open"></div>
                 </div>
                 <div class="td col-assignee"></div>
@@ -4531,9 +4520,7 @@
                 <div class="td col-last">Mar 18, 2025</div>
                 <div class="td col-age">
                   <span class="age-badge age-overdue">405 days</span>
-                </div>
-                <div class="td col-detection"><span class="det-new">New</span></div>
-                <div class="td col-status">
+                </div>                <div class="td col-status">
                   <div class="status-drop" data-status="open"></div>
                 </div>
                 <div class="td col-assignee"></div>
@@ -4564,9 +4551,7 @@
                 <div class="td col-last">Mar 21, 2025</div>
                 <div class="td col-age">
                   <span class="age-badge age-overdue">402 days</span>
-                </div>
-                <div class="td col-detection">Present</div>
-                <div class="td col-status">
+                </div>                <div class="td col-status">
                   <div class="status-drop" data-status="open"></div>
                 </div>
                 <div class="td col-assignee"></div>
@@ -4597,9 +4582,7 @@
                 <div class="td col-last">Mar 23, 2025</div>
                 <div class="td col-age">
                   <span class="age-badge age-overdue">400 days</span>
-                </div>
-                <div class="td col-detection"><span class="det-regressed">Regressed</span></div>
-                <div class="td col-status">
+                </div>                <div class="td col-status">
                   <div class="status-drop" data-status="open"></div>
                 </div>
                 <div class="td col-assignee"></div>
@@ -4630,9 +4613,7 @@
                 <div class="td col-last">Mar 17, 2025</div>
                 <div class="td col-age">
                   <span class="age-badge age-overdue">406 days</span>
-                </div>
-                <div class="td col-detection"><span class="det-regressed">Regressed</span></div>
-                <div class="td col-status">
+                </div>                <div class="td col-status">
                   <div class="status-drop" data-status="open"></div>
                 </div>
                 <div class="td col-assignee"></div>
@@ -4663,9 +4644,7 @@
                 <div class="td col-last">Mar 19, 2025</div>
                 <div class="td col-age">
                   <span class="age-badge age-overdue">404 days</span>
-                </div>
-                <div class="td col-detection">Present</div>
-                <div class="td col-status">
+                </div>                <div class="td col-status">
                   <div class="status-drop" data-status="open"></div>
                 </div>
                 <div class="td col-assignee"></div>
@@ -4696,9 +4675,7 @@
                 <div class="td col-last">Mar 13, 2025</div>
                 <div class="td col-age">
                   <span class="age-badge age-overdue">410 days</span>
-                </div>
-                <div class="td col-detection"><span class="det-new">New</span></div>
-                <div class="td col-status">
+                </div>                <div class="td col-status">
                   <div class="status-drop" data-status="accepted"></div>
                 </div>
                 <div class="td col-assignee"></div>
@@ -4729,9 +4706,7 @@
                 <div class="td col-last">Mar 22, 2025</div>
                 <div class="td col-age">
                   <span class="age-badge age-overdue">401 days</span>
-                </div>
-                <div class="td col-detection"><span class="det-new">New</span></div>
-                <div class="td col-status">
+                </div>                <div class="td col-status">
                   <div class="status-drop" data-status="open"></div>
                 </div>
                 <div class="td col-assignee"></div>
@@ -4762,9 +4737,7 @@
                 <div class="td col-last">Mar 14, 2025</div>
                 <div class="td col-age">
                   <span class="age-badge age-overdue">409 days</span>
-                </div>
-                <div class="td col-detection">Present</div>
-                <div class="td col-status">
+                </div>                <div class="td col-status">
                   <div class="status-drop" data-status="open"></div>
                 </div>
                 <div class="td col-assignee"></div>
@@ -4795,9 +4768,7 @@
                 <div class="td col-last">Mar 14, 2025</div>
                 <div class="td col-age">
                   <span class="age-badge age-overdue">409 days</span>
-                </div>
-                <div class="td col-detection">Present</div>
-                <div class="td col-status">
+                </div>                <div class="td col-status">
                   <div class="status-drop" data-status="open"></div>
                 </div>
                 <div class="td col-assignee"></div>
