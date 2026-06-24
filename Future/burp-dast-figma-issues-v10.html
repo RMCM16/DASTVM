@@ -1622,6 +1622,11 @@
       padding: 2px 8px; font-size: 11px; font-weight: 700;
       color: #333332; line-height: 1.2; letter-spacing: 0.11px; margin-left: 8px;
     }
+    /* Label wrapper + caution icon for the "Inconclusive" (needs-retest) status —
+       in the dropdown and timeline. Inconclusive often follows a re-test that
+       couldn't reach a verdict, so we flag it with a hoverable caution icon. */
+    .smi-label { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+    .status-menu-info-icon { display: inline-flex; align-items: center; line-height: 0; cursor: inherit; flex-shrink: 0; }
 
     /* Status modal — inline revert explainer (shown when "Use scanner status" is picked) */
     .sc-revert-info {
@@ -5444,7 +5449,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       },
       {
         id: 'status', label: 'Status', title: 'Filter by status',
-        options: () => ['New', 'Present', 'Regressed', 'Scanning', 'Needs re-test',
+        options: () => ['New', 'Present', 'Regressed', 'Scanning', 'Inconclusive',
                         'Fixed (confirmed)', 'Fixed (unconfirmed)',
                         'Accepted risk', 'False positive', 'Verified risk'],
         match(row, sel) {
@@ -5452,7 +5457,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
           if (!pill) return false;
           const STATUS_LABEL_MAP = {
             'new': 'New', 'present': 'Present', 'regressed': 'Regressed',
-            'scanning': 'Scanning', 'needs-retest': 'Needs re-test',
+            'scanning': 'Scanning', 'needs-retest': 'Inconclusive',
             'fixed': 'Fixed (unconfirmed)',
             'fixed-confirmed': 'Fixed (confirmed)', 'accepted': 'Accepted risk',
             'false-positive': 'False positive', 'verified': 'Verified risk',
@@ -6119,7 +6124,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     'accepted':       { label: 'Accepted risk',       cls: 's-accepted',  icon: null,      caret: true  },
     'false-positive': { label: 'False positive',      cls: 's-fp',        icon: null,      caret: true  },
     'verified':       { label: 'Verified risk',       cls: 's-vrisk',     icon: null,      caret: true  },
-    'needs-retest':   { label: 'Needs re-test',       cls: 's-needs-retest', icon: 'refresh', caret: true  },
+    'needs-retest':   { label: 'Inconclusive',        cls: 's-needs-retest', icon: 'refresh', caret: true  },
   };
 
   const SVG_INFO_16 = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M8 7.27273C8.40166 7.27273 8.72727 7.59834 8.72727 8V10.9091C8.72727 11.3108 8.40166 11.6364 8 11.6364C7.59834 11.6364 7.27273 11.3108 7.27273 10.9091V8C7.27273 7.59834 7.59834 7.27273 8 7.27273Z" fill="#333332"/><path d="M8 4.36364C7.59834 4.36364 7.27273 4.68925 7.27273 5.09091C7.27273 5.49257 7.59834 5.81818 8 5.81818H8.00727C8.40894 5.81818 8.73455 5.49257 8.73455 5.09091C8.73455 4.68925 8.40894 4.36364 8.00727 4.36364H8Z" fill="#333332"/><path fill-rule="evenodd" clip-rule="evenodd" d="M0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8ZM8 1.45455C4.38505 1.45455 1.45455 4.38505 1.45455 8C1.45455 11.615 4.38505 14.5455 8 14.5455C11.615 14.5455 14.5455 11.615 14.5455 8C14.5455 4.38505 11.615 1.45455 8 1.45455Z" fill="#333332"/></svg>`;
@@ -6133,6 +6138,11 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   // "last re-test failed" indicator inside a row's status pill (Figma 11059:1719)
   const SVG_ALERT_TRIANGLE_RED = `<svg width="16" height="16" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M7.84 2.97a1.35 1.35 0 0 1 2.32 0l6.09 10.56A1.35 1.35 0 0 1 15.09 15.6H2.91a1.35 1.35 0 0 1-1.16-2.07L7.84 2.97Z" stroke="#D6213F" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 7.5v3.5" stroke="#D6213F" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12.75" r="0.85" fill="#D6213F"/></svg>`;
 
+  // DS Icons/Alert Triangle, amber — caution (not error). Used to flag the
+  // "Inconclusive" status, which often follows a re-test that couldn't reach a
+  // verdict. Distinct from the red failure triangle above.
+  const SVG_ALERT_TRIANGLE_AMBER = `<svg width="16" height="16" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M7.84 2.97a1.35 1.35 0 0 1 2.32 0l6.09 10.56A1.35 1.35 0 0 1 15.09 15.6H2.91a1.35 1.35 0 0 1-1.16-2.07L7.84 2.97Z" fill="#FFF4E5" stroke="#B26A00" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 7.5v3.5" stroke="#B26A00" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12.75" r="0.85" fill="#B26A00"/></svg>`;
+
   function renderPill(el, statusId) {
     const cfg = STATUS_CFG[statusId] || STATUS_CFG['present'];
     el.className = 'status-drop ' + cfg.cls;
@@ -6144,6 +6154,10 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     // popover (Figma 11059:2301).
     if (el.dataset.retestFailed) {
       iconSvg = `<span class="pill-retest-fail-icon" data-popover-trigger>${SVG_ALERT_TRIANGLE_RED}</span>`;
+    } else if (statusId === 'needs-retest') {
+      // "Inconclusive" leads with an amber caution triangle (hover for context),
+      // since this state usually means a re-test couldn't reach a verdict.
+      iconSvg = `<span class="status-menu-info-icon" data-inconclusive-info>${SVG_ALERT_TRIANGLE_AMBER}</span>`;
     } else {
       if (cfg.icon === 'info16')       iconSvg = SVG_INFO_16;
       if (cfg.icon === 'spinner')      iconSvg = SVG_SPINNER;
@@ -6229,7 +6243,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     let maxW = Math.max(
       measure('fixed'),                          // 'Fixed (unconfirmed)' + check-circle
       measure('fixed',        { failIcon: true }),// same with alert-triangle override
-      measure('needs-retest', { failIcon: true }),// 'Needs re-test' + alert-triangle
+      measure('needs-retest', { failIcon: true }),// 'Inconclusive' + alert-triangle
       measure('fixed',        { noRetest: true }),// label + check-circle + info-circle
       measure('needs-retest', { noRetest: true }) // label + refresh + info-circle
     );
@@ -6278,12 +6292,16 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
 
     let html = '<div class="status-menu-list">';
 
+    // Caution icon for the "Inconclusive" (needs-retest) status — hoverable for
+    // context on why a result can be inconclusive (often a re-test verdict).
+    const incIcon = `<span class="status-menu-info-icon" data-inconclusive-info>${SVG_ALERT_TRIANGLE_AMBER}</span>`;
+
     // Scanner status section
     html += '<div class="status-menu-section-label">Scanner status</div>';
     if (isScannerSet) {
-      html += `<div class="status-menu-item is-disabled is-current"><span>${STATUS_CFG[currentId].label}</span>${SVG_CHECK}</div>`;
+      html += `<div class="status-menu-item is-disabled is-current"><span class="smi-label">${currentId === 'needs-retest' ? incIcon : ''}${STATUS_CFG[currentId].label}</span>${SVG_CHECK}</div>`;
     } else {
-      html += `<div class="status-menu-item" data-value="__revert"><span>Use scanner status (${scannerLabel})</span></div>`;
+      html += `<div class="status-menu-item" data-value="__revert"><span class="smi-label">${scannerStatus === 'needs-retest' ? incIcon : ''}Use scanner status (${scannerLabel})</span></div>`;
     }
 
     html += `<div class="status-menu-divider"></div>`;
@@ -7875,8 +7893,11 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     { type:'status',        date:'May 3, 2026',     author:'Ric Corbally', from:'false-positive', to:'present',
       quote:'Re-classified after additional findings on retest. Issue is real after all.' },
 
+    // Re-test came back inconclusive — couldn't confirm or rule out the issue
+    { type:'retest-inconclusive', date:'May 2, 2026', author:'Ric Corbally', from:'present', to:'needs-retest' },
+
     // Status change: verified → false-positive
-    { type:'status',        date:'April 30, 2026',   author:'Chris Watson', from:'verified', to:'false-positive',
+    { type:'status',        date:'April 30, 2026',   author:'Chris Woodpecker', from:'verified', to:'false-positive',
       quote:'Marked as false positive after manual verification — payload reflects only in error response, no exploitation path.' },
 
     // Status change: accepted → verified
@@ -7887,8 +7908,11 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     { type:'status',        date:'April 20, 2026',   author:'Alun Worrall', from:'fixed-confirmed', to:'accepted',
       quote:'Accepting risk while a permanent fix is scheduled for next quarter.' },
 
+    // Scanner re-test that couldn't reach a verdict — left inconclusive
+    { type:'retest-inconclusive', date:'April 19, 2026', author:'Chris Woodpecker', from:'regressed', to:'needs-retest' },
+
     // Retest: regressed → fixed-confirmed
-    { type:'retest',        date:'April 18, 2026',   author:'Chris Watson', from:'regressed', to:'fixed-confirmed' },
+    { type:'retest',        date:'April 18, 2026',   author:'Chris Woodpecker', from:'regressed', to:'fixed-confirmed' },
 
     // Scanner couldn't reach the endpoint this scan
     { type:'scanner-seen',  date:'April 17, 2026',   scan:'#50404', status:'needs-retest' },
@@ -7919,7 +7943,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     { type:'gitlab',        date:'April 1, 2026',   author:'Ric Corbally', fields:[
         {label:'Project',   value:'security/backend'},
         {label:'Milestone', value:'Sprint 22'},
-        {label:'Assignee',  value:'Chris Watson'},
+        {label:'Assignee',  value:'Chris Woodpecker'},
         {label:'Priority',  value:'Critical'}
       ]},
 
@@ -7954,6 +7978,16 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     () => JSON.parse(JSON.stringify(MASTER_TIMELINE))
   );
 
+  // Demo: row 1 — Cross-Site Scripting (XSS), Zenith Corp (the "Inconclusive"
+  // row) — showcases an Inconclusive status produced by a re-test. Make that
+  // the single most-recent timeline event so the panel opens on it. The
+  // scanner observations above stay "Present" (renderTimeline skips its
+  // scanner-seen status sync when the latest event is a re-test inconclusive).
+  if (TIMELINE_DATA[1]) {
+    TIMELINE_DATA[1] = TIMELINE_DATA[1].filter(ev => ev.type !== 'retest-inconclusive');
+    TIMELINE_DATA[1].unshift({ type:'retest-inconclusive', date:'May 8, 2026', author:'Ric Corbally', from:'present', to:'needs-retest' });
+  }
+
   const TL_SCANNER_BADGE = `<div class="tl-scanner-badge"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9.55859 0.124022C9.80173-0.0663387 10.1511-0.0341889 10.3555 0.197265C11.952 2.00852 12.833 4.34041 12.833 6.75488C12.833 9.16941 11.9521 11.5012 10.3555 13.3125C10.1511 13.5441 9.8018 13.5763 9.55859 13.3857L1.68164 7.21387C1.54071 7.10329 1.45801 6.93403 1.45801 6.75488C1.45805 6.57573 1.54067 6.40644 1.68164 6.2959L9.55859 0.124022ZM2.9873 6.75488L9.83105 12.1172C11.0177 10.5871 11.667 8.70151 11.667 6.75488C11.667 4.80827 11.0177 2.92261 9.83105 1.39258L2.9873 6.75488ZM8.61621 5.26562C8.77335 5.2286 8.93885 5.25821 9.07324 5.34766L10.8232 6.51465C11.0912 6.6933 11.1638 7.05521 10.9854 7.32324C10.8067 7.59123 10.4448 7.66387 10.1768 7.48535L8.94629 6.66504L8.08984 8.16406C7.93624 8.43287 7.59918 8.53494 7.32227 8.39648L5.57227 7.52148C5.28434 7.37734 5.16757 7.0273 5.31152 6.73926C5.45556 6.45119 5.80565 6.33464 6.09375 6.47851L7.35059 7.10644L8.24316 5.54394C8.32338 5.40357 8.45886 5.30277 8.61621 5.26562Z" fill="white"/></svg> Scanner</div>`;
   const TL_ARROW = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M3 8h10M9 4l4 4-4 4" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const TL_GITLAB_ICON = `<svg width="16" height="16" viewBox="0 0 24.0258 22.2425" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;color:#0094FF"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.54897 1.59416C4.54775 1.59044 4.54658 1.58671 4.54544 1.58296L4.54897 1.59416ZM5.09981 3.28536L6.99151 9.09226C7.12562 9.50391 7.50939 9.78251 7.94233 9.78251H16.0423C16.4756 9.78251 16.8595 9.50354 16.9934 9.09151L18.8791 3.2876L20.7713 9.11151L21.9956 12.7364L11.9923 20.0063L2.02791 12.7646L5.09981 3.28536ZM22.1396 12.8108L22.059 12.6999C22.07 12.6855 22.0835 12.673 22.0989 12.6631L22.1858 12.7974L22.1396 12.8108ZM22.1628 12.8427L22.6423 13.5025L22.2058 12.8282L22.1628 12.8427ZM23.2126 14.3242L12.5802 22.0514C12.2297 22.3062 11.755 22.3062 11.4044 22.0514L0.754431 14.3114L0.74987 14.3081C0.437123 14.0781 0.20514 13.7551 0.0871071 13.3852C-0.0305217 13.0167 -0.0289709 12.6204 0.0914815 12.2528L3.75127 0.96351C3.75692 0.946108 3.76305 0.928865 3.76965 0.9118C3.84937 0.705674 3.9761 0.521013 4.13973 0.372501C4.40301 0.132847 4.74625 0 5.10233 0C5.45923 0 5.80323 0.13346 6.06675 0.374161C6.0737 0.380505 6.08055 0.386947 6.08732 0.393485C6.25789 0.55836 6.3844 0.763293 6.45535 0.989523L8.66829 7.78251H15.3158L17.5313 0.96351C17.5369 0.946108 17.5431 0.928865 17.5497 0.9118C17.6294 0.705671 17.7561 0.521009 17.9197 0.372501C18.183 0.132848 18.5263 0 18.8823 0C19.2392 0 19.5832 0.133459 19.8468 0.374161C19.8537 0.380505 19.8606 0.386947 19.8673 0.393485C20.038 0.558476 20.1646 0.763586 20.2355 0.990013L22.6716 8.4879L23.9397 12.2425C23.9418 12.2484 23.9437 12.2544 23.9456 12.2603C23.948 12.2678 23.9503 12.2754 23.9524 12.2829C24.0631 12.6629 24.0483 13.0685 23.9102 13.4394C23.7758 13.8003 23.5317 14.1097 23.2126 14.3242ZM17.9197 0.372501C17.9203 0.371949 17.921 0.371398 17.9216 0.370847L18.5923 1.11251L17.9179 0.374161C17.9185 0.373607 17.9191 0.373053 17.9197 0.372501ZM19.2631 1.85417L19.2668 1.85086C19.2655 1.85197 19.2643 1.85307 19.2631 1.85417Z" fill="currentColor"/></svg>`;
@@ -7964,8 +7998,11 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   function tlStatusPill(statusId) {
     const cfg = STATUS_CFG[statusId] || STATUS_CFG['present'];
     let iconSvg = '';
-    if (cfg.icon === 'refresh')      iconSvg = SVG_REFRESH;
-    if (cfg.icon === 'check-circle') iconSvg = SVG_CHECK_CIRCLE;
+    // "Inconclusive" carries the amber caution triangle, matching the grid pill.
+    // No hover popover here — the timeline card's commentary already explains it.
+    if (statusId === 'needs-retest')      iconSvg = `<span class="status-menu-info-icon">${SVG_ALERT_TRIANGLE_AMBER}</span>`;
+    else if (cfg.icon === 'refresh')      iconSvg = SVG_REFRESH;
+    else if (cfg.icon === 'check-circle') iconSvg = SVG_CHECK_CIRCLE;
     return `<div class="tl-pill ${cfg.cls}"><span class="pill-content">${iconSvg}${cfg.label}</span></div>`;
   }
 
@@ -8054,6 +8091,18 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
           <svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M17 10A7 7 0 1 1 10 3h4.5M14.5 1v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           Retry re-test
         </button>`;
+
+    } else if (ev.type === 'retest-inconclusive') {
+      wrap.className = 'tl-card';
+      wrap.dataset.tlType = 'retest';
+      wrap.innerHTML = `
+        <div class="tl-card-header">
+          <div class="tl-date-col"><span class="tl-date">${ev.date}</span></div>
+          <span class="tl-author">${ev.author}</span>
+        </div>
+        <div class="tl-content">${tlStatusPill(ev.from)}${TL_ARROW}${tlStatusPill(ev.to)}<span class="tl-title">Re-test inconclusive</span></div>
+        <p class="tl-desc">[Placeholder] The re-test ran but couldn't confirm or rule out the issue — the response was ambiguous. Status set to <em>Inconclusive</em> pending a re-run or manual review.</p>
+        <button type="button" class="btn-quat tl-retry-btn" style="margin-top:8px;">${SVG_REFRESH}Retry re-test</button>`;
 
     } else if (ev.type === 'gitlab') {
       wrap.className = 'tl-card';
@@ -8204,8 +8253,10 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   function renderTimeline(rowIndex) {
     const raw = TIMELINE_DATA[rowIndex];
     // Sync the most recent scanner-seen event with the row's current scanner status,
-    // so the timeline never contradicts the displayed pill.
-    if (raw) {
+    // so the timeline never contradicts the displayed pill. Skipped when the latest
+    // event is already a re-test inconclusive (it explains the status, and we want
+    // the scanner observations above to keep their own "Present" history).
+    if (raw && !(raw[0] && raw[0].type === 'retest-inconclusive')) {
       const row = document.querySelectorAll('[data-row]')[rowIndex];
       const pill = row && row.querySelector('.status-drop');
       if (pill) {
@@ -8446,6 +8497,57 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     });
     document.addEventListener('mouseout', (e) => {
       if (e.target.closest('.pill-retest-fail-icon')) hide();
+    });
+  })();
+
+  // ── Inconclusive-status context popover ─────────────────────────────
+  // Hovering the amber caution icon beside an "Inconclusive" status (in the
+  // status dropdown or the timeline) reveals a DS popover explaining the
+  // state. Reuses the .retest-fail-popover styling. Placeholder copy for now.
+  (function () {
+    const INC_TITLE = 'Inconclusive result';
+    const INC_BODY  = "Burp ran a re-test but couldn't confirm or rule out this issue — the response was ambiguous, so the status is inconclusive. [Placeholder] A re-run or a manual review may be needed to reach a verdict.";
+
+    const pop = document.createElement('div');
+    pop.className = 'retest-fail-popover inconclusive-info-popover';
+    pop.innerHTML = [
+      '<div class="retest-fail-popover-card">',
+        `<span class="retest-fail-popover-title">${INC_TITLE}</span>`,
+        `<p class="retest-fail-popover-body">${INC_BODY}</p>`,
+      '</div>',
+      '<div class="retest-fail-popover-arrow">',
+        '<svg width="34" height="16" viewBox="0 0 34 16" fill="none">',
+          '<path d="M0 0H34L17 16L0 0Z" fill="#FFFFFF"/>',
+        '</svg>',
+      '</div>'
+    ].join('');
+    const popArrow = pop.querySelector('.retest-fail-popover-arrow');
+    document.body.appendChild(pop);
+
+    let hideTimer;
+    function show(trigger) {
+      clearTimeout(hideTimer);
+      pop.classList.add('is-visible');
+      const r = trigger.getBoundingClientRect();
+      const popW = pop.offsetWidth, popH = pop.offsetHeight, arrowW = 34;
+      const arrowCenterX = r.left + r.width / 2;
+      let left = arrowCenterX - popW / 2;
+      let top  = r.top - popH - 2;
+      left = Math.max(8, Math.min(left, window.innerWidth - popW - 8));
+      if (top < 8) top = r.bottom + 2;
+      pop.style.left = left + 'px';
+      pop.style.top  = top + 'px';
+      const arrowLeft = Math.max(8, Math.min(arrowCenterX - left - arrowW / 2, popW - arrowW - 8));
+      popArrow.style.marginLeft = arrowLeft + 'px';
+    }
+    function hide() { hideTimer = setTimeout(() => pop.classList.remove('is-visible'), 80); }
+
+    document.addEventListener('mouseover', (e) => {
+      const trigger = e.target.closest('[data-inconclusive-info]');
+      if (trigger) show(trigger);
+    });
+    document.addEventListener('mouseout', (e) => {
+      if (e.target.closest('[data-inconclusive-info]')) hide();
     });
   })();
 
