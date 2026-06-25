@@ -7303,10 +7303,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
           <div class="tl-date-col"><span class="tl-date">${ev.date}</span></div>
           <span class="tl-author">${ev.author}</span>
         </div>
-        <div class="tl-content">
-          ${tlStatusPill(ev.from)}${TL_ARROW}${tlStatusPill(ev.to)}
-          <span class="tl-title">Issue re-tested</span>
-        </div>`;
+        <div class="tl-content">${tlStatusPill(ev.to)}<span class="tl-title">Issue re-tested</span></div>`;
 
     } else if (ev.type === 'gitlab') {
       wrap.className = 'tl-card';

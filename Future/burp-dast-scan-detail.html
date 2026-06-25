@@ -1296,6 +1296,21 @@
       color: var(--c-primary);
       line-height: 1.3;
     }
+    /* ── Inconclusive status — amber caution icon + context popover ───────── */
+    .smi-label { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+    .status-menu-info-icon { display: inline-flex; align-items: center; line-height: 0; cursor: inherit; flex-shrink: 0; }
+    .inc-info-popover {
+      position: fixed; z-index: 9999; pointer-events: none;
+      display: inline-flex; flex-direction: column; align-items: flex-start;
+      filter: drop-shadow(0 0 10px rgba(0,0,35,0.10));
+      opacity: 0; transition: opacity 0.12s ease;
+    }
+    .inc-info-popover.is-visible { opacity: 1; }
+    .inc-info-popover-card { background:#FFFFFF; border-radius:8px; padding:20px; display:flex; flex-direction:column; gap:10px; }
+    .inc-info-popover-title { font-family:var(--font); font-size:16px; font-weight:500; color:#000023; line-height:1.4; letter-spacing:0.16px; width:300px; }
+    .inc-info-popover-body { font-family:var(--font); font-size:14px; font-weight:400; color:#333332; line-height:1.4; letter-spacing:0.07px; width:300px; margin:0; }
+    .inc-info-popover-arrow { width:34px; height:16px; flex-shrink:0; line-height:0; }
+
     .btn-quat {
       font-family: var(--font);
       font-size: 14px;
@@ -6055,7 +6070,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   }
 
   /* ── Status dropdown ── */
-  const SCANNER_SET = new Set(['new', 'present', 'regressed', 'scanning']);
+  const SCANNER_SET = new Set(['new', 'present', 'regressed', 'scanning', 'needs-retest']);
 
   const USER_OPTIONS = [
     { id: 'fixed',          label: 'Fixed (unconfirmed)' },
@@ -6074,12 +6089,15 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     'accepted':       { label: 'Accepted risk',       cls: 's-accepted',  icon: null,      caret: true  },
     'false-positive': { label: 'False positive',      cls: 's-fp',        icon: null,      caret: true  },
     'verified':       { label: 'Verified risk',       cls: 's-vrisk',     icon: null,      caret: true  },
-    'needs-retest':   { label: 'Needs re-test',       cls: 's-needs-retest', icon: 'refresh', caret: true  },
+    'needs-retest':   { label: 'Inconclusive',        cls: 's-needs-retest', icon: 'refresh', caret: true  },
   };
 
   const SVG_INFO_16 = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M8 7.27273C8.40166 7.27273 8.72727 7.59834 8.72727 8V10.9091C8.72727 11.3108 8.40166 11.6364 8 11.6364C7.59834 11.6364 7.27273 11.3108 7.27273 10.9091V8C7.27273 7.59834 7.59834 7.27273 8 7.27273Z" fill="#333332"/><path d="M8 4.36364C7.59834 4.36364 7.27273 4.68925 7.27273 5.09091C7.27273 5.49257 7.59834 5.81818 8 5.81818H8.00727C8.40894 5.81818 8.73455 5.49257 8.73455 5.09091C8.73455 4.68925 8.40894 4.36364 8.00727 4.36364H8Z" fill="#333332"/><path fill-rule="evenodd" clip-rule="evenodd" d="M0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 12.4183 12.4183 16 8 16C3.58172 16 0 12.4183 0 8ZM8 1.45455C4.38505 1.45455 1.45455 4.38505 1.45455 8C1.45455 11.615 4.38505 14.5455 8 14.5455C11.615 14.5455 14.5455 11.615 14.5455 8C14.5455 4.38505 11.615 1.45455 8 1.45455Z" fill="#333332"/></svg>`;
   const SVG_SPINNER  = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;animation:spin 1.2s linear infinite"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 1.33333C4.3181 1.33333 1.33333 4.3181 1.33333 8C1.33333 8.36819 1.03486 8.66667 0.666667 8.66667C0.298477 8.66667 0 8.36819 0 8C0 3.58172 3.58172 0 8 0C12.4183 0 16 3.58172 16 8C16 12.4183 12.4183 16 8 16C7.63181 16 7.33333 15.7015 7.33333 15.3333C7.33333 14.9651 7.63181 14.6667 8 14.6667C11.6819 14.6667 14.6667 11.6819 14.6667 8C14.6667 4.3181 11.6819 1.33333 8 1.33333Z" fill="#0094FF"/></svg>`;
   const SVG_REFRESH  = `<svg width="14" height="14" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M17 10A7 7 0 1 1 10 3h4.5M14.5 1v4h-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  // DS Icons/Alert Triangle, amber — caution (not error). Flags the "Inconclusive"
+  // status, which often follows a re-test that couldn't reach a verdict.
+  const SVG_ALERT_TRIANGLE_AMBER = `<svg width="16" height="16" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path d="M7.84 2.97a1.35 1.35 0 0 1 2.32 0l6.09 10.56A1.35 1.35 0 0 1 15.09 15.6H2.91a1.35 1.35 0 0 1-1.16-2.07L7.84 2.97Z" fill="#FFF4E5" stroke="#B26A00" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 7.5v3.5" stroke="#B26A00" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="12.75" r="0.85" fill="#B26A00"/></svg>`;
   const SVG_CARET    = `<svg width="10" height="6" viewBox="0 0 9.33333 5.33333" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M0.195262 0.195262C0.455612 -0.0650874 0.877722 -0.0650874 1.13807 0.195262L4.66667 3.72386L8.19526 0.195262C8.45561 -0.0650874 8.87772 -0.0650874 9.13807 0.195262C9.39842 0.455612 9.39842 0.877722 9.13807 1.13807L5.13807 5.13807C4.87772 5.39842 4.45561 5.39842 4.19526 5.13807L0.195262 1.13807C-0.0650874 0.877722 -0.0650874 0.455612 0.195262 0.195262Z" fill="#333332"/></svg>`;
   const SVG_CHECK    = `<svg class="item-check" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6l3 3 5-5"/></svg>`;
   const SVG_CHECK_CIRCLE = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><svg x="0.667" y="0.667" width="14.667" height="14.667" viewBox="0 0 14.667 14.667"><path d="M7.33301 0C11.383 0 14.6668 3.28307 14.667 7.33301C14.667 11.3831 11.3831 14.667 7.33301 14.667C3.28307 14.6668 0 11.383 0 7.33301C0.000175871 3.28318 3.28318 0.000175875 7.33301 0Z" fill="#0094FF"/></svg><svg x="4.667" y="5.33" width="6.697" height="5.667" viewBox="0 0 6.69697 5.66666"><path fill-rule="evenodd" clip-rule="evenodd" d="M6.42988 0.188427C6.75259 0.467691 6.7878 0.955685 6.50854 1.27839L2.94211 5.39959C2.80415 5.55902 2.60703 5.65515 2.39645 5.6657C2.18588 5.67624 1.98014 5.60028 1.82693 5.45544L0.241856 3.95682C-0.0682508 3.66363 -0.081963 3.17456 0.211229 2.86445C0.504421 2.55434 0.993491 2.54063 1.3036 2.83382L2.30191 3.77768L5.33992 0.267084C5.61918 -0.0556217 6.10718 -0.0908377 6.42988 0.188427Z" fill="white"/></svg></svg>`;
@@ -6093,6 +6111,8 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     if (cfg.icon === 'spinner')      iconSvg = SVG_SPINNER;
     if (cfg.icon === 'refresh')      iconSvg = SVG_REFRESH;
     if (cfg.icon === 'check-circle') iconSvg = SVG_CHECK_CIRCLE;
+    // "Inconclusive" leads with an amber caution triangle (hover for context).
+    if (statusId === 'needs-retest') iconSvg = `<span class="status-menu-info-icon" data-inconclusive-info>${SVG_ALERT_TRIANGLE_AMBER}</span>`;
     el.innerHTML = `<span class="pill-content">${iconSvg}${cfg.label}</span>${cfg.caret ? SVG_CARET : ''}`;
   }
 
@@ -6137,12 +6157,15 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
 
     let html = '<div class="status-menu-list">';
 
+    // Caution icon for the "Inconclusive" (needs-retest) status — hoverable.
+    const incIcon = `<span class="status-menu-info-icon" data-inconclusive-info>${SVG_ALERT_TRIANGLE_AMBER}</span>`;
+
     // Scanner status section
     html += '<div class="status-menu-section-label">Scanner status</div>';
     if (isScannerSet) {
-      html += `<div class="status-menu-item is-disabled is-current"><span>${STATUS_CFG[currentId].label}</span>${SVG_CHECK}</div>`;
+      html += `<div class="status-menu-item is-disabled is-current"><span class="smi-label">${currentId === 'needs-retest' ? incIcon : ''}${STATUS_CFG[currentId].label}</span>${SVG_CHECK}</div>`;
     } else {
-      html += `<div class="status-menu-item" data-value="__revert"><span>Use scanner status (${scannerLabel})</span></div>`;
+      html += `<div class="status-menu-item" data-value="__revert"><span class="smi-label">${scannerStatus === 'needs-retest' ? incIcon : ''}Use scanner status (${scannerLabel})</span></div>`;
     }
 
     html += `<div class="status-menu-divider"></div>`;
@@ -6209,6 +6232,14 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       pill.dataset.scannerStatus = 'present';
     }
   });
+
+  // Demo: surface one "Inconclusive" row so the amber icon, dropdown popover
+  // and re-test timeline can be seen on this page.
+  (function () {
+    const rows = document.querySelectorAll('.table-row');
+    const pill = rows[1] && rows[1].querySelector('.status-drop');
+    if (pill) { delete pill.dataset.scannerStatus; renderPill(pill, 'needs-retest'); }
+  })();
 
   function applyStatusToPill(pill, newId) {
     if (!pill) return;
@@ -7613,6 +7644,35 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   // Master timeline — comprehensive reference of every event type and status
   // applied to every issue so developers see all examples wherever they click.
   // Includes a collapsed group of successive same-status scanner observations.
+  // ── Inconclusive-status context popover (status pill + dropdown) ─────
+  (function () {
+    const INC_TITLE = 'Inconclusive result';
+    const INC_BODY  = "Burp ran a re-test but couldn't confirm or rule out this issue — the response was ambiguous, so the status is inconclusive. [Placeholder] A re-run or a manual review may be needed to reach a verdict.";
+    const pop = document.createElement('div');
+    pop.className = 'inc-info-popover';
+    pop.innerHTML = '<div class="inc-info-popover-card"><span class="inc-info-popover-title">' + INC_TITLE + '</span><p class="inc-info-popover-body">' + INC_BODY + '</p></div><div class="inc-info-popover-arrow"><svg width="34" height="16" viewBox="0 0 34 16" fill="none"><path d="M0 0H34L17 16L0 0Z" fill="#FFFFFF"/></svg></div>';
+    const popArrow = pop.querySelector('.inc-info-popover-arrow');
+    document.body.appendChild(pop);
+    let hideTimer;
+    function show(trigger) {
+      clearTimeout(hideTimer);
+      pop.classList.add('is-visible');
+      const r = trigger.getBoundingClientRect();
+      const popW = pop.offsetWidth, popH = pop.offsetHeight, arrowW = 34;
+      const arrowCenterX = r.left + r.width / 2;
+      let left = arrowCenterX - popW / 2;
+      let top  = r.top - popH - 2;
+      left = Math.max(8, Math.min(left, window.innerWidth - popW - 8));
+      if (top < 8) top = r.bottom + 2;
+      pop.style.left = left + 'px';
+      pop.style.top  = top + 'px';
+      popArrow.style.marginLeft = Math.max(8, Math.min(arrowCenterX - left - arrowW / 2, popW - arrowW - 8)) + 'px';
+    }
+    function hide() { hideTimer = setTimeout(function(){ pop.classList.remove('is-visible'); }, 80); }
+    document.addEventListener('mouseover', function(e){ const t = e.target.closest('[data-inconclusive-info]'); if (t) show(t); });
+    document.addEventListener('mouseout', function(e){ if (e.target.closest('[data-inconclusive-info]')) hide(); });
+  })();
+
   const MASTER_TIMELINE = [
     // Successive same-status scanner observations — collapse into a group
     { type:'scanner-seen',  date:'May 7, 2026',     scan:'#50420', status:'present' },
@@ -7635,6 +7695,9 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     { type:'status',        date:'April 20, 2026',   author:'Alun Worrall', from:'fixed-confirmed', to:'accepted',
       quote:'Accepting risk while a permanent fix is scheduled for next quarter.' },
 
+    // Re-test that couldn't reach a verdict — left inconclusive
+    { type:'retest-inconclusive', date:'April 19, 2026', author:'Chris Watson', from:'regressed', to:'needs-retest' },
+
     // Retest: regressed → fixed-confirmed
     { type:'retest',        date:'April 18, 2026',   author:'Chris Watson', from:'regressed', to:'fixed-confirmed' },
 
@@ -7656,6 +7719,17 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     { type:'comment',       date:'April 5, 2026',   author:'Chris Wood',
       text:'Dev team has applied the recommended sanitisation. Ready for re-test once next scan runs.' },
 
+    // Jira ticket linked — an existing ticket associated with this issue
+    { type:'jira-linked',   date:'April 4, 2026',   author:'Ric Corbally', ticketId:'SEC-2087', fields:[
+        {label:'Project',    value:'SEC'},
+        {label:'Issue type', value:'Task'},
+        {label:'Priority',   value:'High'},
+        {label:'Assignee',   value:'Chris Watson'}
+      ]},
+
+    // Jira ticket unlinked — association removed (title only)
+    { type:'jira-unlinked', date:'April 3, 2026',   author:'Ric Corbally', ticketId:'SEC-1456' },
+
     // Assignees added
     { type:'assignees',     date:'April 2, 2026',   author:'Ric Corbally', names:'Ric Corbally',
       desc:'Assigned for triage and remediation coordination with the dev team.' },
@@ -7669,7 +7743,14 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       ]},
 
     // JIRA integration
-    { type:'jira',          date:'March 31, 2026',   author:'Ric Corbally', fields:[
+    // Trello card created
+    { type:'trello',        date:'March 31, 2026',   author:'Ric Corbally', ticketTitle:'Sanitise reflected user input', fields:[
+        {label:'Board', value:'Security Backlog'},
+        {label:'List',  value:'In Progress'},
+        {label:'Link',  value:'trello.com/c/aB12cD34', href:'https://trello.com/c/aB12cD34'}
+      ]},
+
+    { type:'jira',          date:'March 31, 2026',   author:'Ric Corbally', ticketId:'SEC-12345', fields:[
         {label:'Project',    value:'SEC'},
         {label:'Issue type', value:'Bug'},
         {label:'Priority',   value:'Critical'},
@@ -7703,14 +7784,18 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   const TL_ARROW = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M3 8h10M9 4l4 4-4 4" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const TL_GITLAB_ICON = `<svg width="16" height="16" viewBox="0 0 24.0258 22.2425" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;color:#0094FF"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.54897 1.59416C4.54775 1.59044 4.54658 1.58671 4.54544 1.58296L4.54897 1.59416ZM5.09981 3.28536L6.99151 9.09226C7.12562 9.50391 7.50939 9.78251 7.94233 9.78251H16.0423C16.4756 9.78251 16.8595 9.50354 16.9934 9.09151L18.8791 3.2876L20.7713 9.11151L21.9956 12.7364L11.9923 20.0063L2.02791 12.7646L5.09981 3.28536ZM22.1396 12.8108L22.059 12.6999C22.07 12.6855 22.0835 12.673 22.0989 12.6631L22.1858 12.7974L22.1396 12.8108ZM22.1628 12.8427L22.6423 13.5025L22.2058 12.8282L22.1628 12.8427ZM23.2126 14.3242L12.5802 22.0514C12.2297 22.3062 11.755 22.3062 11.4044 22.0514L0.754431 14.3114L0.74987 14.3081C0.437123 14.0781 0.20514 13.7551 0.0871071 13.3852C-0.0305217 13.0167 -0.0289709 12.6204 0.0914815 12.2528L3.75127 0.96351C3.75692 0.946108 3.76305 0.928865 3.76965 0.9118C3.84937 0.705674 3.9761 0.521013 4.13973 0.372501C4.40301 0.132847 4.74625 0 5.10233 0C5.45923 0 5.80323 0.13346 6.06675 0.374161C6.0737 0.380505 6.08055 0.386947 6.08732 0.393485C6.25789 0.55836 6.3844 0.763293 6.45535 0.989523L8.66829 7.78251H15.3158L17.5313 0.96351C17.5369 0.946108 17.5431 0.928865 17.5497 0.9118C17.6294 0.705671 17.7561 0.521009 17.9197 0.372501C18.183 0.132848 18.5263 0 18.8823 0C19.2392 0 19.5832 0.133459 19.8468 0.374161C19.8537 0.380505 19.8606 0.386947 19.8673 0.393485C20.038 0.558476 20.1646 0.763586 20.2355 0.990013L22.6716 8.4879L23.9397 12.2425C23.9418 12.2484 23.9437 12.2544 23.9456 12.2603C23.948 12.2678 23.9503 12.2754 23.9524 12.2829C24.0631 12.6629 24.0483 13.0685 23.9102 13.4394C23.7758 13.8003 23.5317 14.1097 23.2126 14.3242ZM17.9197 0.372501C17.9203 0.371949 17.921 0.371398 17.9216 0.370847L18.5923 1.11251L17.9179 0.374161C17.9185 0.373607 17.9191 0.373053 17.9197 0.372501ZM19.2631 1.85417L19.2668 1.85086C19.2655 1.85197 19.2643 1.85307 19.2631 1.85417Z" fill="currentColor"/></svg>`;
   const TL_JIRA_ICON   = `<svg width="16" height="16" viewBox="0 0 20.0711 20.0711" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;color:#0094FF"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.41421 10.0355L10.0355 16.6569L16.6569 10.0355L10.0355 3.41421L3.41421 10.0355ZM0.585787 8.62133C-0.195262 9.40238 -0.195263 10.6687 0.585786 11.4498L8.62133 19.4853C9.40238 20.2663 10.6687 20.2663 11.4498 19.4853L19.4853 11.4498C20.2663 10.6687 20.2663 9.40238 19.4853 8.62133L11.4498 0.585787C10.6687 -0.195262 9.40238 -0.195263 8.62133 0.585786L0.585787 8.62133Z" fill="currentColor"/></svg>`;
+  const TL_TRELLO_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><rect x="2" y="2" width="20" height="20" rx="3" fill="#0079BF"/><rect x="5" y="5" width="5.5" height="13" rx="1" fill="#fff"/><rect x="13.5" y="5" width="5.5" height="8" rx="1" fill="#fff"/></svg>`;
   const TL_SPLUNK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 110 110" fill="none" style="flex-shrink:0"><g clip-path="url(#tl-splunk-clip)"><path fill="url(#tl-splunk-grad)" d="M90.6 109.1h-72C8.3 109.1 0 100.8 0 90.6v-72C0 8.3 8.3 0 18.5 0h72C100.7 0 109 8.3 109 18.5v72c.1 10.3-8.2 18.6-18.4 18.6"/><path fill="#F2F2F2" d="M73 54.9c0 .1.1.2.1.3-.5.3-1.1.5-1.7.7-12.7 5.5-25.3 11-38 16.4-.5.3-.8.5-.8 1.1.1 2.6.1 5.2 0 7.9-.1.8.3.8.9.5 15.3-6.6 30.6-13.1 45.9-19.7.7-.3.8-.6.8-1.3q-.15-5.85 0-11.7c0-.7-.2-1-.8-1.2l-8.4-3c-12.4-4.4-24.8-8.8-37.2-13.3-1.1-.4-1.2-.4-1.2.8 0 2.6.1 5.3-.1 7.9-.1.8.3 1.2 1 1.4l30.6 10.2c3.1 1.1 6 2 8.9 3"/><path fill="#F2F2F2" d="M73 54.9c-2.9-1-5.8-2-8.7-2.9-10.3-3.4-20.5-6.8-30.7-10.2-.8-.3-1-.6-1-1.4.1-2.6.1-5.3.1-8 0-1.2 0-1.2 1.2-.8C46.3 36 58.7 40.4 71 44.9l8.4 3c.7.2.9.6.8 1.2q-.15 5.85 0 11.7c0 .7-.2 1-.8 1.3-15.4 6.6-30.6 13.3-46 19.8-.6.3-.9.3-.9-.5.1-2.6.1-5.2 0-7.9 0-.6.2-.9.8-1.1 12.7-5.5 25.3-11 38-16.4.5-.3 1.1-.5 1.7-.7z"/></g><defs><linearGradient id="tl-splunk-grad" x1="117.961" x2="-4.396" y1="111.505" y2="1.606" gradientUnits="userSpaceOnUse"><stop stop-color="#78B43A"/><stop offset=".952" stop-color="#A2CE6A"/></linearGradient><clipPath id="tl-splunk-clip"><path fill="#fff" d="M0 0h109.1v109.1H0z"/></clipPath></defs></svg>`;
   const TL_AI_SYMBOL   = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;color:#5B4FFF"><path d="M20.281 15.209C15.994 13.977 15.023 13.006 13.791 8.719a.29.29 0 00-.582 0C11.977 13.007 11.006 13.977 6.719 15.209a.29.29 0 000 .582c4.287 1.232 5.258 2.203 6.49 6.49a.29.29 0 00.582 0c1.232-4.287 2.203-5.258 6.49-6.49a.29.29 0 000-.582Z" fill="currentColor"/><path d="M22.797 4.23C20.108 3.457 19.543 2.893 18.77.203a.25.25 0 00-.5 0C17.497 2.893 16.932 3.457 14.243 4.23a.25.25 0 000 .47c2.689.773 3.254 1.338 4.027 4.027a.25.25 0 00.5 0C19.543 6.038 20.108 5.473 22.797 4.7a.25.25 0 000-.47Z" fill="currentColor"/><path d="M11 7.5a.25.25 0 00-.188-.242C7.624 6.341 6.955 5.672 6.038 2.484a.25.25 0 00-.476 0C4.645 5.672 3.976 6.341.788 7.258A.25.25 0 00.788 7.742C3.976 8.659 4.645 9.328 5.562 12.516a.25.25 0 00.476 0C6.955 9.328 7.624 8.659 10.812 7.742A.25.25 0 0011 7.5Z" fill="currentColor"/></svg>`;
 
   function tlStatusPill(statusId) {
     const cfg = STATUS_CFG[statusId] || STATUS_CFG['present'];
     let iconSvg = '';
-    if (cfg.icon === 'refresh')      iconSvg = SVG_REFRESH;
-    if (cfg.icon === 'check-circle') iconSvg = SVG_CHECK_CIRCLE;
+    // "Inconclusive" carries the amber caution triangle, matching the grid pill.
+    // No hover popover here — the timeline card's commentary already explains it.
+    if (statusId === 'needs-retest')      iconSvg = `<span class="status-menu-info-icon">${SVG_ALERT_TRIANGLE_AMBER}</span>`;
+    else if (cfg.icon === 'refresh')      iconSvg = SVG_REFRESH;
+    else if (cfg.icon === 'check-circle') iconSvg = SVG_CHECK_CIRCLE;
     return `<div class="tl-pill ${cfg.cls}"><span class="pill-content">${iconSvg}${cfg.label}</span></div>`;
   }
 
@@ -7754,10 +7839,19 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
           <div class="tl-date-col"><span class="tl-date">${ev.date}</span></div>
           <span class="tl-author">${ev.author}</span>
         </div>
-        <div class="tl-content">
-          ${tlStatusPill(ev.from)}${TL_ARROW}${tlStatusPill(ev.to)}
-          <span class="tl-title">Issue re-tested</span>
-        </div>`;
+        <div class="tl-content">${tlStatusPill(ev.to)}<span class="tl-title">Issue re-tested</span></div>`;
+
+    } else if (ev.type === 'retest-inconclusive') {
+      wrap.className = 'tl-card';
+      wrap.dataset.tlType = 'retest';
+      wrap.innerHTML = `
+        <div class="tl-card-header">
+          <div class="tl-date-col"><span class="tl-date">${ev.date}</span></div>
+          <span class="tl-author">${ev.author}</span>
+        </div>
+        <div class="tl-content">${tlStatusPill(ev.to)}<span class="tl-title">Re-test inconclusive</span></div>
+        <p class="tl-desc">[Placeholder] The re-test ran but couldn't confirm or rule out the issue — the response was ambiguous. Status set to <em>Inconclusive</em> pending a re-run or manual review.</p>
+        <button type="button" class="btn-quat tl-retry-btn" style="margin-top:8px;">${SVG_REFRESH}Retry re-test</button>`;
 
     } else if (ev.type === 'gitlab') {
       wrap.className = 'tl-card';
@@ -7777,13 +7871,54 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       const jiraFields = (ev.fields || []).map(f =>
         `<div class="tl-field-row"><span class="tl-field-label">${f.label}:</span><span class="tl-field-value">${f.value}</span></div>`
       ).join('');
+      const createdTitle = ev.ticketId ? `Jira ticket ${ev.ticketId} created` : 'JIRA ticket created';
       wrap.innerHTML = `
         <div class="tl-card-header">
           <div class="tl-date-col"><span class="tl-date">${ev.date}</span></div>
           <span class="tl-author">${ev.author}</span>
         </div>
-        <div class="tl-content">${TL_JIRA_ICON}<span class="tl-title">JIRA ticket created</span></div>
+        <div class="tl-content">${TL_JIRA_ICON}<span class="tl-title">${createdTitle}</span></div>
         ${jiraFields ? `<div class="tl-fields">${jiraFields}</div>` : ''}`;
+
+    } else if (ev.type === 'jira-linked') {
+      wrap.className = 'tl-card';
+      wrap.dataset.tlType = 'jira';
+      const jiraFields = (ev.fields || []).map(f =>
+        `<div class="tl-field-row"><span class="tl-field-label">${f.label}:</span><span class="tl-field-value">${f.value}</span></div>`
+      ).join('');
+      wrap.innerHTML = `
+        <div class="tl-card-header">
+          <div class="tl-date-col"><span class="tl-date">${ev.date}</span></div>
+          <span class="tl-author">${ev.author}</span>
+        </div>
+        <div class="tl-content">${TL_JIRA_ICON}<span class="tl-title">Jira ticket ${ev.ticketId} linked</span></div>
+        ${jiraFields ? `<div class="tl-fields">${jiraFields}</div>` : ''}`;
+
+    } else if (ev.type === 'jira-unlinked') {
+      wrap.className = 'tl-card';
+      wrap.dataset.tlType = 'jira';
+      wrap.innerHTML = `
+        <div class="tl-card-header">
+          <div class="tl-date-col"><span class="tl-date">${ev.date}</span></div>
+          <span class="tl-author">${ev.author}</span>
+        </div>
+        <div class="tl-content">${TL_JIRA_ICON}<span class="tl-title">Jira ticket ${ev.ticketId} unlinked</span></div>`;
+
+    } else if (ev.type === 'trello') {
+      wrap.className = 'tl-card';
+      const trelloFields = (ev.fields || []).map(f =>
+        `<div class="tl-field-row"><span class="tl-field-label">${f.label}:</span>${f.href
+          ? `<a class="tl-field-value" href="${f.href}" target="_blank" rel="noopener" style="color:#0094FF;text-decoration:none;">${f.value}</a>`
+          : `<span class="tl-field-value">${f.value}</span>`}</div>`
+      ).join('');
+      const createdTitle = ev.ticketTitle ? `Trello ticket “${ev.ticketTitle}” created` : 'Trello ticket created';
+      wrap.innerHTML = `
+        <div class="tl-card-header">
+          <div class="tl-date-col"><span class="tl-date">${ev.date}</span></div>
+          <span class="tl-author">${ev.author}</span>
+        </div>
+        <div class="tl-content">${TL_TRELLO_ICON}<span class="tl-title">${createdTitle}</span></div>
+        ${trelloFields ? `<div class="tl-fields">${trelloFields}</div>` : ''}`;
 
     } else if (ev.type === 'splunk') {
       wrap.className = 'tl-card';
