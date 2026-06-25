@@ -7895,7 +7895,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
 
   function renderTimeline(rowIndex) {
     const raw = TIMELINE_DATA[rowIndex];
-    const events  = raw ? groupScannerObservations(raw) : null;
+    const events  = raw ? groupScannerObservations(raw.filter(e => !(e.type === 'scanner-seen' && e.status === 'scanning'))) : null;
     const tlCards  = document.getElementById('tlCards');
     const tlDotCol = document.getElementById('tlDotCol');
     if (!tlCards || !tlDotCol || !events) return;
