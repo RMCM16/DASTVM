@@ -3338,6 +3338,17 @@
     /* AI status: icon + plain text, no pill background — matches Figma */
     .ai-badge { display: inline-flex; align-items: center; gap: 10px; }
     .ai-badge svg { flex-shrink: 0; }
+    /* Burp AI "In progress" — Pro 1 (#5B4FFF) highlight travels section→section
+       across the three sparkle segments; the rest sit in Pro 5 (#D6D3FF). */
+    @keyframes ai-sparkle-pulse { 0%, 33% { fill: #5B4FFF; } 34%, 100% { fill: #D6D3FF; } }
+    .ai-sparkle-anim .aisp   { fill: #D6D3FF; animation: ai-sparkle-pulse 1.5s linear infinite; }
+    .ai-sparkle-anim .aisp-1 { animation-delay: 0s; }
+    .ai-sparkle-anim .aisp-2 { animation-delay: -1s; }
+    .ai-sparkle-anim .aisp-3 { animation-delay: -.5s; }
+    @media (prefers-reduced-motion: reduce) {
+      .ai-sparkle-anim .aisp   { animation: none; fill: #D6D3FF; }
+      .ai-sparkle-anim .aisp-1 { fill: #5B4FFF; }
+    }
     .ai-badge-text {
       font-family: var(--font); font-size: 14px; font-weight: 400;
       color: #333332; letter-spacing: 0.07px; white-space: nowrap; line-height: 1.4;
@@ -5432,6 +5443,8 @@ document.addEventListener('DOMContentLoaded', function() {
 // "check"          → Issue Confirmed  (#5B4FFF)
 // "help"           → Inconclusive     (#5B4FFF)
 // "alert-triangle" → Error            (#D6213F)
+// "sparkle" → In progress (Burp AI currently investigating) #5B4FFF
+var AI_SVG_SPARKLE = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="ai-sparkle-anim"><path class="aisp aisp-1" d="M20.281 15.2093C15.9937 13.9771 15.0231 13.0065 13.7908 8.7191C13.7536 8.58935 13.6351 8.50012 13.5002 8.50012C13.3653 8.50012 13.2467 8.58935 13.2095 8.7191C11.977 13.0068 11.0064 13.9771 6.719 15.2093C6.58924 15.2465 6.50002 15.3651 6.50002 15.5C6.50002 15.6349 6.58924 15.7534 6.719 15.7906C11.0067 17.0232 11.977 17.9935 13.2095 22.2811C13.2467 22.4109 13.3653 22.5001 13.5002 22.5001C13.6351 22.5001 13.7536 22.4109 13.7908 22.2811C15.0231 17.9938 15.9934 17.0232 20.281 15.7906C20.4108 15.7534 20.5 15.6349 20.5 15.5C20.5 15.3651 20.4108 15.2468 20.281 15.2093Z"/><path class="aisp aisp-2" d="M22.7968 4.23013C20.1075 3.45742 19.5431 2.89269 18.7698 0.203212C18.7352 0.0828006 18.6252 0 18.5 0C18.3748 0 18.2648 0.0828006 18.2303 0.203212C17.4573 2.89269 16.8925 3.45742 14.2032 4.23013C14.0828 4.26465 14 4.37468 14 4.49986C14 4.62504 14.0828 4.73507 14.2032 4.76959C16.8925 5.54259 17.4573 6.10731 18.2303 8.79679C18.2648 8.9172 18.3748 9 18.5 9C18.6252 9 18.7352 8.9172 18.7698 8.79679C19.5431 6.10731 20.1075 5.54259 22.7968 4.76959C22.9172 4.73507 23 4.62532 23 4.49986C23 4.3744 22.9172 4.26465 22.7968 4.23013Z"/><path class="aisp aisp-3" d="M11 7.50009C11 7.30786 10.8729 7.1389 10.6879 7.08589C7.49971 6.16911 6.83077 5.50017 5.91442 2.31193C5.86141 2.12703 5.69245 1.99988 5.50022 1.99988C5.30798 1.99988 5.13902 2.12703 5.08601 2.31193C4.16923 5.50017 3.50029 6.16911 0.312057 7.08589C0.12715 7.1389 0 7.30743 0 7.50009C0 7.69276 0.12715 7.86129 0.312057 7.9143C3.49986 8.83021 4.16923 9.49958 5.08601 12.6878C5.13902 12.8727 5.30798 12.9999 5.50022 12.9999C5.69245 12.9999 5.86141 12.8727 5.91442 12.6878C6.83077 9.49958 7.50014 8.83021 10.6879 7.9143C10.8729 7.86086 11 7.69233 11 7.50009Z"/></svg>';
 var AI_SVG_CHECK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color:#5B4FFF"><path fill-rule="evenodd" clip-rule="evenodd" d="M18.9499 4.83911C19.591 5.3637 19.6855 6.30873 19.1609 6.9499L10.1609 17.9499C9.89257 18.2779 9.49799 18.4771 9.07472 18.4982C8.65145 18.5193 8.23901 18.3604 7.93934 18.0607L3.93934 14.0607C3.35355 13.4749 3.35355 12.5252 3.93934 11.9394C4.52513 11.3536 5.47487 11.3536 6.06066 11.9394L8.88864 14.7674L16.8391 5.05019C17.3637 4.40902 18.3087 4.31452 18.9499 4.83911Z" fill="currentColor"/></svg>';
 var AI_SVG_HELP  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color:#5B4FFF"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3ZM1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM12.2582 8.02433C11.7927 7.94448 11.314 8.03196 10.9068 8.27127C10.4996 8.51059 10.1902 8.8863 10.0335 9.33185C9.85018 9.85284 9.27926 10.1266 8.75827 9.94334C8.23728 9.76007 7.96351 9.18915 8.14678 8.66816C8.46025 7.77705 9.07898 7.02564 9.89339 6.54701C10.7078 6.06838 11.6653 5.89341 12.5963 6.05311C13.5274 6.21281 14.3719 6.69686 14.9802 7.41953C15.5884 8.14206 15.9214 9.05649 15.9201 10.0009C15.9197 11.5313 14.7851 12.5419 13.9748 13.0821C13.5392 13.3725 13.1107 13.586 12.795 13.7263C12.6358 13.7971 12.5016 13.8508 12.405 13.8876C12.3566 13.9061 12.3174 13.9203 12.2888 13.9305L12.2541 13.9427L12.243 13.9464L12.2391 13.9478L12.2376 13.9483C12.2373 13.9484 12.2363 13.9487 11.9201 13L12.2363 13.9487C11.7124 14.1233 11.1461 13.8402 10.9714 13.3162C10.7969 12.7926 11.0796 12.2267 11.6028 12.0517L11.6188 12.0461C11.6342 12.0406 11.6594 12.0315 11.693 12.0186C11.7605 11.993 11.8607 11.9529 11.9827 11.8987C12.2296 11.789 12.551 11.6275 12.8654 11.418C13.555 10.9582 13.9201 10.4691 13.9201 10L13.9201 9.99852C13.9208 9.5262 13.7543 9.06887 13.4502 8.70754C13.146 8.3462 12.7238 8.10417 12.2582 8.02433ZM12 16C11.4477 16 11 16.4477 11 17C11 17.5523 11.4477 18 12 18H12.01C12.5623 18 13.01 17.5523 13.01 17C13.01 16.4477 12.5623 16 12.01 16H12Z" fill="currentColor"/></svg>';
 var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color:#D6213F"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5282 2.28306C10.9775 2.0301 11.4844 1.89722 12 1.89722C12.5156 1.89722 13.0225 2.0301 13.4718 2.28306C13.9211 2.53601 14.2976 2.90049 14.565 3.34133L14.5679 3.34608L23.0379 17.4861L23.046 17.4999C23.308 17.9535 23.4466 18.4678 23.448 18.9917C23.4495 19.5155 23.3138 20.0306 23.0544 20.4857C22.795 20.9408 22.4209 21.32 21.9694 21.5857C21.518 21.8513 21.0048 21.9941 20.481 21.9999L20.47 22L3.51903 22C2.99522 21.9942 2.48206 21.8513 2.03059 21.5857C1.57912 21.32 1.20507 20.9408 0.94567 20.4857C0.686267 20.0306 0.550547 19.5155 0.552014 18.9917C0.55348 18.4678 0.692083 17.9535 0.95403 17.4999L0.962153 17.4861L9.43215 3.34609L10.29 3.85995L9.43502 3.34133C9.70243 2.90049 10.0789 2.53601 10.5282 2.28306ZM11.1462 4.3766L2.68271 18.5058C2.59753 18.6556 2.55249 18.8249 2.55201 18.9973C2.55152 19.1719 2.59676 19.3436 2.68322 19.4953C2.76969 19.647 2.89438 19.7734 3.04487 19.8619C3.19404 19.9497 3.36342 19.9973 3.53642 20H20.4636C20.6366 19.9973 20.806 19.9497 20.9552 19.8619C21.1057 19.7734 21.2303 19.647 21.3168 19.4953C21.4033 19.3436 21.4485 19.1719 21.448 18.9973C21.4476 18.8249 21.4025 18.6556 21.3174 18.5058L12.855 4.37859L12.8538 4.3766C12.7648 4.23054 12.6397 4.10977 12.4906 4.02583C12.3409 3.94151 12.1719 3.89722 12 3.89722C11.8282 3.89722 11.6592 3.94151 11.5094 4.02583C11.3603 4.10977 11.2353 4.23054 11.1462 4.3766ZM12 7.99995C12.5523 7.99995 13 8.44767 13 8.99995V13C13 13.5522 12.5523 14 12 14C11.4477 14 11 13.5522 11 13V8.99995C11 8.44767 11.4477 7.99995 12 7.99995ZM12 16C11.4477 16 11 16.4477 11 17C11 17.5522 11.4477 18 12 18H12.01C12.5623 18 13.01 17.5522 13.01 17C13.01 16.4477 12.5623 16 12.01 16H12Z" fill="currentColor"/></svg>';
@@ -5609,12 +5622,13 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       },
       {
         id: 'ai', label: 'Burp AI output', title: 'Filter by Burp AI output',
-        options: () => ['Confirmed', 'Inconclusive', 'Error', 'Not investigated'],
+        options: () => ['Confirmed', 'Inconclusive', 'Error', 'In progress', 'Not investigated'],
         match(row, sel) {
           const ai = row.dataset.ai || '';
           const label = ai === 'confirmed' ? 'Confirmed'
                       : ai === 'inconclusive' ? 'Inconclusive'
                       : ai === 'error' ? 'Error'
+                      : ai === 'in-progress' ? 'In progress'
                       : 'Not investigated';
           return sel.has(label);
         },
@@ -8419,9 +8433,15 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       confirmed:    '<span class="ai-badge">' + AI_SVG_CHECK + '<span class="ai-badge-text">Issue Confirmed</span></span>',
       inconclusive: '<span class="ai-badge">' + AI_SVG_HELP  + '<span class="ai-badge-text">Inconclusive</span></span>',
       error:        '<span class="ai-badge">' + AI_SVG_ALERT + '<span class="ai-badge-text">Error</span></span>',
+      'in-progress':'<span class="ai-badge">' + AI_SVG_SPARKLE + '<span class="ai-badge-text">In progress</span></span>',
     };
 
-    if (aiState && aiState !== '') {
+    if (aiState === 'in-progress') {
+      // Burp AI is mid-investigation — show the status badge only; no result yet.
+      if (aiOutputRow) aiOutputRow.style.display = 'flex';
+      if (aiOutputVal) aiOutputVal.innerHTML = AI_BADGE_HTML['in-progress'];
+      if (aiContent)   aiContent.style.display = 'none';
+    } else if (aiState && aiState !== '') {
       // Has AI output — show badge in meta card + inline AI section
       if (aiOutputRow) aiOutputRow.style.display = 'flex';
       if (aiOutputVal) aiOutputVal.innerHTML = AI_BADGE_HTML[aiState] || '';
@@ -8810,14 +8830,14 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     // Distribution: ~12 confirmed, 7 inconclusive, 4 error across High/Medium rows
     const AI_STATES = {
       0:  'confirmed',    // HTTP response header injection (High, High)
-      1:  'confirmed',    // XSS Zenith Corp (High)
+      1:  'in-progress',  // Burp AI investigating (demo)
       3:  'inconclusive', // Improper Input Validation (High)
-      4:  'confirmed',    // SQL Injection SecureNet (High)
+      4:  'in-progress',  // Burp AI investigating (demo)
       5:  'confirmed',    // XSS DataShield stored (High)
       6:  'error',        // Directory Traversal BlockSec (High)
-      7:  'inconclusive', // Insecure Deserialization TechVault (High)
+      7:  'in-progress',  // Burp AI investigating (demo)
       8:  'confirmed',    // CSRF / Broken Auth (High)
-      9:  'confirmed',    // Remote Code Execution (High)
+      9:  'in-progress',  // Burp AI investigating (demo)
       11: 'error',        // Auth-related High (High)
       12: 'inconclusive', // Command Injection (High)
       13: 'confirmed',    // JWT Algorithm Confusion (High)
@@ -8992,6 +9012,8 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
         return '<span class="ai-badge">' + AI_SVG_HELP  + '<span class="ai-badge-text">Inconclusive</span></span>';
       if (state === 'error')
         return '<span class="ai-badge">' + AI_SVG_ALERT + '<span class="ai-badge-text">Error</span></span>';
+      if (state === 'in-progress')
+        return '<span class="ai-badge">' + AI_SVG_SPARKLE + '<span class="ai-badge-text">In progress</span></span>';
       return ''; // empty cell for not investigated
     }
 
@@ -9021,6 +9043,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
 
     // ── AI output popover ────────────────────────────────────────────────────
     (function() {
+      var POP_SPARKLE = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:#4C4FB1;flex-shrink:0"><path d="M20.281 15.2093C15.9937 13.9771 15.0231 13.0065 13.7908 8.7191C13.7536 8.58935 13.6351 8.50012 13.5002 8.50012C13.3653 8.50012 13.2467 8.58935 13.2095 8.7191C11.977 13.0068 11.0064 13.9771 6.719 15.2093C6.58924 15.2465 6.50002 15.3651 6.50002 15.5C6.50002 15.6349 6.58924 15.7534 6.719 15.7906C11.0067 17.0232 11.977 17.9935 13.2095 22.2811C13.2467 22.4109 13.3653 22.5001 13.5002 22.5001C13.6351 22.5001 13.7536 22.4109 13.7908 22.2811C15.0231 17.9938 15.9934 17.0232 20.281 15.7906C20.4108 15.7534 20.5 15.6349 20.5 15.5C20.5 15.3651 20.4108 15.2468 20.281 15.2093Z" fill="currentColor"/><path d="M22.7968 4.23013C20.1075 3.45742 19.5431 2.89269 18.7698 0.203212C18.7352 0.0828006 18.6252 0 18.5 0C18.3748 0 18.2648 0.0828006 18.2303 0.203212C17.4573 2.89269 16.8925 3.45742 14.2032 4.23013C14.0828 4.26465 14 4.37468 14 4.49986C14 4.62504 14.0828 4.73507 14.2032 4.76959C16.8925 5.54259 17.4573 6.10731 18.2303 8.79679C18.2648 8.9172 18.3748 9 18.5 9C18.6252 9 18.7352 8.9172 18.7698 8.79679C19.5431 6.10731 20.1075 5.54259 22.7968 4.76959C22.9172 4.73507 23 4.62532 23 4.49986C23 4.3744 22.9172 4.26465 22.7968 4.23013Z" fill="currentColor"/><path d="M11 7.50009C11 7.30786 10.8729 7.1389 10.6879 7.08589C7.49971 6.16911 6.83077 5.50017 5.91442 2.31193C5.86141 2.12703 5.69245 1.99988 5.50022 1.99988C5.30798 1.99988 5.13902 2.12703 5.08601 2.31193C4.16923 5.50017 3.50029 6.16911 0.312057 7.08589C0.12715 7.1389 0 7.30743 0 7.50009C0 7.69276 0.12715 7.86129 0.312057 7.9143C3.49986 8.83021 4.16923 9.49958 5.08601 12.6878C5.13902 12.8727 5.30798 12.9999 5.50022 12.9999C5.69245 12.9999 5.86141 12.8727 5.91442 12.6878C6.83077 9.49958 7.50014 8.83021 10.6879 7.9143C10.8729 7.86086 11 7.69233 11 7.50009Z" fill="currentColor"/></svg>';
       var POP_CHECK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:#4C4FB1;flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M18.9499 4.83911C19.591 5.3637 19.6855 6.30873 19.1609 6.9499L10.1609 17.9499C9.89257 18.2779 9.49799 18.4771 9.07472 18.4982C8.65145 18.5193 8.23901 18.3604 7.93934 18.0607L3.93934 14.0607C3.35355 13.4749 3.35355 12.5252 3.93934 11.9394C4.52513 11.3536 5.47487 11.3536 6.06066 11.9394L8.88864 14.7674L16.8391 5.05019C17.3637 4.40902 18.3087 4.31452 18.9499 4.83911Z" fill="currentColor"/></svg>';
       var POP_HELP  = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:#4C4FB1;flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3ZM1 12C1 5.92487 5.92487 1 12 1C18.0751 1 23 5.92487 23 12C23 18.0751 18.0751 23 12 23C5.92487 23 1 18.0751 1 12ZM12 8C11.4477 8 11 8.44772 11 9C11 9.55228 10.5523 10 10 10C9.44772 10 9 9.55228 9 9C9 7.34315 10.3431 6 12 6C13.6569 6 15 7.34315 15 9C15 10.1947 14.3376 11.2671 13.3029 11.8022L13 11.9646V13C13 13.5523 12.5523 14 12 14C11.4477 14 11 13.5523 11 13V11.3803C11 10.9172 11.2659 10.4948 11.6838 10.2788L12.2901 9.96393C12.7283 9.73484 13 9.28717 13 9C13 8.44772 12.5523 8 12 8ZM12 16C11.4477 16 11 16.4477 11 17C11 17.5523 11.4477 18 12 18C12.5523 18 13 17.5523 13 17C13 16.4477 12.5523 16 12 16Z" fill="currentColor"/></svg>';
       var POP_ALERT = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="color:#D6213F;flex-shrink:0"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.5282 2.28306C10.9775 2.0301 11.4844 1.89722 12 1.89722C12.5156 1.89722 13.0225 2.0301 13.4718 2.28306C13.9211 2.53601 14.2976 2.90049 14.565 3.34133L14.5679 3.34608L23.0379 17.4861L23.046 17.4999C23.308 17.9535 23.4466 18.4678 23.448 18.9917C23.4495 19.5155 23.3138 20.0306 23.0544 20.4857C22.795 20.9408 22.4209 21.32 21.9694 21.5857C21.518 21.8513 21.0048 21.9941 20.481 21.9999L20.47 22L3.51903 22C2.99522 21.9942 2.48206 21.8513 2.03059 21.5857C1.57912 21.32 1.20507 20.9408 0.94567 20.4857C0.686267 20.0306 0.550547 19.5155 0.552014 18.9917C0.55348 18.4678 0.692083 17.9535 0.95403 17.4999L0.962153 17.4861L9.43215 3.34609L10.29 3.85995L9.43502 3.34133C9.70243 2.90049 10.0789 2.53601 10.5282 2.28306ZM11.1462 4.3766L2.68271 18.5058C2.59753 18.6556 2.55249 18.8249 2.55201 18.9973C2.55152 19.1719 2.59676 19.3436 2.68322 19.4953C2.76969 19.647 2.89438 19.7734 3.04487 19.8619C3.19404 19.9497 3.36342 19.9973 3.53642 20H20.4636C20.6366 19.9973 20.806 19.9497 20.9552 19.8619C21.1057 19.7734 21.2303 19.647 21.3168 19.4953C21.4033 19.3436 21.4485 19.1719 21.448 18.9973C21.4476 18.8249 21.4025 18.6556 21.3174 18.5058L12.855 4.37859L12.8538 4.3766C12.7648 4.23054 12.6397 4.10977 12.4906 4.02583C12.3409 3.94151 12.1719 3.89722 12 3.89722C11.8282 3.89722 11.6592 3.94151 11.5094 4.02583C11.3603 4.10977 11.2353 4.23054 11.1462 4.3766ZM12 7.99995C12.5523 7.99995 13 8.44767 13 8.99995V13C13 13.5522 12.5523 14 12 14C11.4477 14 11 13.5522 11 13V8.99995C11 8.44767 11.4477 7.99995 12 7.99995ZM12 16C11.4477 16 11 16.4477 11 17C11 17.5522 11.4477 18 12 18H12.01C12.5623 18 13.01 17.5522 13.01 17C13.01 16.4477 12.5623 16 12.01 16H12Z" fill="currentColor"/></svg>';
@@ -9040,6 +9063,11 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
           icon:  POP_ALERT,
           title: 'Investigation error',
           body:  'Burp AI was unable to complete the investigation due to an error such as a timeout or access issue. Treat this issue as uninvestigated for triage purposes.'
+        },
+        'in-progress': {
+          icon:  POP_SPARKLE,
+          title: 'In progress',
+          body:  'Burp AI is currently investigating this issue. Results will appear here once the investigation completes.'
         }
       };
 
