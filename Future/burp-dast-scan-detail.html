@@ -7798,7 +7798,9 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       ]},
 
     // Jira ticket unlinked — association removed (title only)
-    { type:'jira-unlinked', date:'April 3, 2026',   author:'Ric Corbally', ticketId:'SEC-1456' },
+    { type:'jira-unlinked', date:'April 3, 2026',   author:'Ric Corbally', ticketId:'SEC-1456', title:'Sanitise reflected user input in /user/profile', href:'#' },
+    { type:'jira-unlinked', date:'April 3, 2026',   author:'System', ticketId:'SEC-2087', deleted:true,
+      note:'Ticket no longer exists — the Jira issue was deleted, so it was automatically unlinked from this issue.' },
 
     // Assignees added
     { type:'assignees',     date:'April 2, 2026',   author:'Ric Corbally', names:'Ric Corbally',
@@ -7977,7 +7979,10 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
           <div class="tl-date-col"><span class="tl-date">${ev.date}</span></div>
           <span class="tl-author">${ev.author}</span>
         </div>
-        <div class="tl-content">${TL_JIRA_ICON}<span class="tl-title">Jira ticket ${ev.ticketId} unlinked</span></div>`;
+        <div class="tl-content">${TL_JIRA_ICON}<span class="tl-title">Jira ticket ${ev.ticketId} unlinked</span></div>
+        ${ev.deleted
+          ? `<p class="tl-desc">${ev.note || 'Ticket no longer exists.'}</p>`
+          : (ev.title ? `<div class="tl-fields"><div class="tl-field-row"><span class="tl-field-label">Title:</span><a class="btn-quat tl-ticket-link" href="${ev.href || '#'}">${SVG_EXTERNAL}${ev.title}</a></div></div>` : '')}`;
 
     } else if (ev.type === 'trello') {
       wrap.className = 'tl-card';
