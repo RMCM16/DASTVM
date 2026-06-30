@@ -5862,6 +5862,23 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   const SEV_COLORS = { high: '#F32A4C', medium: '#FF6633', low: '#0094FF', information: '#8C8D8E' };
   const SEV_LABELS = { high: 'High', medium: 'Medium', low: 'Low', information: 'Information' };
   const SEV_CLS_MAP = { high: 'sev-high', medium: 'sev-medium', low: 'sev-low', information: 'sev-info' };
+
+  // The severity rendered in the initial DOM is whatever the scanner assigned.
+  // Capture it per-row so a user override can always be reverted back to it.
+  // "Overridden" = the row's current severity differs from its scanner severity.
+  function currentSevIdOfRow(row) {
+    const t = (row.querySelector('.severity-label')?.textContent.trim() || 'High').toLowerCase();
+    return SEV_LABELS[t] ? t : 'high';
+  }
+  document.querySelectorAll('[data-row]').forEach(row => {
+    if (!row.dataset.scannerSeverity) row.dataset.scannerSeverity = currentSevIdOfRow(row);
+  });
+  function scannerSevOf(row) {
+    return (row && row.dataset.scannerSeverity) || currentSevIdOfRow(row);
+  }
+  function isSevOverridden(row) {
+    return !!row && row.dataset.scannerSeverity && currentSevIdOfRow(row) !== row.dataset.scannerSeverity;
+  }
   const SEV_ICON_PATH = `<path fill-rule="evenodd" clip-rule="evenodd" d="M6.77007 8.42239C6.72231 8.22008 6.76066 8.00702 6.87597 7.83405L8.37597 5.58405C8.60573 5.23941 9.07138 5.14628 9.41603 5.37604C9.76067 5.60581 9.85381 6.07146 9.62404 6.41611L8.56975 7.99755L10.4971 9.0989C10.8427 9.29639 10.9738 9.72946 10.7958 10.0855L9.67082 12.3355C9.48558 12.706 9.03508 12.8561 8.66459 12.6709C8.29411 12.4857 8.14394 12.0352 8.32918 11.6647L9.13689 10.0493L7.1279 8.90126C6.94741 8.79813 6.81783 8.62471 6.77007 8.42239Z" fill="white"/>`;
 
   const SEV_ICON_PATH_D = 'M6.77007 8.42239C6.72231 8.22008 6.76066 8.00702 6.87597 7.83405L8.37597 5.58405C8.60573 5.23941 9.07138 5.14628 9.41603 5.37604C9.76067 5.60581 9.85381 6.07146 9.62404 6.41611L8.56975 7.99755L10.4971 9.0989C10.8427 9.29639 10.9738 9.72946 10.7958 10.0855L9.67082 12.3355C9.48558 12.706 9.03508 12.8561 8.66459 12.6709C8.29411 12.4857 8.14394 12.0352 8.32918 11.6647L9.13689 10.0493L7.1279 8.90126C6.94741 8.79813 6.81783 8.62471 6.77007 8.42239Z';
@@ -5875,21 +5892,50 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   }
 
   function applySeverityToRow(row, sevId) {
+    // Lazily capture the scanner's original severity the first time a row is
+    // edited — covers views whose rows render after initial page load.
+    if (row && !row.dataset.scannerSeverity) row.dataset.scannerSeverity = currentSevIdOfRow(row);
     const label = row.querySelector('.severity-label');
     const svgEl = row.querySelector('.severity-cell svg');
     if (label) label.textContent = SEV_LABELS[sevId] || sevId;
     if (svgEl) svgEl.outerHTML = sevSvgHtml(sevId);
   }
 
+  // Build the <select> options. The four severities are always available; a
+  // "Use scanner severity (X)" revert row is appended only when there's an
+  // override to remove. Mirrors the status modal's revert affordance.
+  function buildSevOptions(currentId, scannerLabel, includeRevert) {
+    let html = '<optgroup label="Set severity">'
+      + ['high', 'medium', 'low', 'information'].map(id =>
+          `<option value="${id}"${id === currentId ? ' selected' : ''}>${SEV_LABELS[id]}</option>`).join('')
+      + '</optgroup>';
+    if (includeRevert) {
+      const lbl = scannerLabel ? `Use scanner severity (${scannerLabel})` : 'Use scanner severity';
+      html += `<optgroup label="Remove override"><option value="__revert">${lbl}</option></optgroup>`;
+    }
+    return html;
+  }
+
+  function syncSvModeFromSelect() {
+    const isRevert = svSelect.value === '__revert';
+    document.getElementById('sv-confirm-btn').textContent = isRevert ? 'Use scanner severity' : 'Change severity';
+  }
+  svSelect.addEventListener('change', syncSvModeFromSelect);
+
   function openSeverityModal(row, preselect) {
     svTargetRow = row;
-    if (preselect) {
-      svBulkRows = []; // panel single-row call — clear any stale bulk selection
-      svSelect.value = preselect;
+    const bulk = svBulkRows.length > 0;
+    if (bulk) {
+      // Bulk edit: offer revert if ANY selected row carries an override.
+      svSelect.innerHTML = buildSevOptions(preselect || 'high', null, svBulkRows.some(isSevOverridden));
+      svSelect.value = preselect && preselect !== '__revert' ? preselect : 'high';
     } else {
-      const current = (row.querySelector('.severity-label')?.textContent.trim() || 'High').toLowerCase();
-      svSelect.value = SEV_LABELS[current] ? current : 'high';
+      const scannerLabel = SEV_LABELS[row?.dataset.scannerSeverity] || null;
+      svSelect.innerHTML = buildSevOptions(preselect && preselect !== '__revert' ? preselect : currentSevIdOfRow(row), scannerLabel, isSevOverridden(row));
+      svSelect.value = preselect === '__revert' ? '__revert'
+                     : (preselect || currentSevIdOfRow(row));
     }
+    syncSvModeFromSelect();
     svOverlay.style.display = 'flex';
   }
 
@@ -5904,8 +5950,38 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   svOverlay.addEventListener('click', e => { if (e.target === svOverlay) closeSeverityModal(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && svOverlay.style.display !== 'none') closeSeverityModal(); });
 
+  // Sync the open side panel's severity display to a severity id.
+  function syncPanelSeverity(sevId) {
+    const fill  = SEV_COLORS[sevId] || '#8C8D8E';
+    const label = SEV_LABELS[sevId] || sevId;
+    const cls   = SEV_CLS_MAP[sevId] || 'sev-low';
+    document.getElementById('spSevDot')?.querySelector('circle')?.setAttribute('fill', fill);
+    const t = document.getElementById('spSevText');     if (t) t.textContent = label;
+    const ic = document.getElementById('spSevIconInner'); if (ic) ic.className = 'sp-sev-icon-lg ' + cls;
+    const v = document.getElementById('spSevVal');       if (v) v.textContent = label;
+  }
+
+  // Restore a row's severity to whatever the scanner assigned, clearing the override.
+  function revertRowSeverity(row) {
+    if (!isSevOverridden(row)) return; // not overridden — no-op
+    const scanner = row.dataset.scannerSeverity || 'high';
+    applySeverityToRow(row, scanner);
+    if (row === activeRow) syncPanelSeverity(scanner);
+  }
+
   document.getElementById('sv-confirm-btn').addEventListener('click', () => {
     const sevId = svSelect.value;
+    if (sevId === '__revert') {
+      if (svBulkRows.length > 0) {
+        svBulkRows.forEach(revertRowSeverity);
+        svBulkRows = [];
+        deselectAll();
+      } else if (svTargetRow) {
+        revertRowSeverity(svTargetRow);
+      }
+      closeSeverityModal();
+      return;
+    }
     if (svBulkRows.length > 0) {
       svBulkRows.forEach(row => applySeverityToRow(row, sevId));
       svBulkRows = [];
@@ -5913,15 +5989,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     } else if (svTargetRow) {
       applySeverityToRow(svTargetRow, sevId);
       // If the confirmed row is the open panel row, sync the panel display
-      if (svTargetRow === activeRow) {
-        const fill  = SEV_COLORS[sevId] || '#8C8D8E';
-        const label = SEV_LABELS[sevId] || sevId;
-        const cls   = SEV_CLS_MAP[sevId] || 'sev-low';
-        document.getElementById('spSevDot').querySelector('circle')?.setAttribute('fill', fill);
-        document.getElementById('spSevText').textContent = label;
-        document.getElementById('spSevIconInner').className = 'sp-sev-icon-lg ' + cls;
-        document.getElementById('spSevVal').textContent = label;
-      }
+      if (svTargetRow === activeRow) syncPanelSeverity(sevId);
     }
     closeSeverityModal();
   });
@@ -7263,9 +7331,11 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       text:'Dev team has applied the recommended sanitisation. Ready for re-test once next scan runs.' },
 
     // Jira ticket linked — an existing ticket associated with this issue
-    { type:'jira-linked',   date:'April 4, 2026',   author:'Ric Corbally', ticketId:'SEC-2087', fields:[
+        { type:'jira-linked',   date:'April 4, 2026',   author:'Ric Corbally', ticketId:'SEC-2087',
+      title:'Sanitise reflected user input in /user/profile', href:'#', fields:[
         {label:'Project',    value:'SEC'},
         {label:'Issue type', value:'Task'},
+        {label:'Status',     value:'In Progress'},
         {label:'Priority',   value:'High'},
         {label:'Assignee',   value:'Chris Watson'}
       ]},
@@ -7278,25 +7348,29 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       desc:'Assigned for triage and remediation coordination with the dev team.' },
 
     // GitLab integration
-    { type:'gitlab',        date:'April 1, 2026',   author:'Ric Corbally', fields:[
-        {label:'Project',   value:'security/backend'},
-        {label:'Milestone', value:'Sprint 22'},
-        {label:'Assignee',  value:'Chris Watson'},
-        {label:'Priority',  value:'Critical'}
+        { type:'gitlab',        date:'April 1, 2026',   author:'Ric Corbally',
+      title:'Sanitise reflected user input in /user/profile', href:'#', fields:[
+        {label:'State',    value:'Open'},
+        {label:'Assignee', value:'Chris Watson'},
+        {label:'Labels',   value:'security, backend'}
       ]},
 
     // JIRA integration
     // Trello card created
-    { type:'trello',        date:'March 31, 2026',   author:'Ric Corbally', ticketTitle:'Sanitise reflected user input', fields:[
-        {label:'Board', value:'Security Backlog'},
-        {label:'List',  value:'In Progress'},
-        {label:'Link',  value:'trello.com/c/aB12cD34', href:'https://trello.com/c/aB12cD34'}
+        { type:'trello',        date:'March 31, 2026',   author:'Ric Corbally',
+      title:'Sanitise reflected user input', href:'#', fields:[
+        {label:'Board',    value:'Security Backlog'},
+        {label:'List',     value:'In Progress'},
+        {label:'Members',  value:'Ric Corbally'},
+        {label:'Due date', value:'Apr 30, 2026'}
       ]},
 
-    { type:'jira',          date:'March 31, 2026',   author:'Ric Corbally', ticketId:'SEC-12345', fields:[
+        { type:'jira',          date:'March 31, 2026',   author:'Ric Corbally', ticketId:'SEC-12345',
+      title:'Reflected XSS in displayName parameter', href:'#', fields:[
         {label:'Project',    value:'SEC'},
         {label:'Issue type', value:'Bug'},
-        {label:'Priority',   value:'Critical'},
+        {label:'Status',     value:'To Do'},
+        {label:'Priority',   value:'High'},
         {label:'Assignee',   value:'Ric Corbally'}
       ]},
 
@@ -7326,6 +7400,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
   const TL_SCANNER_BADGE = `<div class="tl-scanner-badge"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9.55859 0.124022C9.80173-0.0663387 10.1511-0.0341889 10.3555 0.197265C11.952 2.00852 12.833 4.34041 12.833 6.75488C12.833 9.16941 11.9521 11.5012 10.3555 13.3125C10.1511 13.5441 9.8018 13.5763 9.55859 13.3857L1.68164 7.21387C1.54071 7.10329 1.45801 6.93403 1.45801 6.75488C1.45805 6.57573 1.54067 6.40644 1.68164 6.2959L9.55859 0.124022ZM2.9873 6.75488L9.83105 12.1172C11.0177 10.5871 11.667 8.70151 11.667 6.75488C11.667 4.80827 11.0177 2.92261 9.83105 1.39258L2.9873 6.75488ZM8.61621 5.26562C8.77335 5.2286 8.93885 5.25821 9.07324 5.34766L10.8232 6.51465C11.0912 6.6933 11.1638 7.05521 10.9854 7.32324C10.8067 7.59123 10.4448 7.66387 10.1768 7.48535L8.94629 6.66504L8.08984 8.16406C7.93624 8.43287 7.59918 8.53494 7.32227 8.39648L5.57227 7.52148C5.28434 7.37734 5.16757 7.0273 5.31152 6.73926C5.45556 6.45119 5.80565 6.33464 6.09375 6.47851L7.35059 7.10644L8.24316 5.54394C8.32338 5.40357 8.45886 5.30277 8.61621 5.26562Z" fill="white"/></svg> Scanner</div>`;
   const TL_ARROW = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><path d="M3 8h10M9 4l4 4-4 4" stroke="#333332" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   const TL_GITLAB_ICON = `<svg width="16" height="16" viewBox="0 0 24.0258 22.2425" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;color:#0094FF"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.54897 1.59416C4.54775 1.59044 4.54658 1.58671 4.54544 1.58296L4.54897 1.59416ZM5.09981 3.28536L6.99151 9.09226C7.12562 9.50391 7.50939 9.78251 7.94233 9.78251H16.0423C16.4756 9.78251 16.8595 9.50354 16.9934 9.09151L18.8791 3.2876L20.7713 9.11151L21.9956 12.7364L11.9923 20.0063L2.02791 12.7646L5.09981 3.28536ZM22.1396 12.8108L22.059 12.6999C22.07 12.6855 22.0835 12.673 22.0989 12.6631L22.1858 12.7974L22.1396 12.8108ZM22.1628 12.8427L22.6423 13.5025L22.2058 12.8282L22.1628 12.8427ZM23.2126 14.3242L12.5802 22.0514C12.2297 22.3062 11.755 22.3062 11.4044 22.0514L0.754431 14.3114L0.74987 14.3081C0.437123 14.0781 0.20514 13.7551 0.0871071 13.3852C-0.0305217 13.0167 -0.0289709 12.6204 0.0914815 12.2528L3.75127 0.96351C3.75692 0.946108 3.76305 0.928865 3.76965 0.9118C3.84937 0.705674 3.9761 0.521013 4.13973 0.372501C4.40301 0.132847 4.74625 0 5.10233 0C5.45923 0 5.80323 0.13346 6.06675 0.374161C6.0737 0.380505 6.08055 0.386947 6.08732 0.393485C6.25789 0.55836 6.3844 0.763293 6.45535 0.989523L8.66829 7.78251H15.3158L17.5313 0.96351C17.5369 0.946108 17.5431 0.928865 17.5497 0.9118C17.6294 0.705671 17.7561 0.521009 17.9197 0.372501C18.183 0.132848 18.5263 0 18.8823 0C19.2392 0 19.5832 0.133459 19.8468 0.374161C19.8537 0.380505 19.8606 0.386947 19.8673 0.393485C20.038 0.558476 20.1646 0.763586 20.2355 0.990013L22.6716 8.4879L23.9397 12.2425C23.9418 12.2484 23.9437 12.2544 23.9456 12.2603C23.948 12.2678 23.9503 12.2754 23.9524 12.2829C24.0631 12.6629 24.0483 13.0685 23.9102 13.4394C23.7758 13.8003 23.5317 14.1097 23.2126 14.3242ZM17.9197 0.372501C17.9203 0.371949 17.921 0.371398 17.9216 0.370847L18.5923 1.11251L17.9179 0.374161C17.9185 0.373607 17.9191 0.373053 17.9197 0.372501ZM19.2631 1.85417L19.2668 1.85086C19.2655 1.85197 19.2643 1.85307 19.2631 1.85417Z" fill="currentColor"/></svg>`;
+  const SVG_EXTERNAL   = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
   const TL_JIRA_ICON   = `<svg width="16" height="16" viewBox="0 0 20.0711 20.0711" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;color:#0094FF"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.41421 10.0355L10.0355 16.6569L16.6569 10.0355L10.0355 3.41421L3.41421 10.0355ZM0.585787 8.62133C-0.195262 9.40238 -0.195263 10.6687 0.585786 11.4498L8.62133 19.4853C9.40238 20.2663 10.6687 20.2663 11.4498 19.4853L19.4853 11.4498C20.2663 10.6687 20.2663 9.40238 19.4853 8.62133L11.4498 0.585787C10.6687 -0.195262 9.40238 -0.195263 8.62133 0.585786L0.585787 8.62133Z" fill="currentColor"/></svg>`;
   const TL_TRELLO_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0"><rect x="2" y="2" width="20" height="20" rx="3" fill="#0079BF"/><rect x="5" y="5" width="5.5" height="13" rx="1" fill="#fff"/><rect x="13.5" y="5" width="5.5" height="8" rx="1" fill="#fff"/></svg>`;
   const TL_SPLUNK_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 110 110" fill="none" style="flex-shrink:0"><g clip-path="url(#tl-splunk-clip)"><path fill="url(#tl-splunk-grad)" d="M90.6 109.1h-72C8.3 109.1 0 100.8 0 90.6v-72C0 8.3 8.3 0 18.5 0h72C100.7 0 109 8.3 109 18.5v72c.1 10.3-8.2 18.6-18.4 18.6"/><path fill="#F2F2F2" d="M73 54.9c0 .1.1.2.1.3-.5.3-1.1.5-1.7.7-12.7 5.5-25.3 11-38 16.4-.5.3-.8.5-.8 1.1.1 2.6.1 5.2 0 7.9-.1.8.3.8.9.5 15.3-6.6 30.6-13.1 45.9-19.7.7-.3.8-.6.8-1.3q-.15-5.85 0-11.7c0-.7-.2-1-.8-1.2l-8.4-3c-12.4-4.4-24.8-8.8-37.2-13.3-1.1-.4-1.2-.4-1.2.8 0 2.6.1 5.3-.1 7.9-.1.8.3 1.2 1 1.4l30.6 10.2c3.1 1.1 6 2 8.9 3"/><path fill="#F2F2F2" d="M73 54.9c-2.9-1-5.8-2-8.7-2.9-10.3-3.4-20.5-6.8-30.7-10.2-.8-.3-1-.6-1-1.4.1-2.6.1-5.3.1-8 0-1.2 0-1.2 1.2-.8C46.3 36 58.7 40.4 71 44.9l8.4 3c.7.2.9.6.8 1.2q-.15 5.85 0 11.7c0 .7-.2 1-.8 1.3-15.4 6.6-30.6 13.3-46 19.8-.6.3-.9.3-.9-.5.1-2.6.1-5.2 0-7.9 0-.6.2-.9.8-1.1 12.7-5.5 25.3-11 38-16.4.5-.3 1.1-.5 1.7-.7z"/></g><defs><linearGradient id="tl-splunk-grad" x1="117.961" x2="-4.396" y1="111.505" y2="1.606" gradientUnits="userSpaceOnUse"><stop stop-color="#78B43A"/><stop offset=".952" stop-color="#A2CE6A"/></linearGradient><clipPath id="tl-splunk-clip"><path fill="#fff" d="M0 0h109.1v109.1H0z"/></clipPath></defs></svg>`;
@@ -7407,7 +7482,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
           <span class="tl-author">${ev.author}</span>
         </div>
         <div class="tl-content">${TL_GITLAB_ICON}<span class="tl-title">GitLab ticket created</span></div>
-        ${glFields ? `<div class="tl-fields">${glFields}</div>` : ''}`;
+        <div class="tl-fields">${ev.title ? `<div class="tl-field-row"><span class="tl-field-label">Title:</span><a class="btn-quat tl-ticket-link" href="${ev.href || '#'}">${SVG_EXTERNAL}${ev.title}</a></div>` : ''}${glFields}</div>`;
 
     } else if (ev.type === 'jira') {
       wrap.className = 'tl-card';
@@ -7421,7 +7496,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
           <span class="tl-author">${ev.author}</span>
         </div>
         <div class="tl-content">${TL_JIRA_ICON}<span class="tl-title">${createdTitle}</span></div>
-        ${jiraFields ? `<div class="tl-fields">${jiraFields}</div>` : ''}`;
+        <div class="tl-fields">${ev.title ? `<div class="tl-field-row"><span class="tl-field-label">Title:</span><a class="btn-quat tl-ticket-link" href="${ev.href || '#'}">${SVG_EXTERNAL}${ev.title}</a></div>` : ''}${jiraFields}</div>`;
 
     } else if (ev.type === 'jira-linked') {
       wrap.className = 'tl-card';
@@ -7435,7 +7510,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
           <span class="tl-author">${ev.author}</span>
         </div>
         <div class="tl-content">${TL_JIRA_ICON}<span class="tl-title">Jira ticket ${ev.ticketId} linked</span></div>
-        ${jiraFields ? `<div class="tl-fields">${jiraFields}</div>` : ''}`;
+        <div class="tl-fields">${ev.title ? `<div class="tl-field-row"><span class="tl-field-label">Title:</span><a class="btn-quat tl-ticket-link" href="${ev.href || '#'}">${SVG_EXTERNAL}${ev.title}</a></div>` : ''}${jiraFields}</div>`;
 
     } else if (ev.type === 'jira-unlinked') {
       wrap.className = 'tl-card';
@@ -7461,7 +7536,7 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
           <span class="tl-author">${ev.author}</span>
         </div>
         <div class="tl-content">${TL_TRELLO_ICON}<span class="tl-title">${createdTitle}</span></div>
-        ${trelloFields ? `<div class="tl-fields">${trelloFields}</div>` : ''}`;
+        <div class="tl-fields">${ev.title ? `<div class="tl-field-row"><span class="tl-field-label">Title:</span><a class="btn-quat tl-ticket-link" href="${ev.href || '#'}">${SVG_EXTERNAL}${ev.title}</a></div>` : ''}${trelloFields}</div>`;
 
     } else if (ev.type === 'splunk') {
       wrap.className = 'tl-card';
@@ -8156,10 +8231,34 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
 
     const menu = document.createElement('div');
     menu.className = 'sp-sev-menu';
-    menu.innerHTML = SEV_OPTIONS.map(s =>
-      `<div class="sp-sev-item" data-sev="${s}">${sevSvg(s)}${s}</div>`
-    ).join('');
     document.body.appendChild(menu);
+
+    // Rebuilt on each open. Mirrors the status menu layout: a "Scanner severity"
+    // section at the TOP (the revert affordance when overridden, otherwise the
+    // scanner value shown checked + disabled), a divider, then "Set severity"
+    // listing the four severities with a check on the current one.
+    function buildSevMenu() {
+      const scannerId    = activeRow ? scannerSevOf(activeRow) : 'high';
+      const scannerLabel = SEV_LABELS[scannerId] || 'scanner';
+      const currentId    = activeRow ? currentSevIdOfRow(activeRow) : 'high';
+      const overridden   = activeRow && isSevOverridden(activeRow);
+
+      let html = '<div class="status-menu-list">';
+      html += '<div class="status-menu-section-label">Scanner severity</div>';
+      if (overridden) {
+        html += `<div class="status-menu-item" data-sev-revert="1"><span class="smi-label">${sevSvg(scannerLabel)}Use scanner severity (${scannerLabel})</span></div>`;
+      } else {
+        html += `<div class="status-menu-item is-disabled is-current"><span class="smi-label">${sevSvg(scannerLabel)}${scannerLabel}</span>${SVG_CHECK}</div>`;
+      }
+      html += '<div class="status-menu-divider"></div>';
+      html += '<div class="status-menu-section-label">Set severity</div>';
+      SEV_OPTIONS.forEach(s => {
+        const isCurrent = s.toLowerCase() === currentId;
+        html += `<div class="status-menu-item${isCurrent ? ' is-current' : ''}" data-sev="${s}"><span class="smi-label">${sevSvg(s)}${s}</span>${isCurrent ? SVG_CHECK : ''}</div>`;
+      });
+      html += '</div>';
+      menu.innerHTML = html;
+    }
 
     const dropBtn = document.getElementById('spSevDrop');
     let isOpen = false;
@@ -8178,15 +8277,13 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
     })();
 
     function openMenu() {
+      buildSevMenu();
       const rect = dropBtn.getBoundingClientRect();
       menu.style.top      = rect.bottom + 'px';
       menu.style.left     = rect.left + 'px';
       menu.style.minWidth = rect.width + 'px';
       menu.style.display  = 'block';
       dropBtn.classList.add('is-open');
-      // Mark current selection
-      const cur = document.getElementById('spSevText').textContent.trim();
-      menu.querySelectorAll('.sp-sev-item').forEach(i => i.classList.toggle('is-active', i.dataset.sev === cur));
       isOpen = true;
     }
 
@@ -8201,12 +8298,14 @@ var AI_SVG_ALERT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" 
       isOpen ? closeSpSevMenu() : openMenu();
     });
 
-    menu.querySelectorAll('.sp-sev-item').forEach(item => {
-      item.addEventListener('click', function (e) {
-        e.stopPropagation();
-        closeSpSevMenu();
-        if (activeRow) openSeverityModal(activeRow, this.dataset.sev.toLowerCase());
-      });
+    menu.addEventListener('click', function (e) {
+      const item = e.target.closest('.status-menu-item:not(.is-disabled)');
+      if (!item) return;
+      e.stopPropagation();
+      closeSpSevMenu();
+      if (!activeRow) return;
+      if (item.dataset.sevRevert) openSeverityModal(activeRow, '__revert');
+      else if (item.dataset.sev) openSeverityModal(activeRow, item.dataset.sev.toLowerCase());
     });
 
     // Close on outside click
